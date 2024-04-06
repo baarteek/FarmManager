@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { Button, KeyboardAvoidingView, Platform, SafeAreaView, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
+import { Keyboard, KeyboardAvoidingView, Platform, SafeAreaView, Text, TextInput, TouchableOpacity, TouchableWithoutFeedback, View } from "react-native";
+import { styles } from "../styles/AuthStyles";
 
 
 const LoginScreen = ({navigation}) => {
@@ -7,7 +8,8 @@ const LoginScreen = ({navigation}) => {
     const [password, setPassword] = useState('');
 
     return (
-        <SafeAreaView style={{flex: 1}}>
+        <TouchableWithoutFeedback  onPress={Keyboard.dismiss} accessible={false}>
+             <SafeAreaView style={{flex: 1}}>
             <KeyboardAvoidingView
                 style={styles.topContainer}
                 behavior={Platform.OS === "ios" ? "padding" : "height"}
@@ -68,90 +70,13 @@ const LoginScreen = ({navigation}) => {
                         onPress={() => navigation.navigate('Registration')}    
                     >
                         <Text style={{fontWeight: '400', fontSize: 18}}>Create an account</Text>
-                    </TouchableOpacity>
+                </TouchableOpacity>
             </View>
         </SafeAreaView>
+        </TouchableWithoutFeedback>
+       
     );
 };
 
-const styles = StyleSheet.create({
-    topContainer: {
-        flex: 3,
-        justifyContent: 'center',
-        alignItems: 'center'
-    },
-    bottomConatiner: {
-        flex: 1,
-        alignItems: 'center',
-        justifyContent: 'flex-start'
-    },
-    title: {
-        color: '#22532A',
-        fontSize: 42,
-        fontWeight: 'bold'
-    },
-    slogan: {
-        color: '#3A8C38',
-        fontSize: 15,
-        marginBottom: '20%'
-    },
-    input: {
-        width: '80%',
-        height: '10%',
-        borderWidth: 1,
-        borderRadius: 50,
-        borderColor: '#D4D4D4',
-        marginTop: '5%',
-        paddingLeft: 10,
-        fontWeight: 'bold'
-    },
-    forgotPasswordTouchableOpacity: {
-        marginTop: '1%',
-        alignSelf: 'flex-end',
-        marginRight: '12%'
-    },
-    loginButton: {
-        marginTop: '25%',
-        width: '80%',
-        height: '7%',
-        backgroundColor: '#00E000',
-        borderRadius: 50,
-        justifyContent: 'center',
-    },
-    loginText: {
-        color: '#fff',
-        fontWeight: 'bold',
-        fontSize: 28,
-        textAlign: 'center',
-    }, 
-    lineContainer: {
-        flexDirection: 'row',
-        alignItems: 'center', 
-        marginVertical: 20,
-    },
-    line: {
-        flex: 1,
-        height: 1,
-        backgroundColor: '#3A8C38', 
-        marginHorizontal: 10, 
-    },
-    text: {
-        fontSize: 16,
-        fontWeight: '400', 
-    },
-    anotherLoginButton: {
-        borderWidth: 1,
-        borderColor: '#000',
-        borderRadius: 50,
-        width: '40%',
-        height: 50,
-        justifyContent: 'center'
-    },
-    anotherLoginText: {
-        fontWeight: 'bold',
-        fontSize: 22,
-        textAlign: 'center',
-    }
-});
 
 export default LoginScreen;
