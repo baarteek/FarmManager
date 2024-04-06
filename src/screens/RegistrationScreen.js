@@ -10,7 +10,7 @@ const RegistrationScreen = ({navigation}) => {
 
 
     return (
-        <SafeAreaView style={{flex: 1}}>
+        <SafeAreaView style={{flex: 1,  backgroundColor: '#fff'}}>
         <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false} >
         <KeyboardAvoidingView
                 style={styles.container}

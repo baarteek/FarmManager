@@ -9,7 +9,7 @@ const LoginScreen = ({navigation}) => {
 
     return (
         <TouchableWithoutFeedback  onPress={Keyboard.dismiss} accessible={false}>
-             <SafeAreaView style={{flex: 1}}>
+             <SafeAreaView style={{flex: 1, backgroundColor: '#fff'}}>
             <KeyboardAvoidingView
                 style={styles.topContainer}
                 behavior={Platform.OS === "ios" ? "padding" : "height"}
@@ -34,9 +34,9 @@ const LoginScreen = ({navigation}) => {
                     />
                     <TouchableOpacity
                         style={styles.forgotPasswordTouchableOpacity}
-                        onPress={() => console.log('change password')}    
+                        onPress={() => navigation.navigate('PasswordReset')}    
                     >
-                        <Text style={{fontWeight: '200'}}>Forgot your password?</Text>
+                    <Text style={{fontWeight: '200'}}>Forgot your password?</Text>
                     </TouchableOpacity>
                     <TouchableOpacity
                         style={styles.loginButton}

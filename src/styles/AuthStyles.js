@@ -22,6 +22,17 @@ export const styles = StyleSheet.create({
         alignItems: 'center',
         width: '100%',
     },
+    infoContainer: {
+        margin: '5%',
+        padding: '5%',
+        marginTop: '10%',
+        marginBottom: '10%',
+        backgroundColor: '#DFF6DF',
+        borderWidth: 1,
+        borderColor: '#22532A',
+        borderRadius: 20,
+        color: '#22532A',
+    },
     title: {
         color: '#22532A',
         fontSize: 42,
