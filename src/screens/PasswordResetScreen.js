@@ -60,6 +60,7 @@ const PasswordResetScreen = ({navigation}) => {
                                 value={email}
                                 placeholder="example@email.com"
                                 placeholderTextColor="#A3A3A3"
+                                autoFocus={true}
                             />
                         </View>
                         <TouchableOpacity
@@ -82,6 +83,7 @@ const PasswordResetScreen = ({navigation}) => {
                                 value={code}
                                 placeholder="12345"
                                 placeholderTextColor="#A3A3A3"
+                                autoFocus={true}
                             />
                         </View>
                         <TouchableOpacity
@@ -104,6 +106,7 @@ const PasswordResetScreen = ({navigation}) => {
                                 value={newPassword}
                                 placeholder="********"
                                 placeholderTextColor="#A3A3A3"
+                                autoFocus={true}
                             />
                         </View>
                         <View style={styles.innerContainer}>

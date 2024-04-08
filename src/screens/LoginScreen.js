@@ -40,7 +40,7 @@ const LoginScreen = ({navigation}) => {
                     </TouchableOpacity>
                     <TouchableOpacity
                         style={styles.loginButton}
-                        onPress={() => console.log("login")}                    
+                        onPress={() => navigation.navigate("Home")}                    
                     >
                         <Text style={styles.loginText}>Log In</Text>
                     </TouchableOpacity>
@@ -59,7 +59,7 @@ const LoginScreen = ({navigation}) => {
                         <Text  style={styles.anotherLoginText}>Facebook</Text>
                     </TouchableOpacity>
                     <TouchableOpacity
-                         onPress={() => console.log("Goole")}
+                         onPress={() => console.log("Google")}
                         style={[styles.anotherLoginButton, {marginLeft: '10%'}]}
                     >
                         <Text style={styles.anotherLoginText}>Google</Text>
