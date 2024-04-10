@@ -10,7 +10,21 @@ const Drawer = createDrawerNavigator();
 
 const MainNavigation = () => {
     return (
-        <Drawer.Navigator initialRouteName="Home">
+        <Drawer.Navigator 
+            initialRouteName="Home"
+            screenOptions={{
+                headerStyle: {
+                    borderBottomWidth: 2,
+                },
+                headerTintColor: '#22532A',
+                headerTitleStyle: {
+                    fontWeight: 'bold',
+                    fontSize: 22
+                },
+                drawerActiveBackgroundColor: '#DFF6DF',
+                drawerActiveTintColor: '#22532A'
+            }}
+        >
             <Drawer.Screen 
                 name="Home"
                 component={HomeScreen}
@@ -20,7 +34,7 @@ const MainNavigation = () => {
                 component={WeatherScreen}
             />
             <Drawer.Screen
-                name="CropManagement"
+                name="Crop Management"
                 component={CropManagementScreen}
             />
             <Drawer.Screen
