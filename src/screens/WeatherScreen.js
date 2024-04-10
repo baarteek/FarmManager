@@ -1,8 +1,10 @@
 import { ScrollView, Text, View } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
 import { styles } from "../styles/AppStyles";
+import useLocation from "../hooks/useLocation";
 
 const WeatherScreen = ({navigation}) => {
+    const {location, error} = useLocation();
+
     return (
             <ScrollView style={styles.mainCantainer}>
                 <View style={styles.container} >
@@ -21,7 +23,10 @@ const WeatherScreen = ({navigation}) => {
                     </View>
                     <View style={styles.bottomContainer} >
                         <View style={styles.content} >
-                            <Text style={styles.text}>Content</Text>
+                            {location && (
+                                <Text style={styles.text}>Latitude: {location.coords.latitude}, Longitude: {location.coords.longitude}</Text>
+                            )}
+                            {error && <Text style={styles.text}>{error}</Text>}
                         </View>
                     </View>
                 </View>
