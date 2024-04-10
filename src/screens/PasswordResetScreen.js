@@ -67,7 +67,7 @@ const PasswordResetScreen = ({navigation}) => {
                                 style={[styles.loginButton, {marginBottom: '20%', marginTop: '5%'}]}
                                 onPress={handleEmailSubmit}                    
                             >
-                                <Text style={styles.loginText}>Reset Password</Text>
+                                <Text style={styles.loginText}>Send Mail</Text>
                         </TouchableOpacity>
                         </>
                     )

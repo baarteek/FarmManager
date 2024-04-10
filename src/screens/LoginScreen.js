@@ -1,9 +1,11 @@
 import { useState } from "react";
 import { Keyboard, KeyboardAvoidingView, Platform, SafeAreaView, Text, TextInput, TouchableOpacity, TouchableWithoutFeedback, View } from "react-native";
 import { styles } from "../styles/AuthStyles";
+import { useAuth } from "../context/AuthContext";
 
 
 const LoginScreen = ({navigation}) => {
+    const { login } = useAuth();
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
 
@@ -40,7 +42,7 @@ const LoginScreen = ({navigation}) => {
                     </TouchableOpacity>
                     <TouchableOpacity
                         style={styles.loginButton}
-                        onPress={() => navigation.navigate("Home")}                    
+                        onPress={login}                    
                     >
                         <Text style={styles.loginText}>Log In</Text>
                     </TouchableOpacity>

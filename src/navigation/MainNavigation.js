@@ -4,6 +4,7 @@ import HomeScreen from "../screens/HomeScreen";
 import WeatherScreen from "../screens/WeatherScreen";
 import CropManagementScreen from "../screens/CropManagementScreen";
 import MapScreen from "../screens/MapScreen";
+import SettingsScreen from '../screens/SettingsScreen';
 
 const Drawer = createDrawerNavigator();
 
@@ -25,6 +26,10 @@ const MainNavigation = () => {
             <Drawer.Screen
                 name="Map"
                 component={MapScreen}
+            />
+            <Drawer.Screen 
+                name='Settings'
+                component={SettingsScreen}
             />
         </Drawer.Navigator>
     );
