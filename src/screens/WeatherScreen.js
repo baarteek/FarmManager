@@ -8,9 +8,9 @@ import ErrorView from "../components/ErrorView";
 
 const WeatherScreen = () => {
     const { location, locationError } = useLocationContext();
-    //const { weatherData, loading, error } = useWeatherData(location?.coords?.latitude, location?.coords?.longitude);
+    const { weatherData, loading, error } = useWeatherData(location?.coords?.latitude, location?.coords?.longitude);
 
-    //console.log(weatherData.daily);
+    console.log(weatherData?.daily);
 
     if(!location && !locationError) {
         return (
@@ -25,6 +25,23 @@ const WeatherScreen = () => {
         return (
             <ScrollView style={styles.mainCantainer} >
                <ErrorView title="Location Error" message={locationError}/>
+            </ScrollView>
+        );
+    }
+
+    if(loading) {
+        return (
+            <ScrollView style={styles.mainCantainer} >
+            <LoadingView
+                 title="Loading Weather..."
+                 activityIndicatorColor="#22532A"
+             />
+         </ScrollView>
+        );
+    } else if(error) {
+        return (
+            <ScrollView style={styles.mainCantainer} >
+               <ErrorView title="Weather Error" message={error}/>
             </ScrollView>
         );
     }
