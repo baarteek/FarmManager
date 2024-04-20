@@ -27,6 +27,15 @@ export  const styles = StyleSheet.create({
         borderBottomLeftRadius: 20,
         borderBottomRightRadius: 20,
     },
+    innerContainer: {
+        alignItems: 'center',
+        backgroundColor: '#BAF1BA',
+        width: '100%',
+        padding: '5%',
+        borderRadius: 20,
+        marginBottom: '1%',
+        marginTop: '1%'
+    },
     loadingContainer: {
         backgroundColor: '#DFF6DF',
         width: '90%',
@@ -36,8 +45,11 @@ export  const styles = StyleSheet.create({
         justifyContent: 'center',
         textAlign: 'center'
     },
+    rowContainer: {
+        flexDirection: 'row',
+    },
     content: {
-
+        alignItems: 'center',
     },
     title: {
         fontWeight: 'bold',
@@ -45,9 +57,23 @@ export  const styles = StyleSheet.create({
         color: '#22532A',
         fontSize: 18,
     },
+    subtitle: {
+        fontWeight: 'bold', 
+        textAlign: 'center', 
+        color: '#22734D',
+        fontSize: 20,
+        marginBottom: '2%'
+    },
     text: {
         color: '#22532A',
-        fontSize: 14,
+        fontSize: 18,
         fontWeight: '500'
+    },
+    largeText: {
+        color: '#22532A',
+        fontSize: 20,
+        fontWeight: '500',
+        marginLeft: '2%',
+        marginRight: '5%'
     }
 });
