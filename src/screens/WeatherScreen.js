@@ -3,6 +3,7 @@ import { styles } from "../styles/AppStyles";
 import useWeatherData from "../hooks/useWeatherData";
 import { useLocationContext } from "../context/useLocationContext";
 import LoadingView from "../components/LoadingView";
+import ErrorView from "../components/ErrorView";
 
 
 const WeatherScreen = () => {
@@ -16,8 +17,14 @@ const WeatherScreen = () => {
             <ScrollView style={styles.mainCantainer} >
                <LoadingView
                     title="Loading location..."
-                    
+                    activityIndicatorColor="#22532A"
                 />
+            </ScrollView>
+        );
+    } else if(locationError) {
+        return (
+            <ScrollView style={styles.mainCantainer} >
+               <ErrorView title="Location Error" message={locationError}/>
             </ScrollView>
         );
     }
