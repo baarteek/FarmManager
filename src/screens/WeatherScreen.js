@@ -1,14 +1,26 @@
-import { ScrollView, Text, View } from "react-native";
+import { ActivityIndicator, ScrollView, Text, View } from "react-native";
 import { styles } from "../styles/AppStyles";
-import useLocation from "../hooks/useLocation";
 import useWeatherData from "../hooks/useWeatherData";
+import { useLocationContext } from "../context/useLocationContext";
+import LoadingView from "../components/LoadingView";
 
 
 const WeatherScreen = () => {
-    const { location, locationEror } = useLocation();
-    const { weatherData, loading, error } = useWeatherData(location?.coords?.latitude, location?.coords?.longitude);
+    const { location, locationError } = useLocationContext();
+    //const { weatherData, loading, error } = useWeatherData(location?.coords?.latitude, location?.coords?.longitude);
 
-    console.log(weatherData.daily);
+    //console.log(weatherData.daily);
+
+    if(!location && !locationError) {
+        return (
+            <ScrollView style={styles.mainCantainer} >
+               <LoadingView
+                    title="Loading location..."
+                    
+                />
+            </ScrollView>
+        );
+    }
 
     return (
             <ScrollView style={styles.mainCantainer}>
@@ -41,7 +53,7 @@ const WeatherScreen = () => {
                             {location && (
                                 <Text style={styles.text}>Latitude: {location.coords.latitude}, Longitude: {location.coords.longitude}</Text>
                             )}
-                            {locationEror && <Text style={styles.text}>{locationEror}</Text>}
+                            {locationError && <Text style={styles.text}>{locationError}</Text>}
                         </View>
                     </View>
                 </View>

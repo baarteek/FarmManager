@@ -27,6 +27,15 @@ export  const styles = StyleSheet.create({
         borderBottomLeftRadius: 20,
         borderBottomRightRadius: 20,
     },
+    loadingContainer: {
+        backgroundColor: '#DFF6DF',
+        width: '90%',
+        padding: '5%',
+        margin: '5%',
+        borderRadius: 20,
+        justifyContent: 'center',
+        textAlign: 'center'
+    },
     content: {
 
     },
