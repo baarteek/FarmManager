@@ -5,12 +5,14 @@ import { useLocationContext } from "../context/useLocationContext";
 import LoadingView from "../components/LoadingView";
 import ErrorView from "../components/ErrorView";
 import { FontAwesome6, Feather, Entypo, Ionicons } from '@expo/vector-icons';
+import { getWeatherDetails } from "../utils/WeatherUtils";
+import { weatherStyles } from "../styles/WeatherStyles";
 
 
 const WeatherScreen = () => {
     const { location, locationError } = useLocationContext();
     const { weatherData, loading, error } = useWeatherData(location?.coords?.latitude, location?.coords?.longitude);
-
+    
     console.log(weatherData?.current);
 
     if(!location && !locationError) {
@@ -47,6 +49,8 @@ const WeatherScreen = () => {
         );
     }
 
+    const { icon, description } = getWeatherDetails(weatherData.current.weather_code);
+
     return (
             <ScrollView style={styles.mainCantainer}>
                 <View style={styles.container} >
@@ -59,22 +63,23 @@ const WeatherScreen = () => {
                                 <View style={styles.rowContainer} >
                                     <FontAwesome6 name="temperature-full" size={26} color={weatherStyles.iconColor} />
                                     <Text style={[styles.largeText, weatherStyles.largeText]}>{weatherData.current.temperature_2m}°C</Text>
-                                    <Text style={[styles.largeText, weatherStyles.largeText]}>Code: {weatherData.current.weather_code}</Text>
+                                    <Text style={[styles.largeText, weatherStyles.largeText]}>{description}</Text>
+                                    {icon}
                                 </View>
                             </View>
                             <View style={[styles.innerContainer,weatherStyles.innerContainer]}>
                                 <Text style={[styles.subtitle,weatherStyles.subtitle]}>Humidity</Text>
                                 <View style={styles.rowContainer} >
-                                    <Ionicons name="water" size={24} color={weatherStyles.iconColor} />
+                                    <Ionicons name="water" size={weatherStyles.iconSize} color={weatherStyles.iconColor} />
                                     <Text style={[styles.largeText, weatherStyles.largeText]}>{weatherData.current.relative_humidity_2m}%</Text>
                                 </View>
                             </View>
                                 <View style={[styles.innerContainer, weatherStyles.innerContainer]}>
                                     <Text style={[styles.subtitle, weatherStyles.subtitle]}>Wind</Text>
                                     <View style={styles.rowContainer} >
-                                        <Feather name="wind" size={26} color={weatherStyles.iconColor} />
+                                        <Feather name="wind" size={weatherStyles.iconSize} color={weatherStyles.iconColor} />
                                         <Text style={[styles.largeText, weatherStyles.largeText]}>{weatherData.current.wind_speed_10m} m/s</Text>
-                                        <Entypo name="direction" size={24} color={weatherStyles.iconColor} />
+                                        <Entypo name="direction" size={weatherStyles.iconSize} color={weatherStyles.iconColor} />
                                         <Text style={[styles.largeText, weatherStyles.largeText]}>{weatherData.current.wind_direction_10m}°</Text>
                                     </View>
                                 </View>
@@ -107,24 +112,5 @@ const WeatherScreen = () => {
             </ScrollView>
     );
 };
-
-const weatherStyles = StyleSheet.create({
-    title: {
-        color: '#07374a'
-    },
-    container: {
-        backgroundColor: '#c0ebfc'
-    },
-    innerContainer: {
-        backgroundColor: '#98defa'
-    },
-    largeText: {
-        color: '#0c4f69'
-    },
-    subtitle: {
-        color: '#07374a'
-    },
-    iconColor: '#010361'
-});
 
 export default WeatherScreen;
