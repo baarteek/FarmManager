@@ -1,8 +1,9 @@
-import { Text, View } from "react-native";
+import { Text, Touchable, View } from "react-native";
 import { styles } from "../styles/AppStyles";
 import { weatherStyles } from "../styles/WeatherStyles";
 import { getWeatherDetails } from "../utils/WeatherUtils";
 import { FontAwesome6, Feather } from '@expo/vector-icons';
+import { TouchableOpacity } from "react-native-gesture-handler";
 
 const WeatherDailyDetails = ({dailyData, dailyUnits}) => {
     const getWeekdayFromDateString = (dateString) => {
@@ -45,6 +46,10 @@ const WeatherDailyDetails = ({dailyData, dailyUnits}) => {
                                 <Feather name="wind" size={weatherStyles.iconSize} color={weatherStyles.iconColor} />
                                 <Text style={[styles.largeText, weatherStyles.largeText]}>{dailyData.wind_speed_10m_max[index]} {dailyUnits.wind_speed_10m_max}</Text>
                             </View>
+                            <View style={weatherStyles.line} />
+                            <TouchableOpacity style={{ borderWidth: 1, borderRadius: 25, borderColor: '#fff', paddingLeft: '20%', paddingRight: '20%', backgroundColor: '#c0ebfc' }}>
+                                <Text style={[styles.subtitle, weatherStyles.subtitle, { fontSize: 18 }]}>Show Details</Text>
+                            </TouchableOpacity>
                     </View>
                     );
                 })
