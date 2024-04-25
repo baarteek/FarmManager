@@ -1,4 +1,4 @@
-import { ActivityIndicator, ScrollView, StyleSheet, Text, View } from "react-native";
+import { ScrollView, Text, View } from "react-native";
 import { styles } from "../styles/AppStyles";
 import useWeatherData from "../hooks/useWeatherData";
 import { useLocationContext } from "../context/useLocationContext";
@@ -7,13 +7,14 @@ import ErrorView from "../components/ErrorView";
 import { FontAwesome6, Feather, Entypo, Ionicons } from '@expo/vector-icons';
 import { getWeatherDetails } from "../utils/WeatherUtils";
 import { weatherStyles } from "../styles/WeatherStyles";
+import WeatherDailyDetails from "../components/WeatherDailyDetails";
 
 
 const WeatherScreen = () => {
     const { location, locationError } = useLocationContext();
     const { weatherData, loading, error } = useWeatherData(location?.coords?.latitude, location?.coords?.longitude);
     
-    console.log(weatherData?.current);
+    console.log(weatherData?.daily?.time);
 
     if(!location && !locationError) {
         return (
@@ -35,11 +36,11 @@ const WeatherScreen = () => {
     if(loading) {
         return (
             <ScrollView style={styles.mainCantainer} >
-            <LoadingView
-                 title="Loading Weather..."
-                 activityIndicatorColor="#22532A"
-             />
-         </ScrollView>
+                <LoadingView
+                    title="Loading Weather..."
+                    activityIndicatorColor="#22532A"
+                />
+            </ScrollView>
         );
     } else if(error) {
         return (
@@ -61,8 +62,8 @@ const WeatherScreen = () => {
                         <View style={styles.content} >
                             <View style={[styles.innerContainer, weatherStyles.innerContainer]}>
                                 <View style={styles.rowContainer} >
-                                    <FontAwesome6 name="temperature-full" size={26} color={weatherStyles.iconColor} />
-                                    <Text style={[styles.largeText, weatherStyles.largeText]}>{weatherData.current.temperature_2m}°C</Text>
+                                    <FontAwesome6 name="temperature-full" size={weatherStyles.iconSize} color={weatherStyles.iconColor} />
+                                    <Text style={[styles.largeText, weatherStyles.largeText]}>{weatherData.current.temperature_2m}{weatherData.current_units.temperature_2m}</Text>
                                     <Text style={[styles.largeText, weatherStyles.largeText]}>{description}</Text>
                                     {icon}
                                 </View>
@@ -71,16 +72,16 @@ const WeatherScreen = () => {
                                 <Text style={[styles.subtitle,weatherStyles.subtitle]}>Humidity</Text>
                                 <View style={styles.rowContainer} >
                                     <Ionicons name="water" size={weatherStyles.iconSize} color={weatherStyles.iconColor} />
-                                    <Text style={[styles.largeText, weatherStyles.largeText]}>{weatherData.current.relative_humidity_2m}%</Text>
+                                    <Text style={[styles.largeText, weatherStyles.largeText]}>{weatherData.current.relative_humidity_2m}{weatherData.current_units.relative_humidity_2m}</Text>
                                 </View>
                             </View>
                                 <View style={[styles.innerContainer, weatherStyles.innerContainer]}>
                                     <Text style={[styles.subtitle, weatherStyles.subtitle]}>Wind</Text>
                                     <View style={styles.rowContainer} >
                                         <Feather name="wind" size={weatherStyles.iconSize} color={weatherStyles.iconColor} />
-                                        <Text style={[styles.largeText, weatherStyles.largeText]}>{weatherData.current.wind_speed_10m} m/s</Text>
+                                        <Text style={[styles.largeText, weatherStyles.largeText]}>{weatherData.current.wind_speed_10m} {weatherData.current_units.wind_speed_10m}</Text>
                                         <Entypo name="direction" size={weatherStyles.iconSize} color={weatherStyles.iconColor} />
-                                        <Text style={[styles.largeText, weatherStyles.largeText]}>{weatherData.current.wind_direction_10m}°</Text>
+                                        <Text style={[styles.largeText, weatherStyles.largeText]}>{weatherData.current.wind_direction_10m}{weatherData.current_units.wind_direction_10m}</Text>
                                     </View>
                                 </View>
                         </View>
@@ -102,10 +103,7 @@ const WeatherScreen = () => {
                     </View>
                     <View style={[styles.bottomContainer, weatherStyles.container]} >
                         <View style={styles.content} >
-                            {location && (
-                                <Text style={styles.text}>Latitude: {location.coords.latitude}, Longitude: {location.coords.longitude}</Text>
-                            )}
-                            {locationError && <Text style={styles.text}>{locationError}</Text>}
+                            <WeatherDailyDetails dailyData={weatherData.daily} dailyUnits={weatherData.daily_units} />
                         </View>
                     </View>
                 </View>

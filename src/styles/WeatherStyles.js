@@ -11,11 +11,20 @@ export const weatherStyles = StyleSheet.create({
         backgroundColor: '#98defa'
     },
     largeText: {
-        color: '#0c4f69'
+        color: '#0c4f69',
     },
     subtitle: {
         color: '#07374a'
     },
     iconColor: '#010361',
-    iconSize: 26
+    iconSize: 26,
+    line: {
+        height: 1, 
+        width: "95%", 
+        borderWidth: 1, 
+        borderColor: '#c0ebfc', 
+        borderStyle: 'solid', 
+        marginTop: '3%', 
+        marginBottom: '3%'
+    }
 });

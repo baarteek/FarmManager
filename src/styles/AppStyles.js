@@ -34,7 +34,7 @@ export  const styles = StyleSheet.create({
         padding: '5%',
         borderRadius: 16,
         marginBottom: '1%',
-        marginTop: '1%'
+        marginTop: '1%',
     },
     loadingContainer: {
         backgroundColor: '#DFF6DF',
@@ -75,5 +75,14 @@ export  const styles = StyleSheet.create({
         fontWeight: '500',
         marginLeft: '2%',
         marginRight: '5%'
+    },
+    line:  {
+        height: 2, 
+        width: "100%",
+        borderWidth: 1, 
+        borderColor: '#fff', 
+        borderStyle: 'solid',
+        marginBottom: '2%',
+        marginBottom: '3%'
     }
 });
