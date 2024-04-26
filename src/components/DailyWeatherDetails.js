@@ -18,7 +18,7 @@ const WeatherDailyDetails = ({dailyData, dailyUnits}) => {
                     const { icon, description } = getWeatherDetails(dailyData.weather_code[index]);
                     
                     return (
-                        <View key={index} style={[styles.innerContainer, weatherStyles.innerContainer]}>
+                        <View key={index} style={[styles.innerContainer, weatherStyles.innerContainer, {marginBottom: '8%'}]}>
                         {
                             dailyData.time[0] === time ? (
                                 <Text style={[styles.subtitle,weatherStyles.subtitle]}>Today</Text>

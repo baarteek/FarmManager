@@ -7,14 +7,14 @@ import ErrorView from "../components/ErrorView";
 import { FontAwesome6, Feather, Entypo, Ionicons } from '@expo/vector-icons';
 import { getWeatherDetails } from "../utils/WeatherUtils";
 import { weatherStyles } from "../styles/WeatherStyles";
-import WeatherDailyDetails from "../components/WeatherDailyDetails";
+import DailyWeatherDetails from "../components/DailyWeatherDetails";
+import HourlyWeatherDetails from "../components/HourlyWeatherDetails";
 
 
 const WeatherScreen = () => {
     const { location, locationError } = useLocationContext();
     const { weatherData, loading, error } = useWeatherData(location?.coords?.latitude, location?.coords?.longitude);
-    
-    console.log(weatherData?.daily?.time);
+
 
     if(!location && !locationError) {
         return (
@@ -93,7 +93,7 @@ const WeatherScreen = () => {
                     </View>
                     <View style={[styles.bottomContainer, weatherStyles.container]} >
                         <View style={styles.content} >
-                            <Text style={styles.text}>Content</Text>
+                            <HourlyWeatherDetails hourlyData={weatherData.hourly} />
                         </View>
                     </View>
                 </View>
@@ -103,7 +103,7 @@ const WeatherScreen = () => {
                     </View>
                     <View style={[styles.bottomContainer, weatherStyles.container]} >
                         <View style={styles.content} >
-                            <WeatherDailyDetails dailyData={weatherData.daily} dailyUnits={weatherData.daily_units} />
+                            <DailyWeatherDetails dailyData={weatherData.daily} dailyUnits={weatherData.daily_units} />
                         </View>
                     </View>
                 </View>

@@ -48,6 +48,10 @@ export  const styles = StyleSheet.create({
     rowContainer: {
         flexDirection: 'row',
     },
+    horizontalContainer: {
+        width: 100,
+        alignItems: 'center',
+    },
     content: {
         alignItems: 'center',
     },
