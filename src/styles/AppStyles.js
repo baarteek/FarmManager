@@ -6,6 +6,7 @@ export  const styles = StyleSheet.create({
         backgroundColor: '#fff',
         width: '100%',
         height: '100%',
+        paddingBottom: '10%'
     },
     container: {
         alignItems:'center', 
@@ -88,5 +89,13 @@ export  const styles = StyleSheet.create({
         borderStyle: 'solid',
         marginBottom: '2%',
         marginBottom: '3%'
-    }
+    },
+    warningText: {
+        color: '#5F7262',
+        textAlign: 'center',
+        fontSize: 16,
+        fontWeight: '600'
+    },
+    warningBackgorundColor: '#FCE699',
+    warningTitleColor: '#4B534C',
 });

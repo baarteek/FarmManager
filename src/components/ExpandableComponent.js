@@ -4,7 +4,7 @@ import { TouchableOpacity } from "react-native-gesture-handler";
 import { styles } from "../styles/AppStyles";
 import { Entypo } from '@expo/vector-icons';
 
-const ExpandableComponent = ({title, backgroundColor, titleColor, children}) => {
+const ExpandableComponent = ({title, backgroundColor, titleColor, style, children}) => {
     const [expanded , setExpanded] =  useState(true);
     const background = backgroundColor || '#DFF6DF';
     const titleColo = titleColor || '#22734D';
@@ -12,7 +12,7 @@ const ExpandableComponent = ({title, backgroundColor, titleColor, children}) => 
 
       return (
         <>
-            <View style={expanded ? [styles.topContainer, {backgroundColor: background}] : [expandedStyles.topContainer, {backgroundColor: background}]}>
+            <View style={expanded ? [styles.topContainer, {backgroundColor: background}, style] : [expandedStyles.topContainer, {backgroundColor: background}, style]}>
                 <TouchableOpacity onPress={() => setExpanded(!expanded) } style={expandedStyles.touchableElement}>
                     <Text style={[styles.subtitle, {color: titleColo}]}>{title}</Text>
                     {
@@ -24,7 +24,7 @@ const ExpandableComponent = ({title, backgroundColor, titleColor, children}) => 
             </View>
             {
                 expanded && (
-                    <View style={[styles.bottomContainer, {backgroundColor: background}]}>
+                    <View style={[styles.bottomContainer, {backgroundColor: background}, style]}>
                         { children }
                     </View>
                 )
@@ -40,7 +40,7 @@ const expandedStyles = StyleSheet.create({
         marginBottom: "1%",
         width: '90%',
         padding: '2%',
-        borderRadius: 24
+        borderRadius: 24,
     },
     touchableElement: {
         flexDirection: 'row', 
