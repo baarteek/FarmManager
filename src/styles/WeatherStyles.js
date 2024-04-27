@@ -16,7 +16,7 @@ export const weatherStyles = StyleSheet.create({
     subtitle: {
         color: '#07374a'
     },
-    iconColor: '#083a59',
+    iconColor: '#04395e',
     iconSize: 26,
     line: {
         height: 1, 

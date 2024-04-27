@@ -8,7 +8,7 @@ import { FontAwesome6, Feather, Entypo, Ionicons } from '@expo/vector-icons';
 import { getWeatherDetails } from "../utils/WeatherUtils";
 import { weatherStyles } from "../styles/WeatherStyles";
 import DailyWeatherDetails from "../components/DailyWeatherDetails";
-import HourlyWeatherDetails from "../components/HourlyWeatherDetails";
+import TodayWeatherDetails from "../components/TodayWeatherDetails";
 
 
 const WeatherScreen = () => {
@@ -93,7 +93,7 @@ const WeatherScreen = () => {
                     </View>
                     <View style={[styles.bottomContainer, weatherStyles.container]} >
                         <View style={styles.content} >
-                            <HourlyWeatherDetails hourlyData={weatherData.hourly} />
+                            <TodayWeatherDetails hourlyData={weatherData.hourly} />
                         </View>
                     </View>
                 </View>

@@ -5,7 +5,7 @@ import { weatherStyles } from "../styles/WeatherStyles";
 import { useCallback, useEffect, useRef } from "react";
 import { useFocusEffect } from "@react-navigation/native";
 
-const HourlyWeatherDetails = ({ hourlyData }) => {
+const TodayWeatherDetails = ({ hourlyData }) => {
     const scrollViewRef = useRef();
     const firstDayData = {
         time: hourlyData.time.slice(0, 24),
@@ -57,4 +57,4 @@ const HourlyWeatherDetails = ({ hourlyData }) => {
     );
 };
 
-export default HourlyWeatherDetails;
+export default TodayWeatherDetails;
