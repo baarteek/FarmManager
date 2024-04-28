@@ -49,6 +49,10 @@ export  const styles = StyleSheet.create({
     rowContainer: {
         flexDirection: 'row',
     },
+    infoRowContainer: {
+        flexDirection: 'row',
+        justifyContent: 'space-between'
+    },
     horizontalContainer: {
         width: 100,
         alignItems: 'center',
@@ -88,13 +92,21 @@ export  const styles = StyleSheet.create({
         borderColor: '#fff', 
         borderStyle: 'solid',
         marginBottom: '2%',
-        marginBottom: '3%'
+        marginTop: '2%'
     },
     warningText: {
         color: '#5F7262',
         textAlign: 'center',
         fontSize: 16,
         fontWeight: '600'
+    },
+    button: {
+        borderWidth: 1,
+        borderRadius: 24,
+        justifyContent: 'center',
+        backgroundColor: '#fff',
+        width: '100%',
+        padding: '1%'
     },
     warningBackgorundColor: '#FCE699',
     warningTitleColor: '#4B534C',
