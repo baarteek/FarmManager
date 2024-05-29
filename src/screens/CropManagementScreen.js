@@ -1,8 +1,9 @@
-import { SafeAreaView, ScrollView, Text, TouchableOpacity, View } from "react-native";
+import { Alert, SafeAreaView, ScrollView, Text, TouchableOpacity, View } from "react-native";
 import { styles } from "../styles/AppStyles";
 import CropDetails from "../components/CropDetails";
+import { useState } from "react";
 
-const data = [
+const initialData = [
     {
         id: 1,
         name: 'Crop 1',
@@ -95,6 +96,30 @@ const data = [
 
 
 const CropManagementScreen = () => {
+    const [data, setData] = useState(initialData);
+
+    const handleDelete = (id) => {
+        const updatedData = data.filter(field => field.id !== id);
+        setData(updatedData);
+    };
+
+    const confirmDelete = (id) => {
+        Alert.alert("Confirm Deletion", "Are you sure you want to delete this crop?",
+            [
+                {
+                    text: 'Cancel',
+                    style: 'cancel'
+                },
+                {
+                    text: 'Delete',
+                    onPress: () => handleDelete(id),
+                    style: 'destructive'
+                }, 
+            ],
+            { cancelable: false }
+        );
+    };
+
     return (
         <View style={styles.mainCantainer}>
             <View style={styles.container}>
@@ -105,7 +130,7 @@ const CropManagementScreen = () => {
             <ScrollView style={styles.mainCantainer}>
                 {
                     data.map((field, index) => (
-                        <CropDetails cropData={field} key={index} />
+                        <CropDetails cropData={field} key={index} onDelete={confirmDelete} />
                     ))
                 }
             </ScrollView>

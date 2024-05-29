@@ -3,7 +3,7 @@ import { styles } from "../styles/AppStyles";
 import { View, Text } from "react-native";
 import { TouchableOpacity } from "react-native-gesture-handler";
 
-const CropDetails = ({cropData}) => {
+const CropDetails = ({cropData, onDelete}) => {
     return (
         <View style={styles.container}>
             <ExpandableComponent title={cropData.name} >
@@ -60,7 +60,7 @@ const CropDetails = ({cropData}) => {
                     <TouchableOpacity style={styles.button}>
                         <Text style={{textAlign: 'center', fontWeight: 'bold', fontSize: 16, marginLeft: '10%', marginRight: '10%'}}>Edit</Text>
                     </TouchableOpacity>
-                    <TouchableOpacity style={[styles.button, {backgroundColor: '#FC7F7F'}]}>
+                    <TouchableOpacity style={[styles.button, {backgroundColor: '#FC7F7F'}]} onPress={() => onDelete(cropData.id)}>
                         <Text style={{textAlign: 'center', fontWeight: 'bold', fontSize: 16, color: '#fff', marginLeft: '10%', marginRight: '10%'}}>Delete</Text>
                     </TouchableOpacity>
                 </View>
