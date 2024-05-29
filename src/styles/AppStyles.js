@@ -78,6 +78,11 @@ export  const styles = StyleSheet.create({
         fontSize: 18,
         fontWeight: '500'
     },
+    textInfo: {
+        color: '#22532A',
+        fontSize: 18,
+        fontWeight: '300'
+    },
     largeText: {
         color: '#22532A',
         fontSize: 20,
@@ -105,7 +110,7 @@ export  const styles = StyleSheet.create({
         borderRadius: 24,
         justifyContent: 'center',
         backgroundColor: '#fff',
-        width: '100%',
+        width: 'auto',
         padding: '1%'
     },
     warningBackgorundColor: '#FCE699',
