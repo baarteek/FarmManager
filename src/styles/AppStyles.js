@@ -57,6 +57,14 @@ export  const styles = StyleSheet.create({
         width: 100,
         alignItems: 'center',
     },
+    containerWithBorder: {
+        margin: '3%',
+        borderWidth: 1,
+        borderRadius: 8,
+        borderColor: '#22532A',
+        justifyContent: 'center',
+        paddingVertical: '1%'
+    },
     content: {
         alignItems: 'center',
     },
@@ -112,5 +120,32 @@ export  const styles = StyleSheet.create({
         backgroundColor: '#fff',
         width: 'auto',
         padding: '1%'
+    },
+    input: {
+        width: '85%',
+        height: 40,
+        borderWidth: 1,
+        borderRadius: 50,
+        borderColor: '#D4D4D4',
+        marginTop: '2%',
+        marginBottom: '5%',
+        paddingLeft: 10,
+        fontWeight: 'bold',
+        fontSize: 16,
+        alignSelf: 'center'
+    },
+    plotNumberContainer: {
+        flexDirection: 'row',
+        alignSelf: 'center',
+        marginBottom: 8,
+        borderColor: '#ccc',
+        borderWidth: 1,
+        borderRadius: 20,
+        width: '80%',
+        padding: '1%'
+    },
+    plotNumberInput: {
+        flex: 1,
+        borderWidth: 0, 
     },
 });
