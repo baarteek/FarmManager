@@ -173,8 +173,8 @@ const FieldManagementScreen = () => {
             
             <ScrollView style={styles.mainCantainer}>
                 {
-                    fields.map((field, index) => (
-                        <FieldDetails fieldData={field} key={index} onDelete={confirmDelete} />
+                    fields.map((field) => (
+                        <FieldDetails fieldData={field} key={field.id} onDelete={() => confirmDelete(field.id)} />
                     ))
                 }
             </ScrollView>

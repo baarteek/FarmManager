@@ -4,7 +4,7 @@ import { styles } from "../styles/AppStyles";
 import ExpandableComponent from "./ExpandableComponent";
 import { useNavigation } from '@react-navigation/native';
 
-const FieldDetails = ({ fieldData, onDeleteCrop }) => {
+const FieldDetails = ({ fieldData, onDelete }) => {
     const navigation = useNavigation();
 
     return (
@@ -74,7 +74,7 @@ const FieldDetails = ({ fieldData, onDeleteCrop }) => {
                     <TouchableOpacity style={styles.button}>
                         <Text style={{textAlign: 'center', fontWeight: 'bold', fontSize: 16, marginLeft: '10%', marginRight: '10%'}}>Edit</Text>
                     </TouchableOpacity>
-                    <TouchableOpacity style={[styles.button, {backgroundColor: '#FC7F7F'}]}>
+                    <TouchableOpacity style={[styles.button, {backgroundColor: '#FC7F7F'}]} onPress={onDelete}>
                         <Text style={{textAlign: 'center', fontWeight: 'bold', fontSize: 16, color: '#fff', marginLeft: '10%', marginRight: '10%'}}>Delete</Text>
                     </TouchableOpacity>
                 </View>
