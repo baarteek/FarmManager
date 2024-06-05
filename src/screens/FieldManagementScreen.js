@@ -3,6 +3,7 @@ import { styles } from "../styles/AppStyles";
 import { useState } from "react";
 import FieldDetails from "../components/FieldDetails";
 import { useNavigation } from "@react-navigation/native";
+import FloatingActionButton from '../components/FloatingActionButton';
 
 const initialData = [
     {
@@ -169,11 +170,7 @@ const FieldManagementScreen = () => {
 
     return (
         <View style={styles.mainCantainer}>
-            <View style={styles.container}>
-                <TouchableOpacity style={[styles.button, {margin: '5%', width: '80%', backgroundColor: '#62C962'}]} onPress={() => navigation.navigate('Add Field')}>
-                    <Text style={{textAlign: 'center', fontWeight: 'bold', fontSize: 22, color: '#fff', marginLeft: '10%', marginRight: '10%'}}>Add New Field</Text>
-                </TouchableOpacity>
-            </View>
+            
             <ScrollView style={styles.mainCantainer}>
                 {
                     fields.map((field, index) => (
@@ -181,6 +178,7 @@ const FieldManagementScreen = () => {
                     ))
                 }
             </ScrollView>
+            <FloatingActionButton onPress={() => navigation.navigate('Add Field')} />
         </View>
         );
 };

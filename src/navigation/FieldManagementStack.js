@@ -7,9 +7,22 @@ const Stack = createStackNavigator();
 
 const FieldmanagementStack = () => {
     return (
-        <Stack.Navigator>
-            <Stack.Screen name="Field Management" component={FieldManagementScreen} options={{headerShown: false}}/>
-            <Stack.Screen name="Add Field" component={AddFieldScreen} />
+        <Stack.Navigator
+            screenOptions={{
+                headerStyle: {
+                    borderBottomWidth: 2,
+                },
+                headerTintColor: '#276e33',
+                headerTitleStyle: {
+                    fontWeight: 'bold',
+                    fontSize: 18
+                },
+                drawerActiveBackgroundColor: '#276e33',
+                drawerActiveTintColor: '#276e33'
+            }}
+        >
+            <Stack.Screen name="FieldManagementMain" component={FieldManagementScreen} options={{headerShown: false}}/>
+            <Stack.Screen name="Add Field" component={AddFieldScreen} options={{ headerShown: true, title: 'Add Field' }}/>
             <Stack.Screen name="Show Crops" component={ShowCropsScreen} />
         </Stack.Navigator>
     );
