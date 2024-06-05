@@ -2,9 +2,11 @@ import React from 'react';
 import { View, Text, TouchableOpacity } from "react-native";
 import { styles } from "../styles/AppStyles";
 import ExpandableComponent from "./ExpandableComponent";
-import CropDetails from "./CropDetails";
+import { useNavigation } from '@react-navigation/native';
 
 const FieldDetails = ({ fieldData, onDeleteCrop }) => {
+    const navigation = useNavigation();
+
     return (
         <View style={styles.container}>
             <ExpandableComponent title={fieldData.name}>
@@ -65,7 +67,7 @@ const FieldDetails = ({ fieldData, onDeleteCrop }) => {
                         )
                     }
                 </ExpandableComponent>
-                <TouchableOpacity style={[styles.button, {marginTop: '5%', paddingVertical: '1%', backgroundColor: '#BAF1BA'}]}>
+                <TouchableOpacity style={[styles.button, {marginTop: '5%', paddingVertical: '1%', backgroundColor: '#BAF1BA'}]} onPress={() => navigation.navigate('Show Crops')}>
                         <Text style={{textAlign: 'center', fontWeight: 'bold', fontSize: 20, marginLeft: '10%', marginRight: '10%', color: '#22734D'}}>Show Crops</Text>
                     </TouchableOpacity>
                 <View style={[styles.rowContainer, {justifyContent: 'space-around', marginTop: '3%'}]}>

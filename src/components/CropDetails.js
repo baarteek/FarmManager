@@ -68,7 +68,7 @@ const CropDetails = ({ cropData, onDelete }) => {
                 </ExpandableComponent>
                 <View style={[styles.rowContainer, { justifyContent: 'space-around', marginTop: '3%' }]}>
                     <TouchableOpacity style={styles.button}>
-                        <Text style={{ textAlign: 'center', fontWeight: 'bold', fontSize: 16, marginLeft: '10%', marginRight: '10%', color: '#22734D' }}>Edit</Text>
+                        <Text style={{ textAlign: 'center', fontWeight: 'bold', fontSize: 16, marginLeft: '10%', marginRight: '10%' }}>Edit</Text>
                     </TouchableOpacity>
                     <TouchableOpacity style={[styles.button, { backgroundColor: '#FC7F7F' }]} onPress={() => onDelete(cropData.id)}>
                         <Text style={{ textAlign: 'center', fontWeight: 'bold', fontSize: 16, color: '#fff', marginLeft: '10%', marginRight: '10%' }}>Delete</Text>

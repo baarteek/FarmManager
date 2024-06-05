@@ -5,7 +5,7 @@ import WeatherScreen from "../screens/WeatherScreen";
 import CropManagementScreen from "../screens/CropManagementScreen";
 import MapScreen from "../screens/MapScreen";
 import SettingsScreen from '../screens/SettingsScreen';
-import FieldManagementScreen from '../screens/FieldManagementScreen';
+import FieldmanagementStack from './FieldManagementStack';
 
 const Drawer = createDrawerNavigator();
 
@@ -36,7 +36,7 @@ const MainNavigation = () => {
             />
             <Drawer.Screen
                 name="Field Management"
-                component={FieldManagementScreen}
+                component={FieldmanagementStack}
             />
             <Drawer.Screen
                 name="Crop Management"

@@ -2,6 +2,7 @@ import { Alert, ScrollView, Text, TouchableOpacity, View } from "react-native";
 import { styles } from "../styles/AppStyles";
 import { useState } from "react";
 import FieldDetails from "../components/FieldDetails";
+import { useNavigation } from "@react-navigation/native";
 
 const initialData = [
     {
@@ -72,9 +73,9 @@ const initialData = [
         ]
     },
     {
-        id: 1, 
-        name: 'Field 1', 
-        area: 2.5,
+        id: 2, 
+        name: 'Field 2', 
+        area: 2.9,
         soilType: 'Loamy',
         isActive: true,
         plotNumbers: [
@@ -84,7 +85,7 @@ const initialData = [
         ],
         crops: [
             {
-                id: 2, 
+                id: 1, 
                 cropType: 'Wheat',
                 sowingDate: '15.05.2023',
                 harvestDate: '15.09.2023',
@@ -142,6 +143,7 @@ const initialData = [
 
 const FieldManagementScreen = () => {
     const [fields, setFields] = useState(initialData);
+    const navigation = useNavigation();
 
     const handleDelete = (id) => {
         const updatedData = fields.filter(field => field.id !== id);
@@ -168,7 +170,7 @@ const FieldManagementScreen = () => {
     return (
         <View style={styles.mainCantainer}>
             <View style={styles.container}>
-                <TouchableOpacity style={[styles.button, {margin: '5%', width: '80%', backgroundColor: '#62C962'}]}>
+                <TouchableOpacity style={[styles.button, {margin: '5%', width: '80%', backgroundColor: '#62C962'}]} onPress={() => navigation.navigate('Add Field')}>
                     <Text style={{textAlign: 'center', fontWeight: 'bold', fontSize: 22, color: '#fff', marginLeft: '10%', marginRight: '10%'}}>Add New Field</Text>
                 </TouchableOpacity>
             </View>
