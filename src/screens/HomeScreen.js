@@ -6,6 +6,7 @@ import TodayWeatherDetails from "../components/TodayWeatherDetails";
 import { useLocationContext } from "../context/useLocationContext";
 import useWeatherData from "../hooks/useWeatherData";
 import LoadingView from "../components/LoadingView";
+import WarningView from "../components/WarningView";
 
 const HomeScreen = ({navigation}) => {
     const { location, locationError } = useLocationContext();
@@ -13,14 +14,8 @@ const HomeScreen = ({navigation}) => {
 
     return (
     <ScrollView style={styles.mainCantainer}>
-        <View style={styles.container}>
-            <ExpandableComponent title="Weather Alerts" backgroundColor={styles.warningBackgorundColor} titleColor={styles.warningTitleColor}>
-                <Text style={styles.warningText}>Severe frost warning for the upcoming weekend. Consider protective measures for sensitive crops.</Text>
-            </ExpandableComponent>
-            <ExpandableComponent title="Equipment Maintenance" backgroundColor={styles.warningBackgorundColor} titleColor={styles.warningTitleColor}>
-                <Text style={styles.warningText}>You should perform maintenance on your Case Puma 215 vehicle</Text>
-            </ExpandableComponent>
-        </View>
+        <WarningView title="Weather Alerts" message="Severe frost warning for the upcoming weekend. Consider protective measures for sensitive crops." />
+        <WarningView title="Equipment Maintenance" message="You should perform maintenance on your Case Puma 215 vehicle" />
         {
             loading ? <LoadingView
                     title="Loading Weather..."

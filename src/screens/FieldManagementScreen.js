@@ -4,6 +4,7 @@ import { useState } from "react";
 import FieldDetails from "../components/FieldDetails";
 import { useNavigation } from "@react-navigation/native";
 import FloatingActionButton from '../components/FloatingActionButton';
+import WarningView from "../components/WarningView";
 
 const initialData = [
     {
@@ -170,14 +171,15 @@ const FieldManagementScreen = () => {
 
     return (
         <View style={styles.mainCantainer}>
-            
-            <ScrollView style={styles.mainCantainer}>
-                {
-                    fields.map((field) => (
+            {fields.length === 0 ? (
+                <WarningView title="No fields available" message="Please add fields by clicking the plus button" />
+            ) : (
+                <ScrollView style={styles.mainContainer}>
+                    {fields.map((field) => (
                         <FieldDetails fieldData={field} key={field.id} onDelete={() => confirmDelete(field.id)} />
-                    ))
-                }
-            </ScrollView>
+                    ))}
+                </ScrollView>
+            )}
             <FloatingActionButton onPress={() => navigation.navigate('Add Field')} />
         </View>
         );

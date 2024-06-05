@@ -113,6 +113,4 @@ export  const styles = StyleSheet.create({
         width: 'auto',
         padding: '1%'
     },
-    warningBackgorundColor: '#FCE699',
-    warningTitleColor: '#4B534C',
 });
