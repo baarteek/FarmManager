@@ -20,8 +20,15 @@ export const FieldProvider = ({ children }) => {
         return maxId + 1;
     };
 
+    const editField = (id, updatedField) => {
+        const updatedData = fields.map(field => 
+            field.id === id ? { ...field, ...updatedField } : field
+        );
+        setFields(updatedData);
+    };
+
     return (
-        <FieldContext.Provider value={{ fields, addField, handleDelete, getNextId }}>
+        <FieldContext.Provider value={{ fields, addField, handleDelete, getNextId, editField }}>
             {children}
         </FieldContext.Provider>
     );

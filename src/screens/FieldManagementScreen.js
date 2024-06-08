@@ -35,7 +35,12 @@ const FieldManagementScreen = () => {
             ) : (
                 <ScrollView style={styles.mainContainer}>
                     {fields.map((field) => (
-                        <FieldDetails fieldData={field} key={field.id} onDelete={() => confirmDelete(field.id)} />
+                        <FieldDetails 
+                            fieldData={field} 
+                            key={field.id} 
+                            onDelete={() => confirmDelete(field.id)}
+                            onEdit={() => navigation.navigate('Edit Field', { field })}
+                        />
                     ))}
                 </ScrollView>
             )}
