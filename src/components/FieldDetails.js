@@ -67,13 +67,13 @@ const FieldDetails = ({ fieldData, onDelete }) => {
                         )
                     }
                 </ExpandableComponent>
-                <TouchableOpacity style={[styles.button, {marginTop: '5%', paddingVertical: '1%', backgroundColor: '#BAF1BA'}]} onPress={() => navigation.navigate('Show Crops')}>
+                <TouchableOpacity style={[styles.button, {marginTop: '5%', paddingVertical: '1%', backgroundColor: '#BAF1BA'}]}onPress={() => navigation.navigate('Show Crops', { field: fieldData })}>
                         <Text style={{textAlign: 'center', fontWeight: 'bold', fontSize: 20, marginLeft: '10%', marginRight: '10%', color: '#22734D'}}>Show Crops</Text>
                     </TouchableOpacity>
                 <View style={[styles.rowContainer, {justifyContent: 'space-around', marginTop: '3%'}]}>
                     <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('Edit Field', { field: fieldData })}>
                         <Text style={{textAlign: 'center', fontWeight: 'bold', fontSize: 16, marginLeft: '10%', marginRight: '10%'}}>Edit</Text>
-                    </TouchableOpacity>
+                    </TouchableOpacity> 
                     <TouchableOpacity style={[styles.button, {backgroundColor: '#FC7F7F'}]} onPress={onDelete}>
                         <Text style={{textAlign: 'center', fontWeight: 'bold', fontSize: 16, color: '#fff', marginLeft: '10%', marginRight: '10%'}}>Delete</Text>
                     </TouchableOpacity>
