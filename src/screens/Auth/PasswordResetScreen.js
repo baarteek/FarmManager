@@ -1,5 +1,5 @@
 import { KeyboardAvoidingView, Keyboard, SafeAreaView, Text, TouchableWithoutFeedback, Platform, View, TextInput, TouchableOpacity } from "react-native";
-import { styles } from "../styles/AuthStyles";
+import { styles } from "../../styles/AuthStyles";
 import { useState } from "react";
 
 

@@ -1,5 +1,5 @@
 import { KeyboardAvoidingView, Platform, SafeAreaView, Text, TextInput, View, TouchableOpacity, TouchableWithoutFeedback, Keyboard } from "react-native";
-import { styles } from "../styles/AuthStyles";
+import { styles } from "../../styles/AuthStyles";
 import { useState } from "react";
 
 const RegistrationScreen = ({navigation}) => {

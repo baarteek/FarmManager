@@ -1,4 +1,4 @@
-import { Text, Touchable, View } from "react-native";
+import { Text, View } from "react-native";
 import { styles } from "../styles/AppStyles";
 import { weatherStyles } from "../styles/WeatherStyles";
 import { getWeatherDetails } from "../utils/WeatherUtils";

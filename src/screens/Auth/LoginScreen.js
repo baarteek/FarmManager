@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Keyboard, KeyboardAvoidingView, Platform, SafeAreaView, Text, TextInput, TouchableOpacity, TouchableWithoutFeedback, View } from "react-native";
-import { styles } from "../styles/AuthStyles";
-import { useAuth } from "../context/AuthContext";
+import { styles } from "../../styles/AuthStyles";
+import { useAuth } from "../../context/AuthContext";
 
 
 const LoginScreen = ({navigation}) => {

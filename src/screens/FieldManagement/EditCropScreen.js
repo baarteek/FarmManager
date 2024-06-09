@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, Keyboard, Alert } from "react-native";
-import { styles } from "../styles/AppStyles";
+import { styles } from "../../styles/AppStyles";
 import { ScrollView, TouchableWithoutFeedback } from 'react-native-gesture-handler';
 import { useNavigation, useRoute } from "@react-navigation/native";
-import { useFieldContext } from '../context/FieldProvider';
+import { useFieldContext } from '../../context/FieldProvider';
 import DateTimePicker from '@react-native-community/datetimepicker';
 
 const formatDate = (date) => {
@@ -18,32 +18,31 @@ const parseDate = (dateString) => {
     return new Date(year, month - 1, day);
 };
 
-const AddCropScreen = () => {
+const EditCropScreen = () => {
     const navigation = useNavigation();
     const route = useRoute();
-    const { fieldId } = route.params;
-    const { fields, addCropToField } = useFieldContext();
+    const { fieldId, cropId } = route.params;
+    const { fields, editCropInField } = useFieldContext();
     const field = fields.find(f => f.id === fieldId);
+    const crop = field.crops.find(c => c.id === cropId);
 
-    const [cropType, setCropType] = useState('');
-    const [sowingDate, setSowingDate] = useState(new Date());
-    const [harvestDate, setHarvestDate] = useState(new Date());
-    const [season, setSeason] = useState('');
+    const [cropType, setCropType] = useState(crop.cropType);
+    const [sowingDate, setSowingDate] = useState(parseDate(crop.sowingDate));
+    const [harvestDate, setHarvestDate] = useState(parseDate(crop.harvestDate));
+    const [season, setSeason] = useState(crop.season);
 
-    const handleAddCrop = () => {
-        const newCrop = {
-            id: field.crops.length + 1,
+    const handleEditCrop = () => {
+        const updatedCrop = {
+            ...crop,
             cropType,
             sowingDate: formatDate(sowingDate),
             harvestDate: formatDate(harvestDate),
-            season,
-            fertilizationHistory: [],
-            pestAndDiseaseHistory: [],
+            season
         };
-        addCropToField(fieldId, newCrop);
+        editCropInField(fieldId, updatedCrop);
         Alert.alert(
-            "Crop Added",
-            "The new crop has been successfully added.",
+            "Crop Updated",
+            "The crop has been successfully updated.",
             [
                 { text: "OK", onPress: () => navigation.goBack() }
             ]
@@ -97,12 +96,12 @@ const AddCropScreen = () => {
                     value={season}
                     onChangeText={setSeason}
                 />
-                <TouchableOpacity style={[styles.button, { margin: '5%', marginTop: '5%', width: '80%', backgroundColor: '#62C962', alignSelf: 'center' }]} onPress={handleAddCrop}>
-                    <Text style={{ textAlign: 'center', fontWeight: 'bold', fontSize: 22, color: '#fff', marginLeft: '10%', marginRight: '10%' }}>Add New Crop</Text>
+                <TouchableOpacity style={[styles.button, { margin: '5%', marginTop: '5%', width: '80%', backgroundColor: '#62C962', alignSelf: 'center' }]} onPress={handleEditCrop}>
+                    <Text style={{ textAlign: 'center', fontWeight: 'bold', fontSize: 22, color: '#fff', marginLeft: '10%', marginRight: '10%' }}>Update Crop</Text>
                 </TouchableOpacity>
             </ScrollView>
         </TouchableWithoutFeedback>
     );
 };
 
-export default AddCropScreen;
+export default EditCropScreen;

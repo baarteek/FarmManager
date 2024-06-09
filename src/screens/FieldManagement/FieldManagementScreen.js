@@ -1,11 +1,11 @@
 import React from 'react';
 import { Alert, ScrollView, View } from "react-native";
-import { styles } from "../styles/AppStyles";
-import FieldDetails from "../components/FieldDetails";
+import { styles } from "../../styles/AppStyles";
+import FieldDetails from "../../components/FieldDetails";
 import { useNavigation } from "@react-navigation/native";
-import FloatingActionButton from '../components/FloatingActionButton';
-import WarningView from "../components/WarningView";
-import { useFieldContext } from '../context/FieldProvider';
+import FloatingActionButton from '../../components/FloatingActionButton';
+import WarningView from "../../components/WarningView";
+import { useFieldContext } from '../../context/FieldProvider';
 
 const FieldManagementScreen = () => {
     const navigation = useNavigation();

@@ -1,11 +1,11 @@
 import { createStackNavigator } from '@react-navigation/stack';
-import FieldManagementScreen from '../screens/FieldManagementScreen';
-import AddFieldScreen from '../screens/AddFieldScreen';
-import ShowCropsScreen from '../screens/ShowCropsScreen';
+import FieldManagementScreen from '../screens/FieldManagement/FieldManagementScreen';
+import AddFieldScreen from '../screens/FieldManagement/AddFieldScreen';
+import ShowCropsScreen from '../screens/FieldManagement/ShowCropsScreen';
+import EditFieldScreen from '../screens/FieldManagement/EditFieldScreen';
+import AddCropScreen from '../screens/FieldManagement/AddCropScreen';
+import EditCropScreen from '../screens/FieldManagement/EditCropScreen';
 import { FieldProvider } from '../context/FieldProvider';
-import EditFieldScreen from '../screens/EditFieldScreen';
-import AddCropScreen from '../screens/AddCropScreen';
-import EditCropScreen from '../screens/EditCropScreen';
 
 const Stack = createStackNavigator();
 

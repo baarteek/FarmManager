@@ -1,14 +1,14 @@
 import { ScrollView, Text, View } from "react-native";
-import { styles } from "../styles/AppStyles";
-import useWeatherData from "../hooks/useWeatherData";
-import { useLocationContext } from "../context/useLocationContext";
-import LoadingView from "../components/LoadingView";
-import ErrorView from "../components/ErrorView";
+import { styles } from "../../styles/AppStyles";
+import useWeatherData from "../../hooks/useWeatherData";
+import { useLocationContext } from "../../context/useLocationContext";
+import LoadingView from "../../components/LoadingView";
+import ErrorView from "../../components/ErrorView";
 import { FontAwesome6, Feather, Entypo, Ionicons } from '@expo/vector-icons';
-import { getWeatherDetails } from "../utils/WeatherUtils";
-import { weatherStyles } from "../styles/WeatherStyles";
-import DailyWeatherDetails from "../components/DailyWeatherDetails";
-import TodayWeatherDetails from "../components/TodayWeatherDetails";
+import { getWeatherDetails } from "../../utils/WeatherUtils";
+import { weatherStyles } from "../../styles/WeatherStyles";
+import DailyWeatherDetails from "../../components/DailyWeatherDetails";
+import TodayWeatherDetails from "../../components/TodayWeatherDetails";
 
 
 const WeatherScreen = () => {

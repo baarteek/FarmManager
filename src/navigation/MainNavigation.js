@@ -1,11 +1,11 @@
 import 'react-native-gesture-handler';
 import { createDrawerNavigator } from "@react-navigation/drawer";
-import HomeScreen from "../screens/HomeScreen";
-import WeatherScreen from "../screens/WeatherScreen";
-import CropManagementScreen from "../screens/CropManagementScreen";
-import MapScreen from "../screens/MapScreen";
-import SettingsScreen from '../screens/SettingsScreen';
+import HomeScreen from '../screens/Home/HomeScreen';
+import WeatherScreen from '../screens/Weather/WeatherScreen';
 import FieldmanagementStack from './FieldManagementStack';
+import CropManagementScreen from '../screens/FieldManagement/CropManagementScreen';
+import MapScreen from '../screens/Map/MapScreen';
+import SettingsScreen from '../screens/Settings/SettingsScreen';
 
 const Drawer = createDrawerNavigator();
 

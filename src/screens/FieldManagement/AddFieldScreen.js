@@ -1,22 +1,19 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, Keyboard, Alert } from "react-native";
-import { styles } from "../styles/AppStyles";
+import { styles } from "../../styles/AppStyles";
 import { ScrollView, TouchableWithoutFeedback } from 'react-native-gesture-handler';
 import { Picker } from '@react-native-picker/picker';
 import Icon from 'react-native-vector-icons/MaterialIcons';
-import { useNavigation, useRoute } from "@react-navigation/native";
-import { useFieldContext } from '../context/FieldProvider';
+import { useNavigation } from "@react-navigation/native";
+import { useFieldContext } from '../../context/FieldProvider';
 
-const EditFieldScreen = () => {
+const AddFieldScreen = () => {
     const navigation = useNavigation();
-    const route = useRoute();
-    const { editField } = useFieldContext();
-    const { field } = route.params;
-
-    const [name, setName] = useState(field.name);
-    const [area, setArea] = useState(field.area.toString());
-    const [soilType, setSoilType] = useState(field.soilType);
-    const [plotNumbers, setPlotNumbers] = useState(field.plotNumbers);
+    const { addField, getNextId } = useFieldContext(); 
+    const [name, setName] = useState('');
+    const [area, setArea] = useState('');
+    const [soilType, setSoilType] = useState('');
+    const [plotNumbers, setPlotNumbers] = useState(['']);
 
     const addPlotNumberField = () => {
         setPlotNumbers([...plotNumbers, '']);
@@ -32,17 +29,21 @@ const EditFieldScreen = () => {
         setPlotNumbers(updatedPlotNumbers);
     };
 
-    const handleSaveField = () => {
-        const updatedField = {
+    const handleAddField = () => {
+        const newField = {
+            id: getNextId(),
             name,
             area: parseFloat(area),
             soilType,
             plotNumbers,
+            isActive: true,
+            crops: [],
+            soilMeasurements: [],
         };
-        editField(field.id, updatedField);
+        addField(newField);
         Alert.alert(
-            "Field Updated",
-            "The field has been successfully updated.",
+            "Field Added",
+            "The new field has been successfully added.",
             [
                 { text: "OK", onPress: () => navigation.goBack() }
             ]
@@ -55,7 +56,7 @@ const EditFieldScreen = () => {
                 <Text style={[styles.largeText, { textAlign: 'center' }]}>Field Name</Text>
                 <TextInput
                     style={styles.input}
-                    placeholder="Field Name"
+                    placeholder="My Field"
                     value={name}
                     onChangeText={setName}
                 />
@@ -98,12 +99,12 @@ const EditFieldScreen = () => {
                         <Picker.Item label="Silty" value="Silty" />
                     </Picker>
                 </View>
-                <TouchableOpacity style={[styles.button, { margin: '5%', marginTop: '5%', width: '80%', backgroundColor: '#62C962', alignSelf: 'center' }]} onPress={handleSaveField}>
-                    <Text style={{ textAlign: 'center', fontWeight: 'bold', fontSize: 22, color: '#fff', marginLeft: '10%', marginRight: '10%' }}>Save Field</Text>
+                <TouchableOpacity style={[styles.button, { margin: '5%', marginTop: '5%', width: '80%', backgroundColor: '#62C962', alignSelf: 'center' }]} onPress={handleAddField}>
+                    <Text style={{ textAlign: 'center', fontWeight: 'bold', fontSize: 22, color: '#fff', marginLeft: '10%', marginRight: '10%' }}>Add New Field</Text>
                 </TouchableOpacity>
             </ScrollView>
         </TouchableWithoutFeedback>
     );
 };
 
-export default EditFieldScreen;
+export default AddFieldScreen;
