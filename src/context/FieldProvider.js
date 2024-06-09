@@ -16,9 +16,13 @@ export const FieldProvider = ({ children }) => {
     };
 
     const getNextId = () => {
+        if (fields.length === 0) {
+            return 1;
+        }
         const maxId = fields.reduce((max, field) => (field.id > max ? field.id : max), fields[0].id);
         return maxId + 1;
     };
+    
 
     const editField = (id, updatedField) => {
         const updatedData = fields.map(field => 

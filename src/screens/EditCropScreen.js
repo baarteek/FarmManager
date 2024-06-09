@@ -1,9 +1,22 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, Keyboard, Alert } from "react-native";
 import { styles } from "../styles/AppStyles";
 import { ScrollView, TouchableWithoutFeedback } from 'react-native-gesture-handler';
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { useFieldContext } from '../context/FieldProvider';
+import DateTimePicker from '@react-native-community/datetimepicker';
+
+const formatDate = (date) => {
+    const day = String(date.getDate()).padStart(2, '0');
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const year = date.getFullYear();
+    return `${day}.${month}.${year}`;
+};
+
+const parseDate = (dateString) => {
+    const [day, month, year] = dateString.split('.').map(part => parseInt(part, 10));
+    return new Date(year, month - 1, day);
+};
 
 const EditCropScreen = () => {
     const navigation = useNavigation();
@@ -14,16 +27,16 @@ const EditCropScreen = () => {
     const crop = field.crops.find(c => c.id === cropId);
 
     const [cropType, setCropType] = useState(crop.cropType);
-    const [sowingDate, setSowingDate] = useState(crop.sowingDate);
-    const [harvestDate, setHarvestDate] = useState(crop.harvestDate);
+    const [sowingDate, setSowingDate] = useState(parseDate(crop.sowingDate));
+    const [harvestDate, setHarvestDate] = useState(parseDate(crop.harvestDate));
     const [season, setSeason] = useState(crop.season);
 
     const handleEditCrop = () => {
         const updatedCrop = {
             ...crop,
             cropType,
-            sowingDate,
-            harvestDate,
+            sowingDate: formatDate(sowingDate),
+            harvestDate: formatDate(harvestDate),
             season
         };
         editCropInField(fieldId, updatedCrop);
@@ -34,6 +47,16 @@ const EditCropScreen = () => {
                 { text: "OK", onPress: () => navigation.goBack() }
             ]
         );
+    };
+
+    const onChangeSowingDate = (event, selectedDate) => {
+        const currentDate = selectedDate || sowingDate;
+        setSowingDate(currentDate);
+    };
+
+    const onChangeHarvestDate = (event, selectedDate) => {
+        const currentDate = selectedDate || harvestDate;
+        setHarvestDate(currentDate);
     };
 
     return (
@@ -47,19 +70,25 @@ const EditCropScreen = () => {
                     onChangeText={setCropType}
                 />
                 <Text style={[styles.largeText, { textAlign: 'center' }]}>Sowing Date</Text>
-                <TextInput
-                    style={styles.input}
-                    placeholder="YYYY-MM-DD"
-                    value={sowingDate}
-                    onChangeText={setSowingDate}
-                />
+                <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center' }}>
+                    <DateTimePicker
+                        value={sowingDate}
+                        mode="date"
+                        display="default"
+                        onChange={onChangeSowingDate}
+                        style={{alignSelf: 'center', marginVertical: '2%'}}
+                    />
+                </View>
                 <Text style={[styles.largeText, { textAlign: 'center' }]}>Harvest Date</Text>
-                <TextInput
-                    style={styles.input}
-                    placeholder="YYYY-MM-DD"
-                    value={harvestDate}
-                    onChangeText={setHarvestDate}
-                />
+                <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center' }}>
+                    <DateTimePicker
+                        value={harvestDate}
+                        mode="date"
+                        display="default"
+                        onChange={onChangeHarvestDate}
+                        style={{alignSelf: 'center', marginVertical: '2%'}}
+                    />
+                </View>
                 <Text style={[styles.largeText, { textAlign: 'center' }]}>Season</Text>
                 <TextInput
                     style={styles.input}

@@ -4,6 +4,19 @@ import { styles } from "../styles/AppStyles";
 import { ScrollView, TouchableWithoutFeedback } from 'react-native-gesture-handler';
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { useFieldContext } from '../context/FieldProvider';
+import DateTimePicker from '@react-native-community/datetimepicker';
+
+const formatDate = (date) => {
+    const day = String(date.getDate()).padStart(2, '0');
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const year = date.getFullYear();
+    return `${day}.${month}.${year}`;
+};
+
+const parseDate = (dateString) => {
+    const [day, month, year] = dateString.split('.').map(part => parseInt(part, 10));
+    return new Date(year, month - 1, day);
+};
 
 const AddCropScreen = () => {
     const navigation = useNavigation();
@@ -13,16 +26,16 @@ const AddCropScreen = () => {
     const field = fields.find(f => f.id === fieldId);
 
     const [cropType, setCropType] = useState('');
-    const [sowingDate, setSowingDate] = useState('');
-    const [harvestDate, setHarvestDate] = useState('');
+    const [sowingDate, setSowingDate] = useState(new Date());
+    const [harvestDate, setHarvestDate] = useState(new Date());
     const [season, setSeason] = useState('');
 
     const handleAddCrop = () => {
         const newCrop = {
             id: field.crops.length + 1,
             cropType,
-            sowingDate,
-            harvestDate,
+            sowingDate: formatDate(sowingDate),
+            harvestDate: formatDate(harvestDate),
             season,
             fertilizationHistory: [],
             pestAndDiseaseHistory: [],
@@ -37,6 +50,16 @@ const AddCropScreen = () => {
         );
     };
 
+    const onChangeSowingDate = (event, selectedDate) => {
+        const currentDate = selectedDate || sowingDate;
+        setSowingDate(currentDate);
+    };
+
+    const onChangeHarvestDate = (event, selectedDate) => {
+        const currentDate = selectedDate || harvestDate;
+        setHarvestDate(currentDate);
+    };
+
     return (
         <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false} style={[styles.mainCantainer, { justifyContent: 'center', alignItems: 'center' }]} >
             <ScrollView style={{ width: '100%', paddingTop: '5%' }}>
@@ -48,19 +71,25 @@ const AddCropScreen = () => {
                     onChangeText={setCropType}
                 />
                 <Text style={[styles.largeText, { textAlign: 'center' }]}>Sowing Date</Text>
-                <TextInput
-                    style={styles.input}
-                    placeholder="YYYY-MM-DD"
-                    value={sowingDate}
-                    onChangeText={setSowingDate}
-                />
+                <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center' }}>
+                    <DateTimePicker
+                        value={sowingDate}
+                        mode="date"
+                        display="default"
+                        onChange={onChangeSowingDate}
+                        style={{alignSelf: 'center', marginVertical: '2%'}}
+                    />
+                </View>
                 <Text style={[styles.largeText, { textAlign: 'center' }]}>Harvest Date</Text>
-                <TextInput
-                    style={styles.input}
-                    placeholder="YYYY-MM-DD"
-                    value={harvestDate}
-                    onChangeText={setHarvestDate}
-                />
+                <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center' }}>
+                    <DateTimePicker
+                        value={harvestDate}
+                        mode="date"
+                        display="default"
+                        onChange={onChangeHarvestDate}
+                        style={{alignSelf: 'center', marginVertical: '2%'}}
+                    />
+                </View>
                 <Text style={[styles.largeText, { textAlign: 'center' }]}>Season</Text>
                 <TextInput
                     style={styles.input}

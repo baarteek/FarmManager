@@ -49,14 +49,14 @@ export const initialData = [
                 season: '2023/2024',
                 fertilizationHistory: [
                     {
-                        date: '2023-05-10',
+                        date: '15.05.2023',
                         type: 'NPK',
                         quantity: '50 kg/ha',
                         method: 'Broadcast',
                         description: 'Improved growth observed after 2 weeks'
                     },
                     {
-                        date: '2023-06-15',
+                        date: '15.05.2023',
                         type: 'Urea',
                         quantity: '30 kg/ha',
                         method: 'Foliar application',
@@ -65,13 +65,13 @@ export const initialData = [
                 ],
                 pestAndDiseaseHistory: [
                     {
-                        date: '2023-06-01',
+                        date: '15.05.2023',
                         type: 'Aphids',
                         treatment: 'Insecticide spray',
                         description: 'Aphids infestation noticed on lower leaves',
                     },
                     {
-                        date: '2023-07-10',
+                        date: '15.05.2023',
                         type: 'Fungal Disease',
                         treatment: 'Fungicide application',
                         description: 'Powdery mildew on leaves',
