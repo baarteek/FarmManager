@@ -118,7 +118,7 @@ const ShowCropsScreen = () => {
                                     )}
                                 </ExpandableComponent>
                                 <View style={[styles.rowContainer, { justifyContent: 'space-around', marginTop: '3%' }]}>
-                                    <TouchableOpacity style={styles.button}>
+                                    <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('Edit Crop', { fieldId, cropId: crop.id })}>
                                         <Text style={{ textAlign: 'center', fontWeight: 'bold', fontSize: 16, marginLeft: '10%', marginRight: '10%' }}>Edit</Text>
                                     </TouchableOpacity>
                                     <TouchableOpacity style={[styles.button, { backgroundColor: '#FC7F7F' }]} onPress={() => handleDeleteCrop(crop.id)}>
