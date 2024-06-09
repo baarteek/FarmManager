@@ -70,8 +70,50 @@ export const FieldProvider = ({ children }) => {
         setFields(updatedData);
     };
 
+    const addSoilMeasurementToField = (fieldId, newMeasurement) => {
+        setFields((prevFields) => {
+            return prevFields.map(field => {
+                if (field.id === fieldId) {
+                    return {
+                        ...field,
+                        soilMeasurements: [...field.soilMeasurements, newMeasurement],
+                    };
+                }
+                return field;
+            });
+        });
+    };
+
+    const editSoilMeasurementInField = (fieldId, measurementIndex, updatedMeasurement) => {
+        setFields((prevFields) => {
+            return prevFields.map(field => {
+                if (field.id === fieldId) {
+                    const updatedMeasurements = [...field.soilMeasurements];
+                    updatedMeasurements[measurementIndex] = updatedMeasurement;
+                    return {
+                        ...field,
+                        soilMeasurements: updatedMeasurements,
+                    };
+                }
+                return field;
+            });
+        });
+    };
+
+    const deleteSoilMeasurement = (fieldId, measurementIndex) => {
+        setFields((prevFields) =>
+            prevFields.map((field) => {
+                if (field.id === fieldId) {
+                    const updatedMeasurements = field.soilMeasurements.filter((_, index) => index !== measurementIndex);
+                    return { ...field, soilMeasurements: updatedMeasurements };
+                }
+                return field;
+            })
+        );
+    };
+
     return (
-        <FieldContext.Provider value={{ fields, addField, handleDelete, getNextId, editField, addCropToField, deleteCropFromField, editCropInField }}>
+        <FieldContext.Provider value={{ fields, addField, handleDelete, getNextId, editField, addCropToField, deleteCropFromField, editCropInField, addSoilMeasurementToField, editSoilMeasurementInField, deleteSoilMeasurement }}>
             {children}
         </FieldContext.Provider>
     );

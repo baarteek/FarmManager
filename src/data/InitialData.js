@@ -15,15 +15,15 @@ export const initialData = [
         ],
         soilMeasurements: [
             {
-                date: '2023-03-01',
+                date: '11.03.2023',
                 pH: 6.8,
                 nitrogen: 'Low',
                 phosphorus: 'Medium',
                 potassium: 'High',
             },
             {
-                date: '2023-02-01',
-                pH: 6.4,
+                date: '16.07.2024',
+                pH: 6.9,
                 nitrogen: 'Medium',
                 phosphorus: 'Medium',
                 potassium: 'High',
@@ -81,14 +81,14 @@ export const initialData = [
         ],
         soilMeasurements: [
             {
-                date: '2023-03-01',
+                date: '03.01.2023',
                 pH: 6.8,
                 nitrogen: 'Low',
                 phosphorus: 'Medium',
                 potassium: 'High',
             },
             {
-                date: '2023-02-01',
+                date: '02.01.2022',
                 pH: 6.4,
                 nitrogen: 'Medium',
                 phosphorus: 'Medium',
