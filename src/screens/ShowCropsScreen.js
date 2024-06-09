@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, ScrollView, TouchableOpacity } from "react-native";
+import { View, Text, ScrollView, TouchableOpacity, Alert } from "react-native";
 import { styles } from "../styles/AppStyles";
 import { useRoute, useNavigation } from "@react-navigation/native";
 import ExpandableComponent from "../components/ExpandableComponent";
@@ -10,7 +10,7 @@ import { useFieldContext } from '../context/FieldProvider';
 const ShowCropsScreen = () => {
     const route = useRoute();
     const navigation = useNavigation();
-    const { fields } = useFieldContext();
+    const { fields, deleteCropFromField } = useFieldContext();
     const { fieldId } = route.params;
 
     const [crops, setCrops] = useState([]);
@@ -21,6 +21,22 @@ const ShowCropsScreen = () => {
             setCrops(field.crops || []);
         }
     }, [fields, fieldId]);
+
+    const handleDeleteCrop = (cropId) => {
+        Alert.alert(
+            "Confirm Deletion",
+            "Are you sure you want to delete this crop?",
+            [
+                { text: "Cancel", style: "cancel" },
+                { text: "Delete", onPress: () => deleteCrop(cropId), style: "destructive" }
+            ],
+            { cancelable: false }
+        );
+    };
+
+    const deleteCrop = (cropId) => {
+        deleteCropFromField(fieldId, cropId);
+    };
 
     return (
         <View style={[styles.mainContainer, { height: '100%' }]}>
@@ -105,7 +121,7 @@ const ShowCropsScreen = () => {
                                     <TouchableOpacity style={styles.button}>
                                         <Text style={{ textAlign: 'center', fontWeight: 'bold', fontSize: 16, marginLeft: '10%', marginRight: '10%' }}>Edit</Text>
                                     </TouchableOpacity>
-                                    <TouchableOpacity style={[styles.button, { backgroundColor: '#FC7F7F' }]}>
+                                    <TouchableOpacity style={[styles.button, { backgroundColor: '#FC7F7F' }]} onPress={() => handleDeleteCrop(crop.id)}>
                                         <Text style={{ textAlign: 'center', fontWeight: 'bold', fontSize: 16, color: '#fff', marginLeft: '10%', marginRight: '10%' }}>Delete</Text>
                                     </TouchableOpacity>
                                 </View>
