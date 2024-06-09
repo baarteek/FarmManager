@@ -27,8 +27,21 @@ export const FieldProvider = ({ children }) => {
         setFields(updatedData);
     };
 
+    const addCropToField = (fieldId, newCrop) => {
+        const updatedData = fields.map(field => {
+            if (field.id === fieldId) {
+                return {
+                    ...field,
+                    crops: [...field.crops, newCrop],
+                };
+            }
+            return field;
+        });
+        setFields(updatedData);
+    };
+
     return (
-        <FieldContext.Provider value={{ fields, addField, handleDelete, getNextId, editField }}>
+        <FieldContext.Provider value={{ fields, addField, handleDelete, getNextId, editField, addCropToField }}>
             {children}
         </FieldContext.Provider>
     );

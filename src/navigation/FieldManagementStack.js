@@ -4,6 +4,7 @@ import AddFieldScreen from '../screens/AddFieldScreen';
 import ShowCropsScreen from '../screens/ShowCropsScreen';
 import { FieldProvider } from '../context/FieldProvider';
 import EditFieldScreen from '../screens/EditFieldScreen';
+import AddCropScreen from '../screens/AddCropScreen';
 
 const Stack = createStackNavigator();
 
@@ -28,6 +29,7 @@ const FieldmanagementStack = () => {
                 <Stack.Screen name="Add Field" component={AddFieldScreen} options={{ headerShown: true, title: 'Add Field' }} />
                 <Stack.Screen name="Show Crops" component={ShowCropsScreen} />
                 <Stack.Screen name="Edit Field" component={EditFieldScreen} options={{ headerShown: true, title: 'Edit Field' }} />
+                <Stack.Screen name='Add Crop' component={AddCropScreen} options={{headerShown: true, title: 'Add Crop'}} />
             </Stack.Navigator>
         </FieldProvider>
     );
