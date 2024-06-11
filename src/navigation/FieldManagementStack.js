@@ -8,6 +8,9 @@ import EditCropScreen from '../screens/FieldManagement/EditCropScreen';
 import { FieldProvider } from '../context/FieldProvider';
 import AddSoilMeasurementScreen from '../screens/FieldManagement/AddSoilMeasurementScreen';
 import EditSoilMeasurementScreen from '../screens/FieldManagement/EditSoilMeasurementScreen';
+import AddFertilizationScreen from '../screens/FieldManagement/AddFertilizationScreen';
+import EditFertilizationScreen from '../screens/FieldManagement/EditFertilizationScreen';
+
 
 const Stack = createStackNavigator();
 
@@ -36,6 +39,8 @@ const FieldmanagementStack = () => {
                 <Stack.Screen name='Edit Crop' component={EditCropScreen} options={{headerShown: true, title: 'Edit Crop'}} />
                 <Stack.Screen name='Add Soil Measurement' component={AddSoilMeasurementScreen} options={{headerShown: true, title: 'Add Soil Measurement'}} />
                 <Stack.Screen name='Edit Soil Measurement' component={EditSoilMeasurementScreen} options={{headerShown: true, title: 'Edit Soil Measurement'}} />
+                <Stack.Screen name="Add Fertilization" component={AddFertilizationScreen} options={{ headerShown: true, title: 'Add Fertilization' }} />
+                <Stack.Screen name="Edit Fertilization" component={EditFertilizationScreen} options={{ headerShown: true, title: 'Edit Fertilization' }} />
             </Stack.Navigator>
         </FieldProvider>
     );

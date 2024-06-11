@@ -4,8 +4,8 @@ import { TouchableOpacity } from "react-native-gesture-handler";
 import { styles } from "../styles/AppStyles";
 import { Entypo } from '@expo/vector-icons';
 
-const ExpandableComponent = ({title, backgroundColor, titleColor, style, children}) => {
-    const [expanded , setExpanded] =  useState(true);
+const ExpandableComponent = ({title, backgroundColor, titleColor, style, children, isExpanded = true}) => {
+    const [expanded , setExpanded] =  useState(isExpanded);
     const background = backgroundColor || '#DFF6DF';
     const titleColo = titleColor || '#22734D';
 

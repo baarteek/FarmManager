@@ -21,6 +21,12 @@ const FieldDetails = ({ fieldData, onDelete }) => {
         );
     };
 
+    const sortedSoilMeasurements = [...fieldData.soilMeasurements].sort((a, b) => {
+        const dateA = new Date(a.date.split('.').reverse().join('-'));
+        const dateB = new Date(b.date.split('.').reverse().join('-'));
+        return dateB - dateA; 
+    });
+
     return (
         <View style={styles.container}>
             <ExpandableComponent title={fieldData.name}>
@@ -34,10 +40,10 @@ const FieldDetails = ({ fieldData, onDelete }) => {
                     <Text style={styles.text}>{fieldData.soilType}</Text>
                 </View>
                 <View style={styles.line} />
-                <ExpandableComponent title="Soil Measurements" backgroundColor="#BAF1BA" style={{ width: '100%' }}>
+                <ExpandableComponent title="Soil Measurements" isExpanded={false} backgroundColor="#BAF1BA" style={{ width: '100%' }}>
                     {
-                        fieldData.soilMeasurements && fieldData.soilMeasurements.length > 0 ? (
-                            fieldData.soilMeasurements.map((measurement, index) => (
+                        sortedSoilMeasurements && sortedSoilMeasurements.length > 0 ? (
+                            sortedSoilMeasurements.map((measurement, index) => (
                                 <React.Fragment key={index}>
                                     <Text style={styles.title}>{measurement.date}</Text>
                                     <View style={styles.infoRowContainer}>
@@ -72,7 +78,7 @@ const FieldDetails = ({ fieldData, onDelete }) => {
                             ))
                         ) : (
                             <>
-                                <Text style={[styles.text, {textAlign: 'center'}]}>There are no soil measurements for this field</Text>
+                                <Text style={[styles.text, { textAlign: 'center' }]}>There are no soil measurements for this field</Text>
                                 <View style={[styles.line, { borderColor: '#22734D', marginBottom: '5%', marginTop: '5%' }]} />
                             </>
                         )
@@ -83,7 +89,7 @@ const FieldDetails = ({ fieldData, onDelete }) => {
                         </TouchableOpacity>
                     </View>
                 </ExpandableComponent>
-                <ExpandableComponent title="Plot Numbers" backgroundColor="#BAF1BA" style={{ width: '100%' }}>
+                <ExpandableComponent title="Plot Numbers" isExpanded={false} backgroundColor="#BAF1BA" style={{ width: '100%' }}>
                     {
                         fieldData.plotNumbers && fieldData.plotNumbers.length > 0 ? (
                             fieldData.plotNumbers.map((plotNumber, index) => (
@@ -93,7 +99,7 @@ const FieldDetails = ({ fieldData, onDelete }) => {
                                 </React.Fragment>
                             ))
                         ) : (
-                            <Text style={[styles.text, {textAlign: 'center'}]}>There are no plot numbers for this field</Text>
+                            <Text style={[styles.text, { textAlign: 'center' }]}>There are no plot numbers for this field</Text>
                         )
                     }
                 </ExpandableComponent>

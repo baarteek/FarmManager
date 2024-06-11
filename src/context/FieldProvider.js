@@ -22,7 +22,6 @@ export const FieldProvider = ({ children }) => {
         const maxId = fields.reduce((max, field) => (field.id > max ? field.id : max), fields[0].id);
         return maxId + 1;
     };
-    
 
     const editField = (id, updatedField) => {
         const updatedData = fields.map(field => 
@@ -112,8 +111,92 @@ export const FieldProvider = ({ children }) => {
         );
     };
 
+    const addFertilizationToCrop = (fieldId, cropId, newFertilization) => {
+        setFields((prevFields) => 
+            prevFields.map((field) => {
+                if (field.id === fieldId) {
+                    return {
+                        ...field,
+                        crops: field.crops.map((crop) => {
+                            if (crop.id === cropId) {
+                                return {
+                                    ...crop,
+                                    fertilizationHistory: [...crop.fertilizationHistory, newFertilization],
+                                };
+                            }
+                            return crop;
+                        }),
+                    };
+                }
+                return field;
+            })
+        );
+    };
+
+    const editFertilizationInCrop = (fieldId, cropId, fertilizationIndex, updatedFertilization) => {
+        setFields((prevFields) => 
+            prevFields.map((field) => {
+                if (field.id === fieldId) {
+                    return {
+                        ...field,
+                        crops: field.crops.map((crop) => {
+                            if (crop.id === cropId) {
+                                const updatedFertilizations = [...crop.fertilizationHistory];
+                                updatedFertilizations[fertilizationIndex] = updatedFertilization;
+                                return {
+                                    ...crop,
+                                    fertilizationHistory: updatedFertilizations,
+                                };
+                            }
+                            return crop;
+                        }),
+                    };
+                }
+                return field;
+            })
+        );
+    };
+
+    const deleteFertilizationFromCrop = (fieldId, cropId, fertilizationIndex) => {
+        setFields((prevFields) => 
+            prevFields.map((field) => {
+                if (field.id === fieldId) {
+                    return {
+                        ...field,
+                        crops: field.crops.map((crop) => {
+                            if (crop.id === cropId) {
+                                const updatedFertilizations = crop.fertilizationHistory.filter((_, index) => index !== fertilizationIndex);
+                                return {
+                                    ...crop,
+                                    fertilizationHistory: updatedFertilizations,
+                                };
+                            }
+                            return crop;
+                        }),
+                    };
+                }
+                return field;
+            })
+        );
+    };
+
     return (
-        <FieldContext.Provider value={{ fields, addField, handleDelete, getNextId, editField, addCropToField, deleteCropFromField, editCropInField, addSoilMeasurementToField, editSoilMeasurementInField, deleteSoilMeasurement }}>
+        <FieldContext.Provider value={{
+            fields,
+            addField,
+            handleDelete,
+            getNextId,
+            editField,
+            addCropToField,
+            deleteCropFromField,
+            editCropInField,
+            addSoilMeasurementToField,
+            editSoilMeasurementInField,
+            deleteSoilMeasurement,
+            addFertilizationToCrop,
+            editFertilizationInCrop,
+            deleteFertilizationFromCrop,
+        }}>
             {children}
         </FieldContext.Provider>
     );
