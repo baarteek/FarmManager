@@ -25,6 +25,19 @@ const CropDetails = ({ crop, fieldId, handleDeleteCrop }) => {
         deleteFertilizationFromCrop(fieldId, cropId, fertilizationIndex);
     };
 
+    const parseDate = (dateString) => {
+        const [day, month, year] = dateString.split('.').map(part => parseInt(part, 10));
+        return new Date(year, month - 1, day);
+    };
+
+    const sortedFertilizationHistory = crop.fertilizationHistory
+        .map((fertilization, index) => ({ ...fertilization, originalIndex: index }))
+        .sort((a, b) => parseDate(b.date) - parseDate(a.date));
+
+    const sortedPestAndDiseaseHistory = crop.pestAndDiseaseHistory
+        .map((history, index) => ({ ...history, originalIndex: index }))
+        .sort((a, b) => parseDate(b.date) - parseDate(a.date));
+
     return (
         <View style={styles.container}>
             <ExpandableComponent title={crop.cropType}>
@@ -44,8 +57,8 @@ const CropDetails = ({ crop, fieldId, handleDeleteCrop }) => {
                 </View>
                 <View style={styles.line} />
                 <ExpandableComponent title="Fertilization" isExpanded={false} backgroundColor="#BAF1BA" style={{ width: '100%' }}>
-                    {crop.fertilizationHistory && crop.fertilizationHistory.length > 0 ? (
-                        crop.fertilizationHistory.map((fertilization, index) => (
+                    {sortedFertilizationHistory && sortedFertilizationHistory.length > 0 ? (
+                        sortedFertilizationHistory.map((fertilization, index) => (
                             <React.Fragment key={index}>
                                 <Text style={styles.title}>{fertilization.date}</Text>
                                 <View style={styles.infoRowContainer}>
@@ -68,10 +81,10 @@ const CropDetails = ({ crop, fieldId, handleDeleteCrop }) => {
                                     <Text style={[styles.text, { textAlign: 'center' }]}>{fertilization.description}</Text>
                                 </View>
                                 <View style={[styles.rowContainer, { justifyContent: 'space-around', marginTop: '5%' }]}>
-                                    <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('Edit Fertilization', { fieldId, cropId: crop.id, fertilizationIndex: index })}>
+                                    <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('Edit Fertilization', { fieldId, cropId: crop.id, fertilizationIndex: fertilization.originalIndex })}>
                                         <Text style={{ textAlign: 'center', fontWeight: 'bold', fontSize: 16, marginLeft: '10%', marginRight: '10%' }}>Edit</Text>
                                     </TouchableOpacity>
-                                    <TouchableOpacity style={[styles.button, { backgroundColor: '#FC7F7F' }]} onPress={() => handleDeleteFertilization(index)}>
+                                    <TouchableOpacity style={[styles.button, { backgroundColor: '#FC7F7F' }]} onPress={() => handleDeleteFertilization(fertilization.originalIndex)}>
                                         <Text style={{ textAlign: 'center', fontWeight: 'bold', fontSize: 16, color: '#fff', marginLeft: '10%', marginRight: '10%' }}>Delete</Text>
                                     </TouchableOpacity>
                                 </View>
@@ -91,8 +104,8 @@ const CropDetails = ({ crop, fieldId, handleDeleteCrop }) => {
                     </View>
                 </ExpandableComponent>
                 <ExpandableComponent title="Pest and Disease" isExpanded={false} backgroundColor="#BAF1BA" style={{ width: '100%' }}>
-                    {crop.pestAndDiseaseHistory && crop.pestAndDiseaseHistory.length > 0 ? (
-                        crop.pestAndDiseaseHistory.map((history, index) => (
+                    {sortedPestAndDiseaseHistory && sortedPestAndDiseaseHistory.length > 0 ? (
+                        sortedPestAndDiseaseHistory.map((history, index) => (
                             <React.Fragment key={index}>
                                 <Text style={styles.title}>{history.date}</Text>
                                 <View style={styles.infoRowContainer}>

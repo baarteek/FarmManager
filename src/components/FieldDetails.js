@@ -21,11 +21,14 @@ const FieldDetails = ({ fieldData, onDelete }) => {
         );
     };
 
-    const sortedSoilMeasurements = [...fieldData.soilMeasurements].sort((a, b) => {
-        const dateA = new Date(a.date.split('.').reverse().join('-'));
-        const dateB = new Date(b.date.split('.').reverse().join('-'));
-        return dateB - dateA; 
-    });
+    const parseDate = (dateString) => {
+        const [day, month, year] = dateString.split('.').map(part => parseInt(part, 10));
+        return new Date(year, month - 1, day);
+    };
+
+    const sortedSoilMeasurements = fieldData.soilMeasurements
+        .map((measurement, index) => ({ ...measurement, originalIndex: index }))
+        .sort((a, b) => parseDate(b.date) - parseDate(a.date));
 
     return (
         <View style={styles.container}>
@@ -66,10 +69,10 @@ const FieldDetails = ({ fieldData, onDelete }) => {
                                         <Text style={styles.text}>{measurement.potassium}</Text>
                                     </View>
                                     <View style={[styles.rowContainer, { justifyContent: 'space-around', marginTop: '10%' }]}>
-                                        <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('Edit Soil Measurement', { fieldId: fieldData.id, measurementIndex: index })}>
+                                        <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('Edit Soil Measurement', { fieldId: fieldData.id, measurementIndex: measurement.originalIndex })}>
                                             <Text style={{ textAlign: 'center', fontWeight: 'bold', fontSize: 16, marginLeft: '10%', marginRight: '10%' }}>Edit</Text>
                                         </TouchableOpacity>
-                                        <TouchableOpacity style={[styles.button, { backgroundColor: '#FC7F7F' }]} onPress={() => handleDeleteMeasurement(fieldData.id, index)}>
+                                        <TouchableOpacity style={[styles.button, { backgroundColor: '#FC7F7F' }]} onPress={() => handleDeleteMeasurement(fieldData.id, measurement.originalIndex)}>
                                             <Text style={{ textAlign: 'center', fontWeight: 'bold', fontSize: 16, color: '#fff', marginLeft: '10%', marginRight: '10%' }}>Delete</Text>
                                         </TouchableOpacity>
                                     </View>
