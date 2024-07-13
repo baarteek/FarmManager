@@ -147,5 +147,5 @@ export  const styles = StyleSheet.create({
     plotNumberInput: {
         flex: 1,
         borderWidth: 0, 
-    },
+    }
 });
