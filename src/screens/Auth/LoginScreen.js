@@ -8,7 +8,7 @@ const LoginScreen = ({navigation}) => {
     const { login } = useAuth();
     const [email, setEmail] = useState('user@example.com');
     const [password, setPassword] = useState('stringA1@');
-    const [error, setError] = useState(null);
+    const [error, setError] = useState(null); 
     const [loading, setLoading] = useState(null);
 
     const handleLogin = async () => {
