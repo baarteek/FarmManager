@@ -1,13 +1,24 @@
 import { useState } from "react";
-import { Keyboard, KeyboardAvoidingView, Platform, SafeAreaView, Text, TextInput, TouchableOpacity, TouchableWithoutFeedback, View } from "react-native";
+import { ActivityIndicator, Keyboard, KeyboardAvoidingView, Platform, SafeAreaView, Text, TextInput, TouchableOpacity, TouchableWithoutFeedback, View } from "react-native";
 import { styles } from "../../styles/AuthStyles";
 import { useAuth } from "../../context/AuthContext";
 
 
 const LoginScreen = ({navigation}) => {
     const { login } = useAuth();
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
+    const [email, setEmail] = useState('user@example.com');
+    const [password, setPassword] = useState('stringA1@');
+    const [error, setError] = useState(null);
+    const [loading, setLoading] = useState(null);
+
+    const handleLogin = async () => {
+        setLoading(true);
+        const success = await login(email, password);
+        setLoading(false);
+        if(!success) {
+            setError('Login failed. Please check your credentials.');
+        }
+    };
 
     return (
         <TouchableWithoutFeedback  onPress={Keyboard.dismiss} accessible={false}>
@@ -42,11 +53,16 @@ const LoginScreen = ({navigation}) => {
                     </TouchableOpacity>
                     <TouchableOpacity
                         style={styles.loginButton}
-                        onPress={login}                    
+                        onPress={handleLogin}                    
                     >
-                        <Text style={styles.loginText}>Log In</Text>
+                        {loading ? (
+                            <ActivityIndicator size="large" color="#fff" />
+                        ) : (
+                            <Text style={styles.loginText}>Log In</Text>
+                        )}
                     </TouchableOpacity>
             </KeyboardAvoidingView>
+            {error && <Text style={{ color: 'red', textAlign: 'center', marginBottom: '10%' }}>{error}</Text>}
             <View style={styles.bottomConatiner} >
                 <View style={styles.lineContainer}>
                     <View style={styles.line} />
