@@ -111,7 +111,7 @@ export const FarmProvider = ({ children }) => {
     };
 
     return (
-        <FarmContext.Provider value={{ farms, loading, error, addFarm, editFarm, handleDeleteFarm }}>
+        <FarmContext.Provider value={{ farms, loading, error, addFarm, editFarm, handleDeleteFarm, fetchFarms }}>
             {children}
         </FarmContext.Provider>
     );

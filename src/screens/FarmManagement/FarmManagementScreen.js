@@ -1,5 +1,5 @@
-import React from 'react';
-import { Alert, ScrollView, View, ActivityIndicator } from "react-native";
+import React, { useState } from 'react';
+import { Alert, ScrollView, View, ActivityIndicator, RefreshControl } from "react-native";
 import FarmDetails from "../../components/FarmDetails";
 import { useNavigation } from "@react-navigation/native";
 import FloatingActionButton from '../../components/FloatingActionButton';
@@ -9,7 +9,8 @@ import { styles } from '../../styles/AppStyles';
 
 const FarmManagementScreen = () => {
     const navigation = useNavigation();
-    const { farms, loading, handleDeleteFarm } = useFarmContext();
+    const { farms, loading, handleDeleteFarm, fetchFarms } = useFarmContext();
+    const [refreshing, setRefreshing] = useState(false);
 
     const confirmDeleteFarm = (id) => {
         Alert.alert("Confirm Deletion", "Are you sure you want to delete this farm?",
@@ -28,10 +29,16 @@ const FarmManagementScreen = () => {
         );
     };
 
+    const onRefresh = async () => {
+        setRefreshing(true);
+        await fetchFarms();
+        setRefreshing(false);
+    };
+
     if (loading) {
         return (
-            <View style={styles.mainContainer}>
-                <ActivityIndicator size="large" color="#00ff00" />
+            <View style={[styles.mainContainer, {backgroundColor: '#fff', height: '100%'}]}>
+                <ActivityIndicator size="large" />
             </View>
         );
     }
@@ -41,13 +48,18 @@ const FarmManagementScreen = () => {
             {farms.length === 0 ? (
                 <WarningView title="No farms available" message="Please add farms by clicking the plus button" />
             ) : (
-                <ScrollView style={styles.mainContainer}>
+                <ScrollView
+                    style={styles.mainContainer}
+                    refreshControl={
+                        <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+                    }
+                >
                     {farms.map((farm) => (
                         <FarmDetails 
                             farmData={farm} 
                             key={farm.id} 
                             onDelete={() => confirmDeleteFarm(farm.id)}
-                            onEdit={() => navigation.navigate('Edit Farm', { id: farm.id })} // Przekazanie tylko id farmy
+                            onEdit={() => navigation.navigate('Edit Farm', { id: farm.id })}
                         />
                     ))}
                 </ScrollView>
