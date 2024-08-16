@@ -24,12 +24,12 @@ const FarmDetails = ({ farmData, onDelete }) => {
             <ExpandableComponent title={farmData.name}>
                 <View style={styles.infoRowContainer}>
                     <Text style={styles.text}>Location</Text>
-                    <Text style={styles.text}>{farmData.location || 'N/A'}</Text>
+                    <Text style={styles.text}>{farmData.location}</Text>
                 </View>
                 <View style={styles.line} />
                 <View style={styles.infoRowContainer}>
                     <Text style={styles.text}>Total Area</Text>
-                    <Text style={styles.text}>{farmData.totalArea ? `${farmData.totalArea} ha` : 'N/A'}</Text>
+                    <Text style={styles.text}>{`${farmData.totalArea} ha`}</Text>
                 </View>
                 <View style={styles.line} />
                 <ExpandableComponent title="Fields" isExpanded={true} backgroundColor="#BAF1BA" style={{ width: '100%' }}>
@@ -50,8 +50,11 @@ const FarmDetails = ({ farmData, onDelete }) => {
                             <Text style={[styles.text, { textAlign: 'center' }]}>There are no fields for this farm</Text>
                         )
                     }
-                     <View style={[styles.rowContainer, { justifyContent: 'space-around', marginTop: '5%' }]}>
-                        <TouchableOpacity style={[styles.button, { backgroundColor: '#00E000', width: '80%' }]} onPress={() => navigation.navigate('Add Field', { farmId: farmData.id })}>
+                    <View style={[styles.rowContainer, { justifyContent: 'space-around', marginTop: '5%' }]}>
+                        <TouchableOpacity 
+                            style={[styles.button, { backgroundColor: '#00E000', width: '80%' }]} 
+                            onPress={() => navigation.navigate('Add Field', { farmId: farmData.id })}
+                        >
                             <Text style={{ textAlign: 'center', fontWeight: 'bold', fontSize: 16, color: '#fff', marginHorizontal: 10 }}>Add Field</Text>
                         </TouchableOpacity>
                     </View>

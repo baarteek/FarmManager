@@ -39,8 +39,26 @@ export const FarmProvider = ({ children }) => {
         fetchFarms();
     }, [token]);
 
-    const addFarm = (newFarm) => {
-        setFarms(prevFarms => [...prevFarms, { ...newFarm, id: Date.now().toString() }]);
+    const addFarm = async (newFarm) => {
+        setLoading(true);
+        try {
+            if(!token) {
+                throw new Error('No token found');
+            }
+
+            const response = await axios.post(`${API_BASE_URL}/Farms`, newFarm, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                }
+            });
+            setFarms(prevFarms => [...prevFarms, response.data]);
+        } catch(err) {
+            console.error('Error adding farm:', err.message);
+            setError('Failed to add farm. Please try again later.');
+        } finally {
+            setLoading(false);
+        }
     };
 
     const editFarm = (updatedFarm) => {
