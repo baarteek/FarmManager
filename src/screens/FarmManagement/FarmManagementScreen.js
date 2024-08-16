@@ -1,5 +1,5 @@
 import React from 'react';
-import { Alert, ScrollView, View, ActivityIndicator } from "react-native";
+import { Alert, ScrollView, View, ActivityIndicator, TouchableOpacity, Text } from "react-native";
 import FarmDetails from "../../components/FarmDetails";
 import { useNavigation } from "@react-navigation/native";
 import FloatingActionButton from '../../components/FloatingActionButton';
@@ -46,7 +46,7 @@ const FarmManagementScreen = () => {
                         <FarmDetails 
                             farmData={farm} 
                             key={farm.id} 
-                            onDeleteField={() => confirmDeleteFarm(farm.id)}
+                            onDelete={() => confirmDeleteFarm(farm.id)}
                             onEdit={() => navigation.navigate('Edit Farm', { farm })}
                         />
                     ))}

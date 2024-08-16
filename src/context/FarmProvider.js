@@ -67,8 +67,27 @@ export const FarmProvider = ({ children }) => {
         );
     };
 
-    const handleDeleteFarm = (id) => {
-        setFarms(prevFarms => prevFarms.filter(farm => farm.id !== id));
+    const handleDeleteFarm = async (id) => {
+        setLoading(true);
+        try {
+            if(!token) {
+                throw new Error('No token found');
+            }
+
+            await axios.delete(`${API_BASE_URL}/Farms/${id}`, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                }
+            });
+
+            setFarms(prevFarm => prevFarm.filter(farm => farm.id !== id));
+            setError(null);
+        } catch(err) {
+            console.error('Error deleting farm:', err.message);
+            setError('Failed to delete farm. Please try again later.');
+        } finally {
+            setLoading(false);
+        }
     };
 
     return (

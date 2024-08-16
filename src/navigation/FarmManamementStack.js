@@ -23,7 +23,7 @@ const FarmManagementStack = () => {
                 }}
             >
                 <Stack.Screen name="FarmManagementMain" component={FarmManagementScreen} options={{ headerShown: false }} />
-                <Stack.Screen name="Add Farm" component={AddFarmScreen}  />
+                <Stack.Screen name="Add Farm" component={AddFarmScreen} />
             </Stack.Navigator>
         </FarmProvider>
     )

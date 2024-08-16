@@ -1,23 +1,11 @@
 import React from 'react';
-import { View, Text, TouchableOpacity, Alert } from "react-native";
+import { View, Text, TouchableOpacity, Alert, ActivityIndicator } from "react-native";
 import { useNavigation } from '@react-navigation/native';
 import { styles } from '../styles/AppStyles';
 import ExpandableComponent from "./ExpandableComponent";
 
-const FarmDetails = ({ farmData, onDelete }) => {
+const FarmDetails = ({ farmData, onDelete, onEdit, loading }) => {
     const navigation = useNavigation();
-
-    const confirmDeleteFarm = () => {
-        Alert.alert(
-            "Confirm Deletion",
-            "Are you sure you want to delete this farm?",
-            [
-                { text: "Cancel", style: "cancel" },
-                { text: "Delete", onPress: onDelete, style: "destructive" }
-            ],
-            { cancelable: false }
-        );
-    };
 
     return (
         <View style={styles.container}>
@@ -72,15 +60,20 @@ const FarmDetails = ({ farmData, onDelete }) => {
                 <View style={[styles.rowContainer, { justifyContent: 'space-around', marginTop: '5%' }]}>
                     <TouchableOpacity 
                         style={[styles.button, { backgroundColor: '#00BFFF', width: '40%' }]} 
-                        onPress={() => navigation.navigate('Edit Farm', { farm: farmData })}
+                        onPress={onEdit}
                     >
                         <Text style={{ textAlign: 'center', fontWeight: 'bold', fontSize: 16, color: '#fff', marginHorizontal: 10 }}>Edit Farm</Text>
                     </TouchableOpacity>
                     <TouchableOpacity 
                         style={[styles.button, { backgroundColor: '#FC7F7F', width: '40%' }]} 
-                        onPress={confirmDeleteFarm}
+                        onPress={onDelete}
+                        disabled={loading}
                     >
-                        <Text style={{ textAlign: 'center', fontWeight: 'bold', fontSize: 16, color: '#fff', marginHorizontal: 10 }}>Delete Farm</Text>
+                        {loading ? (
+                            <ActivityIndicator size="small" color="#fff" />
+                        ) : (
+                            <Text style={{ textAlign: 'center', fontWeight: 'bold', fontSize: 16, color: '#fff', marginHorizontal: 10 }}>Delete Farm</Text>
+                        )}
                     </TouchableOpacity>
                 </View>
             </ExpandableComponent>
