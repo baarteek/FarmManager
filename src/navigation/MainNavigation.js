@@ -7,6 +7,8 @@ import CropManagementScreen from '../screens/FieldManagement/CropManagementScree
 import MapScreen from '../screens/Map/MapScreen';
 import SettingsScreen from '../screens/Settings/SettingsScreen';
 import CalculatorListScreen from '../screens/Calculators/CalculatorListScreen';
+import FarmManagementScreen from '../screens/FarmManagement/FarmManagementScreen';
+import FarmManagementStack from './FarmManamementStack';
 
 const Drawer = createDrawerNavigator();
 
@@ -34,6 +36,10 @@ const MainNavigation = () => {
             <Drawer.Screen 
                 name="Weather"
                 component={WeatherScreen}
+            />
+            <Drawer.Screen
+                name='Farm Management'
+                component={FarmManagementStack}
             />
             <Drawer.Screen
                 name="Field Management"
