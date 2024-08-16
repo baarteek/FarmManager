@@ -2,6 +2,7 @@ import { createStackNavigator } from "@react-navigation/stack";
 import FarmManagementScreen from "../screens/FarmManagement/FarmManagementScreen";
 import { FarmProvider } from "../context/FarmProvider";
 import AddFarmScreen from "../screens/FarmManagement/AddFarmScreen";
+import FarmEditScreen from "../screens/FarmManagement/FarmEditScreen";
 
 const Stack = createStackNavigator();
 
@@ -24,6 +25,7 @@ const FarmManagementStack = () => {
             >
                 <Stack.Screen name="FarmManagementMain" component={FarmManagementScreen} options={{ headerShown: false }} />
                 <Stack.Screen name="Add Farm" component={AddFarmScreen} />
+                <Stack.Screen name="Edit Farm" component={FarmEditScreen} />
             </Stack.Navigator>
         </FarmProvider>
     )

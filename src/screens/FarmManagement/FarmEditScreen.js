@@ -1,18 +1,36 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, TextInput, TouchableOpacity, Keyboard, Alert, ActivityIndicator } from "react-native";
 import { styles } from "../../styles/AppStyles";
 import { ScrollView, TouchableWithoutFeedback } from 'react-native-gesture-handler';
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation, useRoute } from '@react-navigation/native';
 import { useFarmContext } from '../../context/FarmProvider';
 
-const AddFarmScreen = () => {
+const FarmEditScreen = () => {
     const navigation = useNavigation();
-    const { addFarm, loading } = useFarmContext(); 
+    const route = useRoute();
+    const { id } = route.params;
+    const { farms, editFarm, loading } = useFarmContext();
     const [name, setName] = useState('');
     const [location, setLocation] = useState('');
     const [totalArea, setTotalArea] = useState('');
+    const [initialLoading, setInitialLoading] = useState(true);
 
-    const handleAddFarm = async () => {
+    useEffect(() => {
+        const farm = farms.find(farm => farm.id === id);
+
+        if (farm) {
+            setName(farm.name);
+            setLocation(farm.location);
+            setTotalArea(farm.totalArea?.toString());
+        } else {
+            Alert.alert("Error", "Farm not found.");
+            navigation.goBack();
+        }
+
+        setInitialLoading(false);
+    }, [id, farms, navigation]);
+
+    const handleSave = async () => {
         if (!name || !totalArea) {
             Alert.alert(
                 "Missing Information",
@@ -21,17 +39,18 @@ const AddFarmScreen = () => {
             return;
         }
 
-        const newFarm = {
+        const updatedFarm = {
+            id,
             name,
             location,
             totalArea: parseFloat(totalArea),
         };
 
         try {
-            await addFarm(newFarm);
+            await editFarm(updatedFarm);
             Alert.alert(
-                "Farm Added",
-                "The new farm has been successfully added.",
+                "Success",
+                "Farm updated successfully!",
                 [
                     { text: "OK", onPress: () => navigation.goBack() }
                 ]
@@ -39,10 +58,18 @@ const AddFarmScreen = () => {
         } catch (error) {
             Alert.alert(
                 "Error",
-                "Failed to add the farm. Please try again later."
+                "Failed to update the farm. Please try again later."
             );
         }
     };
+
+    if (initialLoading) {
+        return (
+            <View style={styles.mainContainer}>
+                <ActivityIndicator size="large" color="#00ff00" />
+            </View>
+        );
+    }
 
     return (
         <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false} style={[styles.mainCantainer, { justifyContent: 'center', alignItems: 'center' }]} >
@@ -71,14 +98,14 @@ const AddFarmScreen = () => {
                 />
                 <TouchableOpacity 
                     style={[styles.button, { margin: '5%', marginTop: '5%', width: '80%', backgroundColor: '#62C962', alignSelf: 'center' }]} 
-                    onPress={handleAddFarm}
+                    onPress={handleSave}
                     disabled={loading}
                 >
                     {loading ? (
                         <ActivityIndicator size="large" color="#fff" />
                     ) : (
                         <Text style={{ textAlign: 'center', fontWeight: 'bold', fontSize: 22, color: '#fff', marginHorizontal: 10 }}>
-                            Add New Farm
+                            Save Changes
                         </Text>
                     )}
                 </TouchableOpacity>
@@ -87,4 +114,4 @@ const AddFarmScreen = () => {
     );
 };
 
-export default AddFarmScreen;
+export default FarmEditScreen;

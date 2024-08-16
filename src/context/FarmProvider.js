@@ -61,10 +61,30 @@ export const FarmProvider = ({ children }) => {
         }
     };
 
-    const editFarm = (updatedFarm) => {
-        setFarms(prevFarms =>
-            prevFarms.map(farm => farm.id === updatedFarm.id ? updatedFarm : farm)
-        );
+    const editFarm = async (updatedFarm) => {
+        setLoading(true);
+        try {
+            if(!token) {
+                throw new Error('No token found');
+            }
+
+            await axios.put(`${API_BASE_URL}/Farms/${updatedFarm.id}`, updatedFarm, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            setFarms(prevFarms =>
+                prevFarms.map(farm => farm.id === updatedFarm.id ? updatedFarm : farm)
+            );
+            setError(null);
+        } catch (err) {
+            console.error('Error updating farm:', err.message);
+            setError('Failed to update farm. Please try again later.');
+        } finally {
+            setLoading(false);
+        }
     };
 
     const handleDeleteFarm = async (id) => {
