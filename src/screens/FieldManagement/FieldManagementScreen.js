@@ -12,7 +12,7 @@ import ErrorView from '../../components/ErrorView';
 const FieldManagementScreen = () => {
     const navigation = useNavigation();
     const { fields, handleDelete, fetchFields, error: fieldsError } = useFieldContext();
-    const { farms, loading: farmsLoading, error: farmsError } = useFarmContext();
+    const { farms, loading: farmsLoading, error: farmsError, fetchFarms } = useFarmContext();
     const [selectedFarm, setSelectedFarm] = useState(null);
     const [error, setError] = useState(null);
     const [refreshing, setRefreshing] = useState(false);
@@ -43,7 +43,12 @@ const FieldManagementScreen = () => {
 
     const onRefresh = async () => {
         setRefreshing(true);
-        await fetchFields(selectedFarm.id);
+        await fetchFarms(); 
+        if (farms.length > 0) {
+            const firstFarm = farms[0];
+            setSelectedFarm(firstFarm);
+            await fetchFields(firstFarm.id);
+        }
         setRefreshing(false);
     };
 
@@ -85,6 +90,29 @@ const FieldManagementScreen = () => {
         );
     }
 
+    if(farms.length === 0) {
+        return (
+            <ScrollView
+                style={styles.mainContainer}
+                refreshControl={
+                    <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+                }
+            >
+                <WarningView 
+                    title="No Farms Available" 
+                    message="There are no farms available. Please add a new farm by clicking the button below or pull down to refresh." 
+                />
+                <TouchableOpacity
+                    style={[styles.button, { marginTop: '5%', marginHorizontal: '10%', backgroundColor: '#00E000' }]}
+                    onPress={() => navigation.navigate('Add Farm')}
+                >
+                    <Text style={{ textAlign: 'center', fontWeight: 'bold', fontSize: 16, color: '#fff', marginHorizontal: '10%' }}>Add Farm</Text>
+                </TouchableOpacity>
+            </ScrollView>
+        );
+    }
+    
+
     return (
         <View style={styles.mainCantainer}>
             <ScrollView 
@@ -95,15 +123,15 @@ const FieldManagementScreen = () => {
                     <TouchableOpacity
                         key={farm.id}
                         style={{
-                            paddingHorizontal: '5%',
-                            paddingVertical: '2%',
+                            paddingHorizontal: '3%',
+                            paddingVertical: '3%',
                             backgroundColor: farm.id === selectedFarm.id ? '#62C962' : '#e6ede9',
                             marginHorizontal: '3%',
                             borderRadius: 5,
                         }}
                         onPress={() => setSelectedFarm(farm)}
                     >
-                        <Text style={{ color: farm.id === selectedFarm.id ? '#fff' : '#000', fontWeight: 'bold', fontSize: 16 }}>
+                        <Text style={{ color: farm.id === selectedFarm.id ? '#fff' : '#000', fontWeight: 'bold', fontSize: 16, width: '100%', paddingHorizontal: 10 }}>
                             {farm.name}
                         </Text>
                     </TouchableOpacity>
