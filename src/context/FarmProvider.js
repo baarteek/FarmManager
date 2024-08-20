@@ -29,7 +29,7 @@ export const FarmProvider = ({ children }) => {
             setError(null);
         } catch (err) {
             console.error('Error fetching farms:', err.message);
-            setError('Failed to load farms. Please try again later.');
+            setError('Failed to load farms. Please try again later');
         } finally {
             setLoading(false);
         }

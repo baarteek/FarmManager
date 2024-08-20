@@ -4,12 +4,13 @@ import FarmDetails from "../../components/FarmDetails";
 import { useNavigation } from "@react-navigation/native";
 import FloatingActionButton from '../../components/FloatingActionButton';
 import WarningView from "../../components/WarningView";
+import ErrorView from "../../components/ErrorView";
 import { useFarmContext } from '../../context/FarmProvider';
 import { styles } from '../../styles/AppStyles';
 
 const FarmManagementScreen = () => {
     const navigation = useNavigation();
-    const { farms, loading, handleDeleteFarm, fetchFarms } = useFarmContext();
+    const { farms, loading, handleDeleteFarm, fetchFarms, error } = useFarmContext();
     const [refreshing, setRefreshing] = useState(false);
 
     const confirmDeleteFarm = (id) => {
@@ -37,9 +38,22 @@ const FarmManagementScreen = () => {
 
     if (loading) {
         return (
-            <View style={[styles.mainContainer, {backgroundColor: '#fff', height: '100%'}]}>
+            <View style={[styles.mainContainer, { backgroundColor: '#fff', height: '100%' }]}>
                 <ActivityIndicator size="large" />
             </View>
+        );
+    }
+
+    if (error) {
+        return (
+            <ScrollView
+                style={styles.mainContainer}
+                refreshControl={
+                    <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+                }
+            >
+                <ErrorView title="Error" message={`${error} or pull down to refresh.`} />
+            </ScrollView>
         );
     }
 
