@@ -29,9 +29,27 @@ export const FieldProvider = ({ children }) => {
         }
     };
 
+    const handleDelete = async (fieldId) => {
+        setLoading(true);
+        try {
+            await axios.delete(`${API_BASE_URL}/Fields/${fieldId}`, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                }
+            });
+            setFields(prevFields => prevFields.filter(field => field.id !== fieldId));
+            setError(null);
+        } catch (err) {
+            console.error('Error deleting field:', err.message);
+            setError('Failed to delete the field. Please try again later.');
+        } finally {
+            setLoading(false);
+        }
+    };
+
     return (
         <FieldContext.Provider value={{
-            fields, fetchFields, loading, error
+            fields, fetchFields, loading, error, handleDelete
         }}>
             {children}
         </FieldContext.Provider>
