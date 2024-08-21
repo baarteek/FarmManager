@@ -45,6 +45,7 @@ const FieldManagementScreen = () => {
         setRefreshing(true);
         await fetchFarms(); 
         if (farms.length > 0) {
+            setError(null);
             const firstFarm = farms[0];
             setSelectedFarm(firstFarm);
             await fetchFields(firstFarm.id);
@@ -157,7 +158,7 @@ const FieldManagementScreen = () => {
                     ))}
                 </ScrollView>
             )}
-            <FloatingActionButton onPress={() => navigation.navigate('Add Field')} />
+             <FloatingActionButton onPress={() => navigation.navigate('Add Field', { farmId: selectedFarm.id })} />
         </View>
     );
 };

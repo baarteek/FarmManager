@@ -29,6 +29,33 @@ export const FieldProvider = ({ children }) => {
         }
     };
 
+    const addField = async (newField) => {
+        setLoading(true);
+        try {
+            const response = await axios.post(`${API_BASE_URL}/Fields`, newField, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            const addedField = {
+                ...response.data,
+                referenceParcels: response.data.referenceParcels || [], 
+                soilMeasurements: response.data.soilMeasurements || [], 
+                crops: response.data.crops || []
+            };
+
+            setFields(prevFields => [...prevFields, addedField]);
+            setError(null);
+        } catch(err) {
+            console.error('Error adding field:', err.message);
+            setError('Failed to add the field. Please try again later.');
+        } finally {
+            setLoading(false);
+        }
+    };
+
     const handleDelete = async (fieldId) => {
         setLoading(true);
         try {
@@ -49,7 +76,7 @@ export const FieldProvider = ({ children }) => {
 
     return (
         <FieldContext.Provider value={{
-            fields, fetchFields, loading, error, handleDelete
+            fields, loading, error, fetchFields, addField, handleDelete
         }}>
             {children}
         </FieldContext.Provider>
