@@ -5,6 +5,7 @@ import { ScrollView, TouchableWithoutFeedback } from 'react-native-gesture-handl
 import { Picker } from '@react-native-picker/picker';
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { useFieldContext } from '../../context/FieldProvider';
+import { formatDecimalInput } from '../../utils/TextUtils';
 
 const AddFieldScreen = () => {
     const navigation = useNavigation();
@@ -15,11 +16,6 @@ const AddFieldScreen = () => {
     const [area, setArea] = useState(0.0);
     const [soilType, setSoilType] = useState(0);
 
-    const handleAreaChange = (text) => {
-        const formattedText = text.replace(',', '.');
-        setArea(formattedText);
-    }
-
     const handleAddField = async () => {
         if (!name || !area || !soilType) {
             Alert.alert("Error", "All fields are required.");
@@ -29,7 +25,7 @@ const AddFieldScreen = () => {
         const newField = {
             farmId,
             name,
-            area: area,
+            area: formatDecimalInput(area),
             soilType: parseInt(soilType),
         };
 
@@ -59,7 +55,7 @@ const AddFieldScreen = () => {
                     style={styles.input}
                     placeholder="Enter area in ha"
                     value={area}
-                    onChangeText={handleAreaChange}
+                    onChangeText={setArea}
                     keyboardType="decimal-pad"
                 />
                 <View style={styles.containerWithBorder}>

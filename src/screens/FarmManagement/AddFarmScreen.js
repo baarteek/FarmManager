@@ -4,6 +4,7 @@ import { styles } from "../../styles/AppStyles";
 import { ScrollView, TouchableWithoutFeedback } from 'react-native-gesture-handler';
 import { useNavigation } from "@react-navigation/native";
 import { useFarmContext } from '../../context/FarmProvider';
+import { formatDecimalInput } from '../../utils/TextUtils';
 
 const AddFarmScreen = () => {
     const navigation = useNavigation();
@@ -24,7 +25,7 @@ const AddFarmScreen = () => {
         const newFarm = {
             name,
             location,
-            totalArea: parseFloat(totalArea),
+            totalArea: formatDecimalInput(totalArea),
         };
 
         try {

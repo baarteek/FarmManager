@@ -5,6 +5,7 @@ import { ScrollView, TouchableWithoutFeedback } from 'react-native-gesture-handl
 import { Picker } from '@react-native-picker/picker';
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { useFieldContext } from '../../context/FieldProvider';
+import { formatDecimalInput } from '../../utils/TextUtils';
 
 const EditFieldScreen = () => {
     const navigation = useNavigation();
@@ -16,10 +17,6 @@ const EditFieldScreen = () => {
     const [area, setArea] = useState(field.area.toFixed(2));
     const [soilType, setSoilType] = useState(field.soilType);
 
-    const handleAreaChange = (text) => {
-        const formattedText = text.replace(',', '.');
-        setArea(formattedText);
-    }
 
     const handleSaveField = async () => {
         if (!name || !area || soilType === null) {
@@ -30,7 +27,7 @@ const EditFieldScreen = () => {
         const updatedField = {
             farmId: field.farm.id,
             name,
-            area,
+            area: formatDecimalInput(area),
             soilType: parseInt(soilType),
         };
 
@@ -60,7 +57,7 @@ const EditFieldScreen = () => {
                     style={styles.input}
                     placeholder="Enter area in ha"
                     value={area}
-                    onChangeText={handleAreaChange}
+                    onChangeText={setArea}
                     keyboardType="decimal-pad"
                 />
                 <View style={styles.containerWithBorder}>

@@ -4,6 +4,7 @@ import { styles } from "../../styles/AppStyles";
 import { ScrollView, TouchableWithoutFeedback } from 'react-native-gesture-handler';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { useFarmContext } from '../../context/FarmProvider';
+import { formatDecimalInput } from '../../utils/TextUtils';
 
 const FarmEditScreen = () => {
     const navigation = useNavigation();
@@ -43,7 +44,7 @@ const FarmEditScreen = () => {
             id,
             name,
             location,
-            totalArea: parseFloat(totalArea),
+            totalArea: formatDecimalInput(totalArea)
         };
 
         try {
