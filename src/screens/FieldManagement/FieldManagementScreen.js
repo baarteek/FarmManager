@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Alert, ScrollView, View, Text, TouchableOpacity, ActivityIndicator, RefreshControl } from "react-native";
 import { styles } from "../../styles/AppStyles";
 import FieldDetails from "../../components/FieldDetails";
-import { useNavigation } from "@react-navigation/native";
+import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import FloatingActionButton from '../../components/FloatingActionButton';
 import WarningView from "../../components/WarningView";
 import { useFieldContext } from '../../context/FieldProvider';
@@ -40,6 +40,14 @@ const FieldManagementScreen = () => {
             fetchFields(selectedFarm.id);
         }
     }, [selectedFarm]);
+
+    useFocusEffect(
+        useCallback(() => {
+            if(selectedFarm) {
+                fetchFields(selectedFarm.id);
+            }
+        }, [selectedFarm])
+    );
 
     const onRefresh = async () => {
         setRefreshing(true);

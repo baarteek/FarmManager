@@ -40,7 +40,7 @@ const AddFieldScreen = () => {
             ]);
         } catch (error) {
             console.log("Error: ", error);
-            Alert.alert("Error", "Failed to add the field. Please try again later.");
+            Alert.alert("Error", "Failed to add the field. Please try again later ");
         }
     };
 
