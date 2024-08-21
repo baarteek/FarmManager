@@ -2,21 +2,20 @@ import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, Keyboard, Alert } from "react-native";
 import { styles } from "../../styles/AppStyles";
 import { ScrollView, TouchableWithoutFeedback } from 'react-native-gesture-handler';
-import { Picker } from '@react-native-picker/picker';
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { useFieldContext } from '../../context/FieldProvider';
 import { formatDecimalInput } from '../../utils/TextUtils';
+import SoilTypePicker from '../../components/SoilTypePicker';
 
 const EditFieldScreen = () => {
     const navigation = useNavigation();
     const route = useRoute();
     const { editField } = useFieldContext();
     const { field } = route.params;
-
+    
     const [name, setName] = useState(field.name);
     const [area, setArea] = useState(field.area.toFixed(2));
     const [soilType, setSoilType] = useState(field.soilType);
-
 
     const handleSaveField = async () => {
         if (!name || !area || soilType === null) {
@@ -62,17 +61,15 @@ const EditFieldScreen = () => {
                 />
                 <View style={styles.containerWithBorder}>
                     <Text style={[styles.largeText, { textAlign: 'center' }]}>Select Soil Type</Text>
-                    <Picker
-                        selectedValue={soilType}
-                        onValueChange={(itemValue) => setSoilType(itemValue)}
-                    >
-                        <Picker.Item label="Loamy" value={0} />
-                        <Picker.Item label="Sandy" value={1} />
-                        <Picker.Item label="Clay" value={2} />
-                        <Picker.Item label="Silty" value={3} />
-                    </Picker>
+                    <SoilTypePicker 
+                        selectedSoilType={soilType}
+                        setSelectedSoilType={setSoilType}
+                    />
                 </View>
-                <TouchableOpacity style={[styles.button, { margin: '5%', marginTop: '5%', width: '80%', backgroundColor: '#62C962', alignSelf: 'center' }]} onPress={handleSaveField}>
+                <TouchableOpacity 
+                    style={[styles.button, { margin: '5%', marginTop: '5%', width: '80%', backgroundColor: '#62C962', alignSelf: 'center' }]} 
+                    onPress={handleSaveField}
+                >
                     <Text style={{ textAlign: 'center', fontWeight: 'bold', fontSize: 22, color: '#fff' }}>Save Field</Text>
                 </TouchableOpacity>
             </ScrollView>
