@@ -1,36 +1,36 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, Alert } from "react-native";
 import ExpandableComponent from "./ExpandableComponent";
 import { useNavigation } from '@react-navigation/native';
 import { styles } from '../styles/AppStyles';
 import Icon from 'react-native-vector-icons/MaterialIcons';
+import DetailsModal from './DetailsModal';
 
 const FieldDetails = ({ fieldData, onDelete }) => {
     const navigation = useNavigation();
+    const [modalVisible, setModalVisible] = useState(false);
+    const [selectedDetails, setSelectedDetails] = useState(null);
+    const [modalTitle, setModalTitle] = useState('');
 
     const parseDate = (dateString) => {
-        if (!dateString) {
-            console.error("Invalid date string:", dateString);
-            return new Date();
-        }
-    
-        const date = new Date(dateString);
-        if (isNaN(date)) {
-            console.error("Invalid date:", dateString);
-            return new Date();
-        }
-    
-        return date;
+        return new Date(dateString);
     };
-    
 
     const sortedSoilMeasurements = fieldData.soilMeasurements
-        .map((measurement, index) => ({
-            ...measurement,
-            originalIndex: index,
-            dateObject: parseDate(measurement.name)
-        }))
-        .sort((a, b) => b.dateObject - a.dateObject);
+        .map((measurement, index) => ({ ...measurement, originalIndex: index }))
+        .sort((a, b) => parseDate(b.date) - parseDate(a.date));
+
+    const handleMeasurementClick = (measurement) => {
+        setSelectedDetails(measurement);
+        setModalTitle('Soil Measurement Details');
+        setModalVisible(true);
+    };
+
+    const handleParcelClick = (parcel) => {
+        setSelectedDetails(parcel);
+        setModalTitle('Plot Number Details');
+        setModalVisible(true);
+    };
 
     return (
         <View style={styles.container}>
@@ -51,9 +51,12 @@ const FieldDetails = ({ fieldData, onDelete }) => {
                             sortedSoilMeasurements.map((measurement, index) => (
                                 <React.Fragment key={index}>
                                     <View style={styles.infoRowContainer} >
-                                        <TouchableOpacity style={{width: '70%'}}>
+                                        <TouchableOpacity 
+                                            style={{ width: '70%' }}
+                                            onPress={() => handleMeasurementClick(measurement)}
+                                        >
                                             <View style={styles.rowContainer}>
-                                                <Icon name="search" size={22} color="#A9A9A9" style={{marginRight: '3%'}} />
+                                                <Icon name="search" size={22} color="#A9A9A9" style={{ marginRight: '3%' }} />
                                                 <Text style={styles.text}>{measurement.name}</Text>
                                             </View>
                                         </TouchableOpacity>
@@ -74,11 +77,6 @@ const FieldDetails = ({ fieldData, onDelete }) => {
                             </>
                         )
                     }
-                    <View style={[styles.rowContainer, { justifyContent: 'space-around' }]}>
-                        <TouchableOpacity style={[styles.button, { backgroundColor: '#00E000', width: '80%' }]} onPress={() => navigation.navigate('Add Soil Measurement', { fieldId: fieldData.id })}>
-                            <Text style={{ textAlign: 'center', fontWeight: 'bold', fontSize: 16, color: '#fff', marginLeft: '10%', marginRight: '10%' }}>Add</Text>
-                        </TouchableOpacity>
-                    </View>
                 </ExpandableComponent>
                 <ExpandableComponent title="Plot Numbers" isExpanded={false} backgroundColor="#BAF1BA" style={{ width: '100%' }}>
                     {
@@ -86,7 +84,7 @@ const FieldDetails = ({ fieldData, onDelete }) => {
                             fieldData.referenceParcels.map((referenceParcels) => (
                                 <React.Fragment key={referenceParcels.id}>
                                      <View style={styles.infoRowContainer} >
-                                        <TouchableOpacity style={{width: '70%'}}>
+                                        <TouchableOpacity style={{width: '70%'}} onPress={() => handleParcelClick(referenceParcels)}>
                                             <View style={styles.rowContainer}>
                                                 <Icon name="search" size={22} color="#A9A9A9" style={{marginRight: '3%'}} />
                                                 <Text style={styles.text}>{referenceParcels.name}</Text>
@@ -106,12 +104,8 @@ const FieldDetails = ({ fieldData, onDelete }) => {
                             <Text style={[styles.text, { textAlign: 'center' }]}>There are no plot numbers for this field</Text>
                         )
                     }
-                     <View style={[styles.rowContainer, { justifyContent: 'space-around' }]}>
-                        <TouchableOpacity style={[styles.button, { backgroundColor: '#00E000', width: '80%' }]} onPress={() => navigation.navigate('Add Plot Number', { fieldId: fieldData.id })}>
-                            <Text style={{ textAlign: 'center', fontWeight: 'bold', fontSize: 16, color: '#fff', marginLeft: '10%', marginRight: '10%' }}>Add</Text>
-                        </TouchableOpacity>
-                    </View>
                 </ExpandableComponent>
+
                 <TouchableOpacity style={[styles.button, { marginTop: '5%', paddingVertical: '1%', backgroundColor: '#BAF1BA' }]} onPress={() => navigation.navigate('Show Crops', { fieldId: fieldData.id })}>
                     <Text style={{ textAlign: 'center', fontWeight: 'bold', fontSize: 20, marginLeft: '10%', marginRight: '10%', color: '#22734D' }}>Show Crops</Text>
                 </TouchableOpacity>
@@ -123,6 +117,13 @@ const FieldDetails = ({ fieldData, onDelete }) => {
                         <Text style={{ textAlign: 'center', fontWeight: 'bold', fontSize: 16, color: '#fff', marginLeft: '10%', marginRight: '10%' }}>Delete Field</Text>
                     </TouchableOpacity>
                 </View>
+
+                <DetailsModal
+                    visible={modalVisible}
+                    onClose={() => setModalVisible(false)}
+                    title={modalTitle}
+                    details={selectedDetails}
+                />
             </ExpandableComponent>
         </View>
     );
