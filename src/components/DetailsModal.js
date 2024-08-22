@@ -15,12 +15,12 @@ const DetailsModal = ({ visible, onClose, title, details }) => {
                     <View style={styles.detailsContainer}>
                         {details && (
                             Object.entries(details).map(([key, value]) => (
-                                key !== 'id' && (
-                                    <View key={key} style={styles.detailRow}>
-                                        <Text style={styles.detailKey}>{`${key}:`}</Text>
-                                        <Text style={styles.detailValue}>{value}</Text>
-                                    </View>
-                                )
+                                <View key={key} style={styles.detailRow}>
+                                    <Text style={styles.detailKey}>{`${key}:`}</Text>
+                                    <Text style={styles.detailValue}>
+                                        {typeof value === 'object' ? JSON.stringify(value) : value.toString()}
+                                    </Text>
+                                </View>
                             ))
                         )}
                     </View>

@@ -13,6 +13,20 @@ export const SoilMeasurementProvider = ({ children }) => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
+    const fetchSoilMeasurementById = async (id) => {
+        try {
+            const response = await axios.get(`${API_BASE_URL}/SoilMeasurements/${id}`, {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            });
+            return response.data;
+        } catch (err) {
+            console.error('Error fetching soil measurement:', err.message);
+            throw err;
+        }
+    };
+
     const fetchSoilMeasurements = async (fieldId) => {
         setLoading(true);
         try {
@@ -108,7 +122,7 @@ export const SoilMeasurementProvider = ({ children }) => {
 
     return (
         <SoilMeasurementContext.Provider value={{
-            soilMeasurements, loading, error, addSoilMeasurement, editSoilMeasurement, handleDeleteSoilMeasurement, fetchSoilMeasurements
+            soilMeasurements, loading, error, addSoilMeasurement, editSoilMeasurement, handleDeleteSoilMeasurement, fetchSoilMeasurements, fetchSoilMeasurementById
         }}>
             {children}
         </SoilMeasurementContext.Provider>

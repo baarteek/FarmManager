@@ -6,34 +6,38 @@ import { styles } from '../styles/AppStyles';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import DetailsModal from './DetailsModal';
 import { useSoilMeasurementContext } from '../context/SoilMeasurementProvider';
+import { formatDate } from '../utils/DateUtils';
 
 const FieldDetails = ({ fieldData, onDelete }) => {
     const navigation = useNavigation();
     const [modalVisible, setModalVisible] = useState(false);
     const [selectedDetails, setSelectedDetails] = useState(null);
     const [modalTitle, setModalTitle] = useState('');
-    const [soilMeasurements, setSoilMeasurements] = useState(fieldData.soilMeasurements);
 
-    const { handleDeleteSoilMeasurement } = useSoilMeasurementContext();
+    const { fetchSoilMeasurementById, handleDeleteSoilMeasurement } = useSoilMeasurementContext();
 
-    const parseDate = (dateString) => {
-        return new Date(dateString);
-    };
+    const parseDate = (dateString) => new Date(dateString);
 
-    const sortedSoilMeasurements = soilMeasurements
+    const sortedSoilMeasurements = fieldData.soilMeasurements
         .map((measurement, index) => ({ ...measurement, originalIndex: index }))
         .sort((a, b) => parseDate(b.date) - parseDate(a.date));
 
-    const handleMeasurementClick = (measurement) => {
-        setSelectedDetails(measurement);
-        setModalTitle('Soil Measurement Details');
-        setModalVisible(true);
-    };
-
-    const handleParcelClick = (parcel) => {
-        setSelectedDetails(parcel);
-        setModalTitle('Plot Number Details');
-        setModalVisible(true);
+    const handleMeasurementClick = async (measurement) => {
+        try {
+            const response = await fetchSoilMeasurementById(measurement.id);
+            const details = {
+                Date: formatDate(parseDate(response.date)),
+                pH: response.pH,
+                Nitrogen: response.nitrogen,
+                Phosphorus: response.phosphorus,
+                Potassium: response.potassium
+            }
+            setSelectedDetails(details);
+            setModalTitle('Soil Measurement Details');
+            setModalVisible(true);
+        } catch (error) {
+            Alert.alert('Error', 'Failed to load soil measurement details.');
+        }
     };
 
     const handleDeleteMeasurement = (id) => {
@@ -70,8 +74,8 @@ const FieldDetails = ({ fieldData, onDelete }) => {
                 <ExpandableComponent title="Soil Measurements" isExpanded={false} backgroundColor="#BAF1BA" style={{ width: '100%' }}>
                     {
                         sortedSoilMeasurements && sortedSoilMeasurements.length > 0 ? (
-                            sortedSoilMeasurements.map((measurement, index) => (
-                                <React.Fragment key={index}>
+                            sortedSoilMeasurements.map((measurement) => (
+                                <React.Fragment key={measurement.id}>
                                     <View style={styles.infoRowContainer}>
                                         <TouchableOpacity 
                                             style={{ width: '70%' }}
@@ -103,13 +107,13 @@ const FieldDetails = ({ fieldData, onDelete }) => {
                 <ExpandableComponent title="Plot Numbers" isExpanded={false} backgroundColor="#BAF1BA" style={{ width: '100%' }}>
                     {
                         fieldData.referenceParcels && fieldData.referenceParcels.length > 0 ? (
-                            fieldData.referenceParcels.map((referenceParcels) => (
-                                <React.Fragment key={referenceParcels.id}>
-                                     <View style={styles.infoRowContainer} >
-                                        <TouchableOpacity style={{width: '70%'}} onPress={() => handleParcelClick(referenceParcels)}>
+                            fieldData.referenceParcels.map((referenceParcel) => (
+                                <React.Fragment key={referenceParcel.id}>
+                                     <View style={styles.infoRowContainer}>
+                                        <TouchableOpacity style={{width: '70%'}} onPress={() => handleParcelClick(referenceParcel)}>
                                             <View style={styles.rowContainer}>
                                                 <Icon name="search" size={22} color="#A9A9A9" style={{marginRight: '3%'}} />
-                                                <Text style={styles.text}>{referenceParcels.name}</Text>
+                                                <Text style={styles.text}>{referenceParcel.name}</Text>
                                             </View>
                                         </TouchableOpacity>
                                         <TouchableOpacity>
