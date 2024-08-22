@@ -9,13 +9,28 @@ const FieldDetails = ({ fieldData, onDelete }) => {
     const navigation = useNavigation();
 
     const parseDate = (dateString) => {
-        const [day, month, year] = dateString.split('.').map(part => parseInt(part, 10));
-        return new Date(year, month - 1, day);
+        if (!dateString) {
+            console.error("Invalid date string:", dateString);
+            return new Date();
+        }
+    
+        const date = new Date(dateString);
+        if (isNaN(date)) {
+            console.error("Invalid date:", dateString);
+            return new Date();
+        }
+    
+        return date;
     };
+    
 
     const sortedSoilMeasurements = fieldData.soilMeasurements
-        .map((measurement, index) => ({ ...measurement, originalIndex: index }))
-        .sort((a, b) => parseDate(b.date) - parseDate(a.date));
+        .map((measurement, index) => ({
+            ...measurement,
+            originalIndex: index,
+            dateObject: parseDate(measurement.name)
+        }))
+        .sort((a, b) => b.dateObject - a.dateObject);
 
     return (
         <View style={styles.container}>
@@ -37,7 +52,10 @@ const FieldDetails = ({ fieldData, onDelete }) => {
                                 <React.Fragment key={index}>
                                     <View style={styles.infoRowContainer} >
                                         <TouchableOpacity style={{width: '70%'}}>
-                                            <Text style={styles.text}>{measurement.name}</Text>
+                                            <View style={styles.rowContainer}>
+                                                <Icon name="search" size={22} color="#A9A9A9" style={{marginRight: '3%'}} />
+                                                <Text style={styles.text}>{measurement.name}</Text>
+                                            </View>
                                         </TouchableOpacity>
                                         <TouchableOpacity>
                                             <Icon name="edit" size={22} color="#00BFFF" />
@@ -67,9 +85,12 @@ const FieldDetails = ({ fieldData, onDelete }) => {
                         fieldData.referenceParcels && fieldData.referenceParcels.length > 0 ? (
                             fieldData.referenceParcels.map((referenceParcels) => (
                                 <React.Fragment key={referenceParcels.id}>
-                                    <View style={styles.infoRowContainer} >
+                                     <View style={styles.infoRowContainer} >
                                         <TouchableOpacity style={{width: '70%'}}>
-                                            <Text style={styles.text}>{referenceParcels.name}</Text>
+                                            <View style={styles.rowContainer}>
+                                                <Icon name="search" size={22} color="#A9A9A9" style={{marginRight: '3%'}} />
+                                                <Text style={styles.text}>{referenceParcels.name}</Text>
+                                            </View>
                                         </TouchableOpacity>
                                         <TouchableOpacity>
                                             <Icon name="edit" size={22} color="#00BFFF" />
