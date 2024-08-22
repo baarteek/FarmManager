@@ -1,18 +1,17 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, Alert, Keyboard } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, Alert, Keyboard, ActivityIndicator } from 'react-native';
 import { ScrollView, TouchableWithoutFeedback } from 'react-native-gesture-handler';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { styles } from '../../styles/AppStyles';
-import { useFieldContext } from '../../context/FieldProvider';
+import { useSoilMeasurementContext } from '../../context/SoilMeasurementProvider';
 import { formatDate } from '../../utils/DateUtils';
 
 const AddSoilMeasurementScreen = () => {
     const navigation = useNavigation();
     const route = useRoute();
     const { fieldId } = route.params;
-    const { fields, addSoilMeasurementToField } = useFieldContext();
-    const field = fields.find(f => f.id === fieldId);
+    const { addSoilMeasurement, loading } = useSoilMeasurementContext(); // Uzyskanie loading z kontekstu
 
     const [date, setDate] = useState(new Date());
     const [pH, setPH] = useState('');
@@ -20,22 +19,33 @@ const AddSoilMeasurementScreen = () => {
     const [phosphorus, setPhosphorus] = useState('');
     const [potassium, setPotassium] = useState('');
 
-    const handleAddMeasurement = () => {
+    const handleAddMeasurement = async () => {
+        if (!pH || !nitrogen || !phosphorus || !potassium) {
+            Alert.alert('Validation Error', 'All fields must be filled in.');
+            return;
+        }
+
         const newMeasurement = {
-            date: formatDate(date),
-            pH,
-            nitrogen,
-            phosphorus,
-            potassium,
+            fieldId,
+            date: date,
+            pH: parseFloat(pH),
+            nitrogen: parseFloat(nitrogen),
+            phosphorus: parseFloat(phosphorus),
+            potassium: parseFloat(potassium),
         };
-        addSoilMeasurementToField(fieldId, newMeasurement);
-        Alert.alert(
-            "Measurement Added",
-            "The new soil measurement has been successfully added.",
-            [
-                { text: "OK", onPress: () => navigation.goBack() }
-            ]
-        );
+
+        try {
+            await addSoilMeasurement(newMeasurement);
+            Alert.alert(
+                "Measurement Added",
+                "The new soil measurement has been successfully added.",
+                [
+                    { text: "OK", onPress: () => navigation.goBack() }
+                ]
+            );
+        } catch (error) {
+            Alert.alert('Error', 'Failed to add soil measurement. Please try again later.');
+        }
     };
 
     const onChangeDate = (event, selectedDate) => {
@@ -64,29 +74,42 @@ const AddSoilMeasurementScreen = () => {
                     onChangeText={setPH}
                     keyboardType="numeric"
                 />
-                <Text style={[styles.largeText, { textAlign: 'center' }]}>Nitrogen</Text>
+                <Text style={[styles.largeText, { textAlign: 'center' }]}>Nitrogen (mg/kg)</Text>
                 <TextInput
                     style={styles.input}
                     placeholder="Nitrogen"
                     value={nitrogen}
                     onChangeText={setNitrogen}
+                    keyboardType="numeric"
                 />
-                <Text style={[styles.largeText, { textAlign: 'center' }]}>Phosphorus</Text>
+                <Text style={[styles.largeText, { textAlign: 'center' }]}>Phosphorus (mg/kg)</Text>
                 <TextInput
                     style={styles.input}
                     placeholder="Phosphorus"
                     value={phosphorus}
                     onChangeText={setPhosphorus}
+                    keyboardType="numeric"
                 />
-                <Text style={[styles.largeText, { textAlign: 'center' }]}>Potassium</Text>
+                <Text style={[styles.largeText, { textAlign: 'center' }]}>Potassium (mg/kg)</Text>
                 <TextInput
                     style={styles.input}
                     placeholder="Potassium"
                     value={potassium}
                     onChangeText={setPotassium}
+                    keyboardType="numeric"
                 />
-                <TouchableOpacity style={[styles.button, { margin: '5%', marginTop: '5%', width: '80%', backgroundColor: '#62C962', alignSelf: 'center' }]} onPress={handleAddMeasurement}>
-                    <Text style={{ textAlign: 'center', fontWeight: 'bold', fontSize: 22, color: '#fff', marginLeft: '10%', marginRight: '10%' }}>Add Measurement</Text>
+                <TouchableOpacity 
+                    style={[styles.button, { margin: '5%', marginTop: '5%', width: '80%', backgroundColor: '#62C962', alignSelf: 'center' }]} 
+                    onPress={handleAddMeasurement}
+                    disabled={loading}
+                >
+                    {loading ? (
+                        <ActivityIndicator size="small" color="#fff" />
+                    ) : (
+                        <Text style={{ textAlign: 'center', fontWeight: 'bold', fontSize: 22, color: '#fff', marginLeft: '10%', marginRight: '10%' }}>
+                            Add Measurement
+                        </Text>
+                    )}
                 </TouchableOpacity>
             </ScrollView>
         </TouchableWithoutFeedback>

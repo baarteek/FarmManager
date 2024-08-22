@@ -27,11 +27,12 @@ const FieldDetails = ({ fieldData, onDelete }) => {
             const response = await fetchSoilMeasurementById(measurement.id);
             const details = {
                 Date: formatDate(parseDate(response.date)),
-                pH: response.pH,
-                Nitrogen: response.nitrogen,
-                Phosphorus: response.phosphorus,
-                Potassium: response.potassium
-            }
+                pH: `${response.pH}`,
+                Nitrogen: `${response.nitrogen} mg/kg`,
+                Phosphorus: `${response.phosphorus} mg/kg`,
+                Potassium: `${response.potassium} mg/kg`
+            };
+            
             setSelectedDetails(details);
             setModalTitle('Soil Measurement Details');
             setModalVisible(true);
@@ -103,6 +104,12 @@ const FieldDetails = ({ fieldData, onDelete }) => {
                             </>
                         )
                     }
+                    <TouchableOpacity 
+                        style={[styles.button, { backgroundColor: '#62C962', marginVertical: '5%' }]} 
+                        onPress={() => navigation.navigate('Add Soil Measurement', { fieldId: fieldData.id })}
+                    >
+                        <Text style={{ color: '#fff', fontWeight: 'bold', textAlign: 'center' }}>Add Soil Measurement</Text>
+                    </TouchableOpacity>
                 </ExpandableComponent>
                 <ExpandableComponent title="Plot Numbers" isExpanded={false} backgroundColor="#BAF1BA" style={{ width: '100%' }}>
                     {
@@ -130,6 +137,12 @@ const FieldDetails = ({ fieldData, onDelete }) => {
                             <Text style={[styles.text, { textAlign: 'center' }]}>There are no plot numbers for this field</Text>
                         )
                     }
+                    <TouchableOpacity 
+                        style={[styles.button, { backgroundColor: '#62C962', marginVertical: '5%' }]} 
+                        onPress={() => navigation.navigate('Add Plot Number', { fieldId: fieldData.id })}
+                    >
+                        <Text style={{ color: '#fff', fontWeight: 'bold', textAlign: 'center' }}>Add Plot Number</Text>
+                    </TouchableOpacity>
                 </ExpandableComponent>
 
                 <TouchableOpacity style={[styles.button, { marginTop: '5%', paddingVertical: '1%', backgroundColor: '#BAF1BA' }]} onPress={() => navigation.navigate('Show Crops', { fieldId: fieldData.id })}>
