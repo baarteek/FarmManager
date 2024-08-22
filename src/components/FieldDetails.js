@@ -5,18 +5,22 @@ import { useNavigation } from '@react-navigation/native';
 import { styles } from '../styles/AppStyles';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import DetailsModal from './DetailsModal';
+import { useSoilMeasurementContext } from '../context/SoilMeasurementProvider';
 
 const FieldDetails = ({ fieldData, onDelete }) => {
     const navigation = useNavigation();
     const [modalVisible, setModalVisible] = useState(false);
     const [selectedDetails, setSelectedDetails] = useState(null);
     const [modalTitle, setModalTitle] = useState('');
+    const [soilMeasurements, setSoilMeasurements] = useState(fieldData.soilMeasurements);
+
+    const { handleDeleteSoilMeasurement } = useSoilMeasurementContext();
 
     const parseDate = (dateString) => {
         return new Date(dateString);
     };
 
-    const sortedSoilMeasurements = fieldData.soilMeasurements
+    const sortedSoilMeasurements = soilMeasurements
         .map((measurement, index) => ({ ...measurement, originalIndex: index }))
         .sort((a, b) => parseDate(b.date) - parseDate(a.date));
 
@@ -30,6 +34,24 @@ const FieldDetails = ({ fieldData, onDelete }) => {
         setSelectedDetails(parcel);
         setModalTitle('Plot Number Details');
         setModalVisible(true);
+    };
+
+    const handleDeleteMeasurement = (id) => {
+        Alert.alert(
+            "Delete Soil Measurement",
+            "Are you sure you want to delete this soil measurement?",
+            [
+                { text: "Cancel", style: "cancel" },
+                { 
+                    text: "Delete", 
+                    onPress: async () => {
+                        await handleDeleteSoilMeasurement(id);
+                        setSoilMeasurements(prevMeasurements => prevMeasurements.filter(measurement => measurement.id !== id));
+                    } 
+                },
+            ],
+            { cancelable: false }
+        );
     };
 
     return (
@@ -50,7 +72,7 @@ const FieldDetails = ({ fieldData, onDelete }) => {
                         sortedSoilMeasurements && sortedSoilMeasurements.length > 0 ? (
                             sortedSoilMeasurements.map((measurement, index) => (
                                 <React.Fragment key={index}>
-                                    <View style={styles.infoRowContainer} >
+                                    <View style={styles.infoRowContainer}>
                                         <TouchableOpacity 
                                             style={{ width: '70%' }}
                                             onPress={() => handleMeasurementClick(measurement)}
@@ -63,7 +85,7 @@ const FieldDetails = ({ fieldData, onDelete }) => {
                                         <TouchableOpacity>
                                             <Icon name="edit" size={22} color="#00BFFF" />
                                         </TouchableOpacity>
-                                        <TouchableOpacity>
+                                        <TouchableOpacity onPress={() => handleDeleteMeasurement(measurement.id)}>
                                             <Icon name="delete" size={22} color="#FC7F7F" />
                                         </TouchableOpacity>
                                     </View>
