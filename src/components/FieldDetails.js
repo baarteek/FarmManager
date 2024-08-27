@@ -7,6 +7,7 @@ import Icon from 'react-native-vector-icons/MaterialIcons';
 import DetailsModal from './DetailsModal';
 import { useSoilMeasurementContext } from '../context/SoilMeasurementProvider';
 import { formatDate } from '../utils/DateUtils';
+import { usePlotNumberContext } from '../context/PlotNumberProvider';
 
 const FieldDetails = ({ fieldData, onDelete }) => {
     const navigation = useNavigation();
@@ -14,8 +15,10 @@ const FieldDetails = ({ fieldData, onDelete }) => {
     const [selectedDetails, setSelectedDetails] = useState(null);
     const [modalTitle, setModalTitle] = useState('');
     const [soilMeasurements, setSoilMeasurements] = useState(fieldData.soilMeasurements);
+    const [plotNumbers, setPlotNumbers] = useState(fieldData.referenceParcels);
 
     const { fetchSoilMeasurementById, handleDeleteSoilMeasurement } = useSoilMeasurementContext();
+    const { fetchPlotNumberById, deletePlotNumber } = usePlotNumberContext();
 
     const parseDate = (dateString) => new Date(dateString);
 
@@ -53,6 +56,24 @@ const FieldDetails = ({ fieldData, onDelete }) => {
                     onPress: async () => {
                         await handleDeleteSoilMeasurement(id);
                         setSoilMeasurements(prevMeasurements => prevMeasurements.filter(measurement => measurement.id !== id));
+                    } 
+                },
+            ],
+            { cancelable: false }
+        );
+    };
+
+    const handleDeletePlotNumber = (id) => {
+        Alert.alert(
+            "Delete Plot Number",
+            "Are you sure you want to delete this plot number?",
+            [
+                { text: "Cancel", style: "cancel" },
+                { 
+                    text: "Delete", 
+                    onPress: async () => {
+                        await deletePlotNumber(id);
+                        setPlotNumbers(prevPlotNumbers => prevPlotNumbers.filter(parcel => parcel.id !== id));
                     } 
                 },
             ],
@@ -114,8 +135,8 @@ const FieldDetails = ({ fieldData, onDelete }) => {
                 </ExpandableComponent>
                 <ExpandableComponent title="Plot Numbers" isExpanded={false} backgroundColor="#BAF1BA" style={{ width: '100%' }}>
                     {
-                        fieldData.referenceParcels && fieldData.referenceParcels.length > 0 ? (
-                            fieldData.referenceParcels.map((referenceParcel) => (
+                        plotNumbers && plotNumbers.length > 0 ? (
+                            plotNumbers.map((referenceParcel) => (
                                 <React.Fragment key={referenceParcel.id}>
                                      <View style={styles.infoRowContainer}>
                                         <TouchableOpacity style={{width: '70%'}} onPress={() => handleParcelClick(referenceParcel)}>
@@ -127,7 +148,7 @@ const FieldDetails = ({ fieldData, onDelete }) => {
                                         <TouchableOpacity>
                                             <Icon name="edit" size={22} color="#00BFFF" />
                                         </TouchableOpacity>
-                                        <TouchableOpacity>
+                                        <TouchableOpacity onPress={() => handleDeletePlotNumber(referenceParcel.id)}>
                                             <Icon name="delete" size={22} color="#FC7F7F" />
                                         </TouchableOpacity>
                                     </View>
