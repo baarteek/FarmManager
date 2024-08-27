@@ -45,6 +45,22 @@ const FieldDetails = ({ fieldData, onDelete }) => {
         }
     };
 
+    const handleParcelClick = async (parcel) => {
+        try {
+            const response = await fetchPlotNumberById(parcel.id);
+            const details = {
+                "Parcel Number": response.parcelNumber,
+                "Area": response.area + ' ha',
+            };
+            
+            setSelectedDetails(details);
+            setModalTitle('Plot Number Details');
+            setModalVisible(true);
+        } catch (error) {
+            Alert.alert('Error', 'Failed to load plot number details.');
+        }
+    };
+
     const handleDeleteMeasurement = (id) => {
         Alert.alert(
             "Delete Soil Measurement",
