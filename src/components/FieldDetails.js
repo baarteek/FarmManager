@@ -13,12 +13,13 @@ const FieldDetails = ({ fieldData, onDelete }) => {
     const [modalVisible, setModalVisible] = useState(false);
     const [selectedDetails, setSelectedDetails] = useState(null);
     const [modalTitle, setModalTitle] = useState('');
+    const [soilMeasurements, setSoilMeasurements] = useState(fieldData.soilMeasurements);
 
     const { fetchSoilMeasurementById, handleDeleteSoilMeasurement } = useSoilMeasurementContext();
 
     const parseDate = (dateString) => new Date(dateString);
 
-    const sortedSoilMeasurements = fieldData.soilMeasurements
+    const sortedSoilMeasurements = soilMeasurements
         .map((measurement, index) => ({ ...measurement, originalIndex: index }))
         .sort((a, b) => parseDate(b.date) - parseDate(a.date));
 
