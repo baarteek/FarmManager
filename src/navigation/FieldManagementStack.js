@@ -14,6 +14,7 @@ import { FarmProvider } from '../context/FarmProvider';
 import { SoilMeasurementProvider } from '../context/SoilMeasurementProvider';
 import { PlotNumberProvider } from '../context/PlotNumberProvider';
 import AddPlotNumberScreen from '../screens/FieldManagement/AddPlotNumberScreen';
+import EditPlotNumberScreen from '../screens/FieldManagement/EditPlotNumberScreen';
 
 
 const Stack = createStackNavigator();
@@ -45,6 +46,7 @@ const FieldmanagementStack = () => {
                             <Stack.Screen name='Add Soil Measurement' component={AddSoilMeasurementScreen} options={{headerShown: true, title: 'Add Soil Measurement'}} />
                             <Stack.Screen name='Edit Soil Measurement' component={EditSoilMeasurementScreen} options={{headerShown: true, title: 'Edit Soil Measurement'}} />
                             <Stack.Screen name='Add Plot Number' component={AddPlotNumberScreen} options={{headerShown: true, title: 'Add Plot Number'}} />
+                            <Stack.Screen name='Edit Plot Number' component={EditPlotNumberScreen} options={{headerShown: true, title: 'Edit Plot Number'}} />
                         </Stack.Navigator>
                     </PlotNumberProvider>
                 </SoilMeasurementProvider>

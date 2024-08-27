@@ -145,7 +145,7 @@ const FieldDetails = ({ fieldData, onDelete }) => {
                                                 <Text style={styles.text}>{referenceParcel.name}</Text>
                                             </View>
                                         </TouchableOpacity>
-                                        <TouchableOpacity>
+                                        <TouchableOpacity onPress={() => navigation.navigate('Edit Plot Number', { plotNumberId: referenceParcel.id, fieldId: fieldData.id })}>
                                             <Icon name="edit" size={22} color="#00BFFF" />
                                         </TouchableOpacity>
                                         <TouchableOpacity onPress={() => handleDeletePlotNumber(referenceParcel.id)}>
