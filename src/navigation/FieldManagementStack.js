@@ -13,6 +13,7 @@ import EditFertilizationScreen from '../screens/CropManagement/EditFertilization
 import { FarmProvider } from '../context/FarmProvider';
 import { SoilMeasurementProvider } from '../context/SoilMeasurementProvider';
 import { PlotNumberProvider } from '../context/PlotNumberProvider';
+import AddPlotNumberScreen from '../screens/FieldManagement/AddPlotNumberScreen';
 
 
 const Stack = createStackNavigator();
@@ -41,12 +42,9 @@ const FieldmanagementStack = () => {
                             <Stack.Screen name="Add Field" component={AddFieldScreen} options={{ headerShown: true, title: 'Add Field' }} />
                             <Stack.Screen name="Show Crops" component={ShowCropsScreen} />
                             <Stack.Screen name="Edit Field" component={EditFieldScreen} options={{ headerShown: true, title: 'Edit Field' }} />
-                            <Stack.Screen name='Add Crop' component={AddCropScreen} options={{headerShown: true, title: 'Add Crop'}} />
-                            <Stack.Screen name='Edit Crop' component={EditCropScreen} options={{headerShown: true, title: 'Edit Crop'}} />
                             <Stack.Screen name='Add Soil Measurement' component={AddSoilMeasurementScreen} options={{headerShown: true, title: 'Add Soil Measurement'}} />
                             <Stack.Screen name='Edit Soil Measurement' component={EditSoilMeasurementScreen} options={{headerShown: true, title: 'Edit Soil Measurement'}} />
-                            <Stack.Screen name="Add Fertilization" component={AddFertilizationScreen} options={{ headerShown: true, title: 'Add Fertilization' }} />
-                            <Stack.Screen name="Edit Fertilization" component={EditFertilizationScreen} options={{ headerShown: true, title: 'Edit Fertilization' }} />
+                            <Stack.Screen name='Add Plot Number' component={AddPlotNumberScreen} options={{headerShown: true, title: 'Add Plot Number'}} />
                         </Stack.Navigator>
                     </PlotNumberProvider>
                 </SoilMeasurementProvider>
