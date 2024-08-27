@@ -1,42 +1,77 @@
-import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, Alert, Keyboard } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, Text, TextInput, TouchableOpacity, Alert, Keyboard, ActivityIndicator } from 'react-native';
 import { ScrollView, TouchableWithoutFeedback } from 'react-native-gesture-handler';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import DateTimePicker from '@react-native-community/datetimepicker';
-import { useFieldContext } from '../../context/FieldProvider';
 import { styles } from '../../styles/AppStyles';
-import { formatDate, parseDate } from '../../utils/DateUtils';
+import { useSoilMeasurementContext } from '../../context/SoilMeasurementProvider';
+import { formatDecimalInput } from '../../utils/TextUtils';
 
 const EditSoilMeasurementScreen = () => {
     const navigation = useNavigation();
     const route = useRoute();
-    const { fieldId, measurementIndex } = route.params;
-    const { fields, editSoilMeasurementInField } = useFieldContext();
-    const field = fields.find(f => f.id === fieldId);
-    const measurement = field.soilMeasurements[measurementIndex];
+    const { measurementId, fieldId } = route.params;
+    const { fetchSoilMeasurementById, editSoilMeasurement } = useSoilMeasurementContext();
 
-    const [date, setDate] = useState(parseDate(measurement.date));
-    const [pH, setPH] = useState(measurement.pH);
-    const [nitrogen, setNitrogen] = useState(measurement.nitrogen);
-    const [phosphorus, setPhosphorus] = useState(measurement.phosphorus);
-    const [potassium, setPotassium] = useState(measurement.potassium);
+    const [loading, setLoading] = useState(false);
 
-    const handleEditMeasurement = () => {
-        const updatedMeasurement = {
-            date: formatDate(date),
-            pH,
-            nitrogen,
-            phosphorus,
-            potassium,
+    const [date, setDate] = useState(new Date());
+    const [pH, setPH] = useState('');
+    const [nitrogen, setNitrogen] = useState('');
+    const [phosphorus, setPhosphorus] = useState('');
+    const [potassium, setPotassium] = useState('');
+
+    useEffect(() => {
+        const loadMeasurement = async () => {
+            setLoading(true);
+            try {
+                const measurement = await fetchSoilMeasurementById(measurementId);
+                setDate(new Date(measurement.date));
+                setPH(measurement.pH.toString());
+                setNitrogen(measurement.nitrogen.toString());
+                setPhosphorus(measurement.phosphorus.toString());
+                setPotassium(measurement.potassium.toString());
+            } catch (error) {
+                Alert.alert('Error', 'Failed to load soil measurement data.');
+            } finally {
+                setLoading(false);
+            }
         };
-        editSoilMeasurementInField(fieldId, measurementIndex, updatedMeasurement);
-        Alert.alert(
-            "Measurement Updated",
-            "The soil measurement has been successfully updated.",
-            [
-                { text: "OK", onPress: () => navigation.goBack() }
-            ]
-        );
+
+        loadMeasurement();
+    }, [measurementId]);
+
+    const handleEditMeasurement = async () => {
+        if (!pH || !nitrogen || !phosphorus || !potassium) {
+            Alert.alert('Validation Error', 'All fields must be filled in.');
+            return;
+        }
+
+        const updatedMeasurement = {
+            id: measurementId,
+            fieldId: fieldId,
+            date: date,
+            pH: formatDecimalInput(pH),
+            nitrogen: formatDecimalInput(nitrogen),
+            phosphorus: formatDecimalInput(phosphorus),
+            potassium: formatDecimalInput(potassium),
+        };
+
+        setLoading(true);
+        try {
+            await editSoilMeasurement(updatedMeasurement);
+            Alert.alert(
+                "Measurement Updated",
+                "The soil measurement has been successfully updated.",
+                [
+                    { text: "OK", onPress: () => navigation.goBack() }
+                ]
+            );
+        } catch (error) {
+            Alert.alert('Error', 'Failed to update soil measurement. Please try again later.');
+        } finally {
+            setLoading(false);
+        }
     };
 
     const onChangeDate = (event, selectedDate) => {
@@ -65,29 +100,42 @@ const EditSoilMeasurementScreen = () => {
                     onChangeText={setPH}
                     keyboardType="numeric"
                 />
-                <Text style={[styles.largeText, { textAlign: 'center' }]}>Nitrogen</Text>
+                <Text style={[styles.largeText, { textAlign: 'center' }]}>Nitrogen (mg/kg)</Text>
                 <TextInput
                     style={styles.input}
                     placeholder="Nitrogen"
                     value={nitrogen}
                     onChangeText={setNitrogen}
+                    keyboardType="numeric"
                 />
-                <Text style={[styles.largeText, { textAlign: 'center' }]}>Phosphorus</Text>
+                <Text style={[styles.largeText, { textAlign: 'center' }]}>Phosphorus (mg/kg)</Text>
                 <TextInput
                     style={styles.input}
                     placeholder="Phosphorus"
                     value={phosphorus}
                     onChangeText={setPhosphorus}
+                    keyboardType="numeric"
                 />
-                <Text style={[styles.largeText, { textAlign: 'center' }]}>Potassium</Text>
+                <Text style={[styles.largeText, { textAlign: 'center' }]}>Potassium (mg/kg)</Text>
                 <TextInput
                     style={styles.input}
                     placeholder="Potassium"
                     value={potassium}
                     onChangeText={setPotassium}
+                    keyboardType="numeric"
                 />
-                <TouchableOpacity style={[styles.button, { margin: '5%', marginTop: '5%', width: '80%', backgroundColor: '#62C962', alignSelf: 'center' }]} onPress={handleEditMeasurement}>
-                    <Text style={{ textAlign: 'center', fontWeight: 'bold', fontSize: 22, color: '#fff', marginLeft: '10%', marginRight: '10%' }}>Update Measurement</Text>
+                <TouchableOpacity 
+                    style={[styles.button, { margin: '5%', marginTop: '5%', width: '80%', backgroundColor: '#62C962', alignSelf: 'center' }]} 
+                    onPress={handleEditMeasurement}
+                    disabled={loading}
+                >
+                    {loading ? (
+                        <ActivityIndicator size="large" color="#fff" />
+                    ) : (
+                        <Text style={{ textAlign: 'center', fontWeight: 'bold', fontSize: 22, color: '#fff', marginLeft: '10%', marginRight: '10%' }}>
+                            Update Measurement
+                        </Text>
+                    )}
                 </TouchableOpacity>
             </ScrollView>
         </TouchableWithoutFeedback>

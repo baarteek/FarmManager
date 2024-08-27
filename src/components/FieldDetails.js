@@ -87,7 +87,7 @@ const FieldDetails = ({ fieldData, onDelete }) => {
                                                 <Text style={styles.text}>{measurement.name}</Text>
                                             </View>
                                         </TouchableOpacity>
-                                        <TouchableOpacity>
+                                        <TouchableOpacity onPress={() => navigation.navigate("Edit Soil Measurement", { measurementId: measurement.id, fieldId: fieldData.id })}>
                                             <Icon name="edit" size={22} color="#00BFFF" />
                                         </TouchableOpacity>
                                         <TouchableOpacity onPress={() => handleDeleteMeasurement(measurement.id)}>

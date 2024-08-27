@@ -5,13 +5,14 @@ import { useNavigation, useRoute } from '@react-navigation/native';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { styles } from '../../styles/AppStyles';
 import { useSoilMeasurementContext } from '../../context/SoilMeasurementProvider';
-import { formatDate } from '../../utils/DateUtils';
+import { formatDecimalInput } from '../../utils/TextUtils';
 
 const AddSoilMeasurementScreen = () => {
     const navigation = useNavigation();
     const route = useRoute();
     const { fieldId } = route.params;
-    const { addSoilMeasurement, loading } = useSoilMeasurementContext(); // Uzyskanie loading z kontekstu
+    const { addSoilMeasurement } = useSoilMeasurementContext();
+    const [loading, setLoading] = useState(false);
 
     const [date, setDate] = useState(new Date());
     const [pH, setPH] = useState('');
@@ -28,12 +29,13 @@ const AddSoilMeasurementScreen = () => {
         const newMeasurement = {
             fieldId,
             date: date,
-            pH: parseFloat(pH),
-            nitrogen: parseFloat(nitrogen),
-            phosphorus: parseFloat(phosphorus),
-            potassium: parseFloat(potassium),
+            pH: formatDecimalInput(pH),
+            nitrogen: formatDecimalInput(nitrogen),
+            phosphorus: formatDecimalInput(phosphorus),
+            potassium: formatDecimalInput(potassium),
         };
 
+        setLoading(true);
         try {
             await addSoilMeasurement(newMeasurement);
             Alert.alert(
@@ -45,6 +47,8 @@ const AddSoilMeasurementScreen = () => {
             );
         } catch (error) {
             Alert.alert('Error', 'Failed to add soil measurement. Please try again later.');
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -104,7 +108,7 @@ const AddSoilMeasurementScreen = () => {
                     disabled={loading}
                 >
                     {loading ? (
-                        <ActivityIndicator size="small" color="#fff" />
+                        <ActivityIndicator size="large" color="#fff" />
                     ) : (
                         <Text style={{ textAlign: 'center', fontWeight: 'bold', fontSize: 22, color: '#fff', marginLeft: '10%', marginRight: '10%' }}>
                             Add Measurement
