@@ -67,7 +67,16 @@ const FarmDetails = ({ farmData, onDelete, onEdit, loading }) => {
             Alert.alert('Error', 'Failed to load field details.');
         }
     };
-    
+
+    const handleEditField = async (fieldId) => {
+        try {
+            const fieldDetails = await fetchFieldById(fieldId);
+            navigation.navigate("Edit Field", { field: fieldDetails });
+        } catch (error) {
+            Alert.alert('Error', 'Failed to load field details for editing.');
+        }
+    };
+
     return (
         <View style={styles.container}>
             <ExpandableComponent title={farmData.name}>
@@ -96,7 +105,7 @@ const FarmDetails = ({ farmData, onDelete, onEdit, loading }) => {
                                                 <Text style={styles.text}>{field.name}</Text>
                                             </View>
                                         </TouchableOpacity>
-                                        <TouchableOpacity onPress={() => navigation.navigate("Edit Field", { fieldId: field.id })}>
+                                        <TouchableOpacity onPress={() => handleEditField(field.id)}>
                                             <Icon name="edit" size={22} color="#00BFFF" />
                                         </TouchableOpacity>
                                         <TouchableOpacity onPress={() => handleDeleteField(field.id)}>
@@ -118,16 +127,6 @@ const FarmDetails = ({ farmData, onDelete, onEdit, loading }) => {
                             <Text style={{ textAlign: 'center', fontWeight: 'bold', fontSize: 16, color: '#fff', marginHorizontal: 10 }}>Add Field</Text>
                         </TouchableOpacity>
                     </View>
-                    {localFields && localFields.length > 0 && (
-                        <View style={[styles.rowContainer, { justifyContent: 'space-around', marginTop: '5%' }]}>
-                            <TouchableOpacity 
-                                style={[styles.button, { backgroundColor: '#276e33', width: '80%' }]} 
-                                onPress={() => navigation.navigate('FieldManagement', { farmId: farmData.id })}
-                            >
-                                <Text style={{ textAlign: 'center', fontWeight: 'bold', fontSize: 16, color: '#fff', marginHorizontal: 10 }}>Manage Fields</Text>
-                            </TouchableOpacity>
-                        </View>
-                    )}
                 </ExpandableComponent>
                 <View style={[styles.rowContainer, { justifyContent: 'space-around', marginTop: '5%' }]}>
                     <TouchableOpacity 
