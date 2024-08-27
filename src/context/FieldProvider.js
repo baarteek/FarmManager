@@ -23,7 +23,26 @@ export const FieldProvider = ({ children }) => {
             setError(null);
         } catch (err) {
             console.error('Error fetching fields:', err.message);
-            setError('Failed to load fields. Please try again later ');
+            setError('Failed to load fields. Please try again later.');
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const fetchFieldById = async (fieldId) => {
+        setLoading(true);
+        try {
+            const response = await axios.get(`${API_BASE_URL}/Fields/${fieldId}`, {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            });
+            setError(null);
+            return response.data;
+        } catch (err) {
+            console.error('Error fetching field by ID:', err.message);
+            setError('Failed to load field details. Please try again later.');
+            throw err;
         } finally {
             setLoading(false);
         }
@@ -50,7 +69,7 @@ export const FieldProvider = ({ children }) => {
             setError(null);
         } catch(err) {
             console.error('Error adding field:', err.message);
-            setError('Failed to add the field. Please try again later ');
+            setError('Failed to add the field. Please try again later.');
         } finally {
             setLoading(false);
         }
@@ -79,7 +98,7 @@ export const FieldProvider = ({ children }) => {
             setError(null);
         } catch (err) {
             console.error('Error editing field:', err.message);
-            setError('Failed to edit the field. Please try again later ');
+            setError('Failed to edit the field. Please try again later.');
         } finally {
             setLoading(false);
         }
@@ -97,7 +116,7 @@ export const FieldProvider = ({ children }) => {
             setError(null);
         } catch (err) {
             console.error('Error deleting field:', err.message);
-            setError('Failed to delete the field. Please try again later ');
+            setError('Failed to delete the field. Please try again later.');
         } finally {
             setLoading(false);
         }
@@ -105,7 +124,7 @@ export const FieldProvider = ({ children }) => {
 
     return (
         <FieldContext.Provider value={{
-            fields, loading, error, fetchFields, addField, handleDelete, editField
+            fields, loading, error, fetchFields, fetchFieldById, addField, handleDelete, editField
         }}>
             {children}
         </FieldContext.Provider>
