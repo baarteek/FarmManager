@@ -3,13 +3,9 @@ import FieldManagementScreen from '../screens/FieldManagement/FieldManagementScr
 import AddFieldScreen from '../screens/FieldManagement/AddFieldScreen';
 import ShowCropsScreen from '../screens/CropManagement/ShowCropsScreen';
 import EditFieldScreen from '../screens/FieldManagement/EditFieldScreen';
-import AddCropScreen from '../screens/CropManagement/AddCropScreen';
-import EditCropScreen from '../screens/CropManagement/EditCropScreen';
 import { FieldProvider } from '../context/FieldProvider';
 import AddSoilMeasurementScreen from '../screens/FieldManagement/AddSoilMeasurementScreen';
 import EditSoilMeasurementScreen from '../screens/FieldManagement/EditSoilMeasurementScreen';
-import AddFertilizationScreen from '../screens/CropManagement/AddFertilizationScreen';
-import EditFertilizationScreen from '../screens/CropManagement/EditFertilizationScreen';
 import { FarmProvider } from '../context/FarmProvider';
 import { SoilMeasurementProvider } from '../context/SoilMeasurementProvider';
 import { PlotNumberProvider } from '../context/PlotNumberProvider';

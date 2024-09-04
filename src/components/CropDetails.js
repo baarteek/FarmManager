@@ -1,150 +1,166 @@
-import React from 'react';
-import { View, Text, TouchableOpacity, Alert } from 'react-native';
-import { styles } from '../styles/AppStyles';
-import ExpandableComponent from './ExpandableComponent';
+import React, { useEffect, useState } from 'react';
+import { View, Text, TouchableOpacity, Alert } from "react-native";
+import ExpandableComponent from "./ExpandableComponent";
 import { useNavigation } from '@react-navigation/native';
-import { useFieldContext } from '../context/FieldProvider';
+import { styles } from '../styles/AppStyles';
+import Icon from 'react-native-vector-icons/MaterialIcons';
+import DetailsModal from './DetailsModal';
+import { formatDate } from '../utils/DateUtils';
 
-const CropDetails = ({ crop, fieldId, handleDeleteCrop }) => {
+const CropDetails = ({ crop, handleDeleteCrop }) => {
     const navigation = useNavigation();
-    const { deleteFertilizationFromCrop } = useFieldContext();
+    const [modalVisible, setModalVisible] = useState(false);
+    const [selectedDetails, setSelectedDetails] = useState(null);
+    const [modalTitle, setModalTitle] = useState('');
 
-    const handleDeleteFertilization = (fertilizationIndex) => {
+    const handleFertilizationClick = (fertilization) => {
+        const details = {
+            Date: formatDate(fertilization.date),
+            Type: fertilization.type,
+            Quantity: `${fertilization.quantity} kg`,
+            Method: fertilization.method,
+            Description: fertilization.description
+        };
+        
+        setSelectedDetails(details);
+        setModalTitle('Fertilization Details');
+        setModalVisible(true);
+    };
+
+    const handlePestAndDiseaseClick = (history) => {
+        const details = {
+            Date: formatDate(history.date),
+            Type: history.type,
+            Treatment: history.treatment,
+            Description: history.description
+        };
+
+        setSelectedDetails(details);
+        setModalTitle('Pest and Disease Details');
+        setModalVisible(true);
+    };
+
+    const handleDeleteItem = (id, type) => {
         Alert.alert(
-            "Confirm Deletion",
-            "Are you sure you want to delete this fertilization record?",
+            `Delete ${type}`,
+            `Are you sure you want to delete this ${type.toLowerCase()}?`,
             [
                 { text: "Cancel", style: "cancel" },
-                { text: "Delete", onPress: () => deleteFertilization(fieldId, crop.id, fertilizationIndex), style: "destructive" }
+                { text: "Delete", onPress: () => handleDeleteCrop(id) },
             ],
             { cancelable: false }
         );
     };
 
-    const deleteFertilization = (fieldId, cropId, fertilizationIndex) => {
-        deleteFertilizationFromCrop(fieldId, cropId, fertilizationIndex);
-    };
-
-    const parseDate = (dateString) => {
-        const [day, month, year] = dateString.split('.').map(part => parseInt(part, 10));
-        return new Date(year, month - 1, day);
-    };
-
-    const sortedFertilizationHistory = crop.fertilizationHistory
-        .map((fertilization, index) => ({ ...fertilization, originalIndex: index }))
-        .sort((a, b) => parseDate(b.date) - parseDate(a.date));
-
-    const sortedPestAndDiseaseHistory = crop.pestAndDiseaseHistory
-        .map((history, index) => ({ ...history, originalIndex: index }))
-        .sort((a, b) => parseDate(b.date) - parseDate(a.date));
-
     return (
         <View style={styles.container}>
-            <ExpandableComponent title={crop.cropType}>
+            <ExpandableComponent title={crop.name}>
                 <View style={styles.infoRowContainer}>
                     <Text style={styles.text}>Sowing Date:</Text>
-                    <Text style={styles.text}>{crop.sowingDate}</Text>
+                    <Text style={styles.text}>{formatDate(crop.sowingDate)}</Text>  
                 </View>
                 <View style={styles.line} />
                 <View style={styles.infoRowContainer}>
                     <Text style={styles.text}>Harvest Date:</Text>
-                    <Text style={styles.text}>{crop.harvestDate}</Text>
+                    <Text style={styles.text}>{formatDate(crop.harvestDate)}</Text> 
                 </View>
                 <View style={styles.line} />
-                <View style={styles.infoRowContainer}>
-                    <Text style={styles.text}>Season:</Text>
-                    <Text style={styles.text}>{crop.season}</Text>
-                </View>
-                <View style={styles.line} />
+
                 <ExpandableComponent title="Fertilization" isExpanded={false} backgroundColor="#BAF1BA" style={{ width: '100%' }}>
-                    {sortedFertilizationHistory && sortedFertilizationHistory.length > 0 ? (
-                        sortedFertilizationHistory.map((fertilization, index) => (
+                    {crop.fertilizations && crop.fertilizations.length > 0 ? (
+                        crop.fertilizations.map((fertilization, index) => (
                             <React.Fragment key={index}>
-                                <Text style={styles.title}>{fertilization.date}</Text>
                                 <View style={styles.infoRowContainer}>
-                                    <Text style={styles.text}>Type:</Text>
-                                    <Text style={styles.text}>{fertilization.type}</Text>
-                                </View>
-                                <View style={[styles.line, { borderColor: '#DFF6DF' }]} />
-                                <View style={styles.infoRowContainer}>
-                                    <Text style={styles.text}>Quantity:</Text>
-                                    <Text style={styles.text}>{fertilization.quantity}</Text>
-                                </View>
-                                <View style={[styles.line, { borderColor: '#DFF6DF' }]} />
-                                <View style={styles.infoRowContainer}>
-                                    <Text style={styles.text}>Method:</Text>
-                                    <Text style={styles.text}>{fertilization.method}</Text>
-                                </View>
-                                <View style={[styles.line, { borderColor: '#DFF6DF' }]} />
-                                <View style={styles.container}>
-                                    <Text style={[styles.text, { fontWeight: 'bold', marginVertical: '1%' }]}>Description:</Text>
-                                    <Text style={[styles.text, { textAlign: 'center' }]}>{fertilization.description}</Text>
-                                </View>
-                                <View style={[styles.rowContainer, { justifyContent: 'space-around', marginTop: '5%' }]}>
-                                    <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('Edit Fertilization', { fieldId, cropId: crop.id, fertilizationIndex: fertilization.originalIndex })}>
-                                        <Text style={{ textAlign: 'center', fontWeight: 'bold', fontSize: 16, marginLeft: '10%', marginRight: '10%' }}>Edit</Text>
+                                    <TouchableOpacity 
+                                        style={{ width: '70%' }} 
+                                        onPress={() => handleFertilizationClick(fertilization)}
+                                    >
+                                        <View style={styles.rowContainer}>
+                                            <Icon name="search" size={22} color="#A9A9A9" style={{ marginRight: '3%' }} />
+                                            <Text style={styles.text}>{fertilization.name}</Text>
+                                        </View>
                                     </TouchableOpacity>
-                                    <TouchableOpacity style={[styles.button, { backgroundColor: '#FC7F7F' }]} onPress={() => handleDeleteFertilization(fertilization.originalIndex)}>
-                                        <Text style={{ textAlign: 'center', fontWeight: 'bold', fontSize: 16, color: '#fff', marginLeft: '10%', marginRight: '10%' }}>Delete</Text>
+                                    <TouchableOpacity onPress={() => navigation.navigate('Edit Fertilization', { fieldId: crop.fieldId, cropId: crop.id, fertilizationIndex: index })}>
+                                        <Icon name="edit" size={22} color="#00BFFF" />
+                                    </TouchableOpacity>
+                                    <TouchableOpacity onPress={() => handleDeleteItem(fertilization.id, 'Fertilization')}>
+                                        <Icon name="delete" size={22} color="#FC7F7F" />
                                     </TouchableOpacity>
                                 </View>
-                                <View style={[styles.line, { borderColor: '#22734D', marginBottom: '10%' }]} />
+                                <View style={[styles.line, { borderColor: '#22734D', marginBottom: '5%', marginTop: '5%' }]} />
                             </React.Fragment>
                         ))
                     ) : (
-                        <>
-                            <Text style={styles.text}>No fertilization history available</Text>
-                            <View style={[styles.line, { borderColor: '#22734D', marginBottom: '5%', marginTop: '5%' }]} />
-                        </>
+                        <Text style={[styles.text, { textAlign: 'center' }]}>No fertilization history available</Text>
                     )}
-                    <View style={[styles.rowContainer, { justifyContent: 'space-around' }]}>
-                        <TouchableOpacity style={[styles.button, { backgroundColor: '#00E000', width: '80%' }]} onPress={() => navigation.navigate('Add Fertilization', { fieldId, cropId: crop.id })}>
-                            <Text style={{ textAlign: 'center', fontWeight: 'bold', fontSize: 16, color: '#fff', marginLeft: '10%', marginRight: '10%' }}>Add</Text>
+                    <View style={[styles.rowContainer, { justifyContent: 'space-around', marginVertical: '5%' }]}>
+                        <TouchableOpacity 
+                            style={[styles.button, { backgroundColor: '#00E000', width: '80%' }]} 
+                            onPress={() => navigation.navigate('Add Fertilization', { fieldId: crop.fieldId, cropId: crop.id })}
+                        >
+                            <Text style={{ textAlign: 'center', fontWeight: 'bold', fontSize: 16, color: '#fff' }}>Add</Text>
                         </TouchableOpacity>
                     </View>
                 </ExpandableComponent>
+
                 <ExpandableComponent title="Pest and Disease" isExpanded={false} backgroundColor="#BAF1BA" style={{ width: '100%' }}>
-                    {sortedPestAndDiseaseHistory && sortedPestAndDiseaseHistory.length > 0 ? (
-                        sortedPestAndDiseaseHistory.map((history, index) => (
+                    {crop.plantProtections && crop.plantProtections.length > 0 ? (
+                        crop.plantProtections.map((plantProtection, index) => (
                             <React.Fragment key={index}>
-                                <Text style={styles.title}>{history.date}</Text>
                                 <View style={styles.infoRowContainer}>
-                                    <Text style={styles.text}>Type:</Text>
-                                    <Text style={styles.text}>{history.type}</Text>
+                                    <TouchableOpacity 
+                                        style={{ width: '70%' }} 
+                                        onPress={() => handlePestAndDiseaseClick(plantProtection)}
+                                    >
+                                        <View style={styles.rowContainer}>
+                                            <Icon name="search" size={22} color="#A9A9A9" style={{ marginRight: '3%' }} />
+                                            <Text style={styles.text}>{plantProtection.name}</Text>
+                                        </View>
+                                    </TouchableOpacity>
+                                    <TouchableOpacity onPress={() => navigation.navigate('Edit Pest or Disease', { fieldId: crop.fieldId, cropId: crop.id, historyIndex: index })}>
+                                        <Icon name="edit" size={22} color="#00BFFF" />
+                                    </TouchableOpacity>
+                                    <TouchableOpacity onPress={() => handleDeleteItem(plantProtection.id, 'Pest or Disease')}>
+                                        <Icon name="delete" size={22} color="#FC7F7F" />
+                                    </TouchableOpacity>
                                 </View>
-                                <View style={[styles.line, { borderColor: '#DFF6DF' }]} />
-                                <View style={styles.infoRowContainer}>
-                                    <Text style={styles.text}>Treatment:</Text>
-                                    <Text style={styles.text}>{history.treatment}</Text>
-                                </View>
-                                <View style={[styles.line, { borderColor: '#DFF6DF' }]} />
-                                <View style={styles.container}>
-                                    <Text style={[styles.text, { fontWeight: 'bold', marginVertical: '1%' }]}>Description:</Text>
-                                    <Text style={[styles.text, { textAlign: 'center' }]}>{history.description}</Text>
-                                </View>
-                                <View style={[styles.line, { borderColor: '#22734D', marginBottom: '10%' }]} />
+                                <View style={[styles.line, { borderColor: '#22734D', marginBottom: '5%', marginTop: '5%' }]} />
                             </React.Fragment>
                         ))
                     ) : (
-                        <>
-                            <Text style={styles.text}>No pest and disease history available</Text>
-                            <View style={[styles.line, { borderColor: '#22734D', marginBottom: '5%', marginTop: '5%' }]} />
-                        </>
+                        <Text style={[styles.text, { textAlign: 'center' }]}>No pest and disease history available</Text>
                     )}
-                    <View style={[styles.rowContainer, { justifyContent: 'space-around' }]}>
-                        <TouchableOpacity style={[styles.button, { backgroundColor: '#00E000', width: '80%' }]} onPress={() => { }}>
-                            <Text style={{ textAlign: 'center', fontWeight: 'bold', fontSize: 16, color: '#fff', marginLeft: '10%', marginRight: '10%' }}>Add</Text>
+                    <View style={[styles.rowContainer, { justifyContent: 'space-around', marginVertical: '5%' }]}>
+                        <TouchableOpacity 
+                            style={[styles.button, { backgroundColor: '#00E000', width: '80%' }]} 
+                            onPress={() => {}}
+                        >
+                            <Text style={{ textAlign: 'center', fontWeight: 'bold', fontSize: 16, color: '#fff' }}>Add</Text>
                         </TouchableOpacity>
                     </View>
                 </ExpandableComponent>
+
                 <View style={[styles.rowContainer, { justifyContent: 'space-around', marginTop: '3%' }]}>
-                    <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('Edit Crop', { fieldId, cropId: crop.id })}>
-                        <Text style={{ textAlign: 'center', fontWeight: 'bold', fontSize: 16, marginLeft: '10%', marginRight: '10%' }}>Edit</Text>
+                    <TouchableOpacity 
+                        style={[styles.button, { backgroundColor: '#00BFFF', width: '40%' }]} 
+                        onPress={() => navigation.navigate('Edit Crop', { fieldId: crop.fieldId, cropId: crop.id })}
+                    >
+                        <Text style={{ textAlign: 'center', fontWeight: 'bold', fontSize: 16, color: '#fff', marginHorizontal: 10 }}>Edit Crop</Text>
                     </TouchableOpacity>
-                    <TouchableOpacity style={[styles.button, { backgroundColor: '#FC7F7F' }]} onPress={() => handleDeleteCrop(crop.id)}>
-                        <Text style={{ textAlign: 'center', fontWeight: 'bold', fontSize: 16, color: '#fff', marginLeft: '10%', marginRight: '10%' }}>Delete</Text>
+                    <TouchableOpacity 
+                        style={[styles.button, { backgroundColor: '#FC7F7F', width: '40%' }]} 
+                        onPress={() => handleDeleteCrop(crop.id)}
+                    >
+                        <Text style={{ textAlign: 'center', fontWeight: 'bold', fontSize: 16, color: '#fff', marginHorizontal: 10 }}>Delete Crop</Text>
                     </TouchableOpacity>
                 </View>
+
+                <DetailsModal
+                    visible={modalVisible}
+                    onClose={() => setModalVisible(false)}
+                    title={modalTitle}
+                    details={selectedDetails}
+                />
             </ExpandableComponent>
         </View>
     );

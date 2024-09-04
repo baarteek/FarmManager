@@ -42,14 +42,14 @@ const FarmDetails = ({ farmData, onDelete, onEdit, loading }) => {
     
             const referenceParcels = fieldDetails.referenceParcels.length > 0 
                 ? fieldDetails.referenceParcels.map(parcel => parcel.name).join('\n') 
-                : 'No reference parcels available';
+                : 'No available';
     
             const soilMeasurements = fieldDetails.soilMeasurements.length > 0 
                 ? fieldDetails.soilMeasurements.map(measurement => measurement.name).join('\n') 
-                : 'No soil measurements available';
+                : 'No available';
     
             const crops = fieldDetails.crops.length > 0 
-                ? fieldDetails.crops.map(crop => crop.name).join(', ') 
+                ? fieldDetails.crops.map(crop => crop.name).join('\n') 
                 : 'No crops available';
     
             setSelectedFieldDetails({

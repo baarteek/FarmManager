@@ -3,11 +3,11 @@ import { createDrawerNavigator } from "@react-navigation/drawer";
 import HomeScreen from '../screens/Home/HomeScreen';
 import WeatherScreen from '../screens/Weather/WeatherScreen';
 import FieldmanagementStack from './FieldManagementStack';
-import CropManagementScreen from '../screens/CropManagement/CropManagementScreen';
 import MapScreen from '../screens/Map/MapScreen';
 import SettingsScreen from '../screens/Settings/SettingsScreen';
 import CalculatorListScreen from '../screens/Calculators/CalculatorListScreen';
 import FarmManagementStack from './FarmManamementStack';
+import CropManagementStack from './CropManagementStack';
 
 const Drawer = createDrawerNavigator();
 
@@ -46,7 +46,7 @@ const MainNavigation = () => {
             />
             <Drawer.Screen
                 name="Crop Management"
-                component={CropManagementScreen}
+                component={CropManagementStack}
             />
             <Drawer.Screen
                 name="Map"
