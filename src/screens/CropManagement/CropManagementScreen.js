@@ -19,7 +19,7 @@ const CropManagementScreen = () => {
                 {
                     text: 'Cancel',
                     style: 'cancel'
-                },
+                }, 
                 {
                     text: 'Delete',
                     onPress: () => handleDeleteCrop(id),
@@ -60,7 +60,14 @@ const CropManagementScreen = () => {
     return (
         <View style={[{ width: '100%', height: '100%', backgroundColor: '#fff' }]}>
             {crops.length === 0 ? (
-                <WarningView title="No crops available" message="Please add crops by clicking the plus button" />
+                <ScrollView 
+                    style={styles.mainCantainer}
+                    refreshControl={
+                        <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+                    }
+                >
+                    <WarningView title="No crops available" message="Please add crops by clicking the plus button" />
+                </ScrollView>
             ) : (
                 <ScrollView
                     style={styles.mainContainer}
