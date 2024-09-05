@@ -1,17 +1,51 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, TouchableOpacity, Alert } from "react-native";
+import { View, Text, TouchableOpacity, Alert, ActivityIndicator } from "react-native";
 import ExpandableComponent from "./ExpandableComponent";
 import { useNavigation } from '@react-navigation/native';
 import { styles } from '../styles/AppStyles';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import DetailsModal from './DetailsModal';
 import { formatDate } from '../utils/DateUtils';
+import axios from 'axios';
+import { useAuth } from '../context/AuthContext';
+import API_BASE_URL from '../config/apiConfig';
 
 const CropDetails = ({ crop, handleDeleteCrop }) => {
     const navigation = useNavigation();
+    const { token } = useAuth();
     const [modalVisible, setModalVisible] = useState(false);
     const [selectedDetails, setSelectedDetails] = useState(null);
     const [modalTitle, setModalTitle] = useState('');
+    const [cropTypes, setCropTypes] = useState([]);
+    const [loadingCropTypes, setLoadingCropTypes] = useState(true);
+    const [cropTypeName, setCropTypeName] = useState('');
+
+    useEffect(() => {
+        const fetchCropTypes = async () => {
+            try {
+                const response = await axios.get(`${API_BASE_URL}/Crops/cropType`, {
+                    headers: {
+                        Authorization: `Bearer ${token}`, 
+                        'Content-Type': 'application/json'
+                    }
+                });
+                setCropTypes(response.data);
+            } catch (error) {
+                console.error("Error fetching crop types:", error);
+            } finally {
+                setLoadingCropTypes(false);
+            }
+        };
+
+        fetchCropTypes();
+    }, [token]);
+
+    useEffect(() => {
+        if (cropTypes.length > 0) {
+            const type = cropTypes.find((type) => type.id === crop.type);
+            setCropTypeName(type ? type.name : 'Unknown Type');
+        }
+    }, [cropTypes, crop.type]);
 
     const handleFertilizationClick = (fertilization) => {
         const details = {
@@ -52,9 +86,34 @@ const CropDetails = ({ crop, handleDeleteCrop }) => {
         );
     };
 
+    if (loadingCropTypes) {
+        return <ActivityIndicator size="large" color="#00ff00" />;
+    }
+
     return (
         <View style={styles.container}>
             <ExpandableComponent title={crop.name}>
+                <View style={styles.infoRowContainer}>
+                    <Text style={styles.text}>Field:</Text>
+                    <Text style={styles.text}>{crop.field.name}</Text>
+                </View>
+                <View style={styles.line} />
+                <View style={styles.infoRowContainer}>
+                    <Text style={styles.text}>Crop Type:</Text>
+                    <Text style={styles.text}>{cropTypeName}</Text>
+                </View>
+                <View style={styles.line} />
+                <View style={styles.infoRowContainer}>
+                    <Text style={styles.text}>Is Active</Text>
+                    <View>
+                        {crop.isActive ? (
+                            <Icon name="check" size={22} color="#22734D" style={{marginRight: '10%', textShadowColor: '#22734D', textShadowOffset: { width: -1, height: 1 }, textShadowRadius: 1}} />
+                        ) : (
+                            <Icon name="close" size={22} color="#FC7F7F" style={{marginRight: '10%', textShadowColor: '#22734D', textShadowOffset: { width: -1, height: 1 }, textShadowRadius: 1}} />
+                        )}
+                    </View>
+                </View>
+                <View style={styles.line} />
                 <View style={styles.infoRowContainer}>
                     <Text style={styles.text}>Sowing Date:</Text>
                     <Text style={styles.text}>{formatDate(crop.sowingDate)}</Text>  
@@ -65,7 +124,7 @@ const CropDetails = ({ crop, handleDeleteCrop }) => {
                     <Text style={styles.text}>{formatDate(crop.harvestDate)}</Text> 
                 </View>
                 <View style={styles.line} />
-
+                
                 <ExpandableComponent title="Fertilization" isExpanded={false} backgroundColor="#BAF1BA" style={{ width: '100%' }}>
                     {crop.fertilizations && crop.fertilizations.length > 0 ? (
                         crop.fertilizations.map((fertilization, index) => (
@@ -98,7 +157,7 @@ const CropDetails = ({ crop, handleDeleteCrop }) => {
                             style={[styles.button, { backgroundColor: '#00E000', width: '80%' }]} 
                             onPress={() => navigation.navigate('Add Fertilization', { fieldId: crop.fieldId, cropId: crop.id })}
                         >
-                            <Text style={{ textAlign: 'center', fontWeight: 'bold', fontSize: 16, color: '#fff' }}>Add</Text>
+                            <Text style={{ textAlign: 'center', fontWeight: 'bold', fontSize: 16, color: '#fff' }}>Add Fertilization</Text>
                         </TouchableOpacity>
                     </View>
                 </ExpandableComponent>
@@ -135,7 +194,7 @@ const CropDetails = ({ crop, handleDeleteCrop }) => {
                             style={[styles.button, { backgroundColor: '#00E000', width: '80%' }]} 
                             onPress={() => {}}
                         >
-                            <Text style={{ textAlign: 'center', fontWeight: 'bold', fontSize: 16, color: '#fff' }}>Add</Text>
+                            <Text style={{ textAlign: 'center', fontWeight: 'bold', fontSize: 16, color: '#fff' }}>Add Pest or Disease</Text>
                         </TouchableOpacity>
                     </View>
                 </ExpandableComponent>
@@ -143,7 +202,7 @@ const CropDetails = ({ crop, handleDeleteCrop }) => {
                 <View style={[styles.rowContainer, { justifyContent: 'space-around', marginTop: '3%' }]}>
                     <TouchableOpacity 
                         style={[styles.button, { backgroundColor: '#00BFFF', width: '40%' }]} 
-                        onPress={() => navigation.navigate('Edit Crop', { fieldId: crop.fieldId, cropId: crop.id })}
+                        onPress={() => navigation.navigate('Edit Crop', { id: crop.id})}
                     >
                         <Text style={{ textAlign: 'center', fontWeight: 'bold', fontSize: 16, color: '#fff', marginHorizontal: 10 }}>Edit Crop</Text>
                     </TouchableOpacity>

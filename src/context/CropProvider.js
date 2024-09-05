@@ -61,14 +61,14 @@ export const CropProvider = ({ children }) => {
         }
     };
 
-    const editCrop = async (updatedCrop) => {
+    const editCrop = async (cropId, updatedCrop) => {
         setLoading(true);
         try {
             if(!token) {
                 throw new Error('No token found');
             }
 
-            await axios.put(`${API_BASE_URL}/Crops/${updatedCrop.id}`, updatedCrop, {
+            await axios.put(`${API_BASE_URL}/Crops/${cropId}`, updatedCrop, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                     'Content-Type': 'application/json'
@@ -76,7 +76,7 @@ export const CropProvider = ({ children }) => {
             });
 
             setCrops(prevCrops =>
-                prevCrops.map(crop => crop.id === updatedCrop.id ? updatedCrop : crop)
+                prevCrops.map(crop => crop.id === cropId ? { ...crop, ...updatedCrop } : crop)
             );
             setError(null);
         } catch (err) {
