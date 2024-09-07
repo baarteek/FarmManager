@@ -8,6 +8,7 @@ const FieldContext = createContext();
 export const FieldProvider = ({ children }) => {
     const { token } = useAuth();
     const [fields, setFields] = useState([]);
+    const [fieldList, setFieldList] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
@@ -24,6 +25,24 @@ export const FieldProvider = ({ children }) => {
         } catch (err) {
             console.error('Error fetching fields:', err.message);
             setError('Failed to load fields. Please try again later.');
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const fetchFieldsNamesAndId = async (farmId) => {
+        setLoading(true);
+        try {
+            const response = await axios.get(`${API_BASE_URL}/Fields/farm/list/${farmId}`, {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            });
+            setFieldList(response.data);
+            setError(null);
+        } catch (err) {
+            console.error('Error fetching field names and ids:', err.message);
+            setError('Failed to load field names and ids. Please try again later.');
         } finally {
             setLoading(false);
         }
@@ -124,7 +143,7 @@ export const FieldProvider = ({ children }) => {
 
     return (
         <FieldContext.Provider value={{
-            fields, loading, error, fetchFields, fetchFieldById, addField, handleDelete, editField
+            fields, fieldList, loading, error, fetchFields, fetchFieldsNamesAndId, fetchFieldById, addField, handleDelete, editField
         }}>
             {children}
         </FieldContext.Provider>

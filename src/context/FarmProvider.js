@@ -10,6 +10,7 @@ export const useFarmContext = () => useContext(FarmContext);
 export const FarmProvider = ({ children }) => {
     const { token } = useAuth();
     const [farms, setFarms] = useState([]);
+    const [farmList, setFarmList] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
@@ -30,6 +31,28 @@ export const FarmProvider = ({ children }) => {
         } catch (err) {
             console.error('Error fetching farms:', err.message);
             setError('Failed to load farms. Please try again later');
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const fetchFarmsNamesAndId = async () => {
+        setLoading(true);
+        try {
+            if (!token) {
+                throw new Error('No token found');
+            }
+    
+            const response = await axios.get(`${API_BASE_URL}/Farms/user/list`, {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            });
+            setFarmList(response.data);
+            setError(null);
+        } catch (err) {
+            console.error('Error fetching farm names and ids:', err.message);
+            setError('Failed to load farm names and ids. Please try again later');
         } finally {
             setLoading(false);
         }
@@ -111,7 +134,7 @@ export const FarmProvider = ({ children }) => {
     };
 
     return (
-        <FarmContext.Provider value={{ farms, loading, error, addFarm, editFarm, handleDeleteFarm, fetchFarms }}>
+        <FarmContext.Provider value={{ farms, farmList, loading, error, addFarm, editFarm, handleDeleteFarm, fetchFarms, fetchFarmsNamesAndId }}>
             {children}
         </FarmContext.Provider>
     );

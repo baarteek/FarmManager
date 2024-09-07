@@ -3,11 +3,15 @@ import CropManagementScreen from '../screens/CropManagement/CropManagementScreen
 import AddCropScreen from '../screens/CropManagement/AddCropScreen';
 import EditCropScreen from '../screens/CropManagement/EditCropScreen';
 import { CropProvider } from '../context/CropProvider'; 
+import { FieldProvider } from '../context/FieldProvider';
+import { FarmProvider } from '../context/FarmProvider';
 
 const Stack = createStackNavigator();
 
 const CropManagementStack = () => {
     return (
+        <FarmProvider>
+            <FieldProvider>
                 <CropProvider>
                     <Stack.Navigator
                         screenOptions={{
@@ -28,6 +32,8 @@ const CropManagementStack = () => {
                         <Stack.Screen name="Edit Crop" component={EditCropScreen} options={{ headerShown: true, title: 'Edit Crop' }} />
                     </Stack.Navigator>
                 </CropProvider>
+            </FieldProvider>
+        </FarmProvider>
     );
 };
 
