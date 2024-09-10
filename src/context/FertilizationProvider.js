@@ -13,6 +13,20 @@ export const FertilizationProvider = ({ children }) => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
+    const fetchFertilizationById = async (id) => {
+        try {
+            const response = await axios.get(`${API_BASE_URL}/Fertilizations/${id}`, {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            });
+            return response.data;
+        } catch (err) {
+            console.error('Error fetching fertilization:', err.message);
+            throw err;
+        }
+    }
+
    const fetchFertilizations = async (cropId) => {
     setLoading(true);
     try {
@@ -107,7 +121,7 @@ export const FertilizationProvider = ({ children }) => {
     };
 
     return (
-        <FertilizationContext.Provider value={{ fertilizations, loading, error, addFertilization, editFertilization, deleteFertilization, fetchFertilizations }}>
+        <FertilizationContext.Provider value={{ fertilizations, loading, error, addFertilization, editFertilization, deleteFertilization, fetchFertilizations, fetchFertilizationById }}>
             {children}
         </FertilizationContext.Provider>
     );

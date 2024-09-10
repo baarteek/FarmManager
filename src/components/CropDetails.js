@@ -18,10 +18,12 @@ const CropDetails = ({ crop, handleDeleteCrop }) => {
     const [selectedDetails, setSelectedDetails] = useState(null);
     const [modalTitle, setModalTitle] = useState('');
     const [cropTypes, setCropTypes] = useState([]);
+    const [fertilizationTypes, setFertilizationTypes] = useState([]); // State for fertilization types
     const [loadingCropTypes, setLoadingCropTypes] = useState(true);
     const [cropTypeName, setCropTypeName] = useState('');
-    const [fertilizations, setFertilizations] = useState(crop.fertilizations || []); // State for fertilizations
-    const { deleteFertilization } = useFertilizationContext();
+    const [fertilizations, setFertilizations] = useState(crop.fertilizations || []);
+    const { fetchFertilizationById, deleteFertilization } = useFertilizationContext();
+
 
     useEffect(() => {
         const fetchCropTypes = async () => {
@@ -40,7 +42,22 @@ const CropDetails = ({ crop, handleDeleteCrop }) => {
             }
         };
 
+        const fetchFertilizationTypes = async () => {
+            try {
+                const response = await axios.get(`${API_BASE_URL}/Fertilizations/fertilizationType`, { 
+                    headers: {
+                        Authorization: `Bearer ${token}`, 
+                        'Content-Type': 'application/json'
+                    }
+                });
+                setFertilizationTypes(response.data);
+            } catch (error) {
+                console.error("Error fetching fertilization types:", error);
+            }
+        };
+
         fetchCropTypes();
+        fetchFertilizationTypes();
     }, [token]);
 
     useEffect(() => {
@@ -50,10 +67,17 @@ const CropDetails = ({ crop, handleDeleteCrop }) => {
         }
     }, [cropTypes, crop.type]);
 
-    const handleFertilizationClick = (fertilization) => {
+    const getFertilizationTypeName = (typeId) => {
+        const type = fertilizationTypes.find((type) => type.id === typeId);
+        return type ? type.name : 'Unknown Type';
+    };
+
+    const handleFertilizationClick = async (id) => {
+        const fertilization = await fetchFertilizationById(id);
+
         const details = {
             Date: formatDate(fertilization.date),
-            Type: fertilization.type,
+            Type: getFertilizationTypeName(fertilization.type),
             Quantity: `${fertilization.quantity} kg`,
             Method: fertilization.method,
             Description: fertilization.description
@@ -86,7 +110,7 @@ const CropDetails = ({ crop, handleDeleteCrop }) => {
                 { text: "Delete", onPress: async () =>  {
                     try {
                         await deleteFertilization(id);
-                        setFertilizations(fertilizations.filter(f => f.id !== id)); // Update state after deletion
+                        setFertilizations(fertilizations.filter(f => f.id !== id));
                     } catch (error) {
                         console.error("Error deleting fertilization:", error);
                     }
@@ -142,7 +166,7 @@ const CropDetails = ({ crop, handleDeleteCrop }) => {
                                 <View style={styles.infoRowContainer}>
                                     <TouchableOpacity 
                                         style={{ width: '70%' }} 
-                                        onPress={() => handleFertilizationClick(fertilization)}
+                                        onPress={() => handleFertilizationClick(fertilization.id)}
                                     >
                                         <View style={styles.rowContainer}>
                                             <Icon name="search" size={22} color="#A9A9A9" style={{ marginRight: '3%' }} />
