@@ -9,6 +9,7 @@ import { formatDate } from '../utils/DateUtils';
 import axios from 'axios';
 import { useAuth } from '../context/AuthContext';
 import API_BASE_URL from '../config/apiConfig';
+import { useFertilizationContext } from '../context/FertilizationProvider';
 
 const CropDetails = ({ crop, handleDeleteCrop }) => {
     const navigation = useNavigation();
@@ -19,6 +20,8 @@ const CropDetails = ({ crop, handleDeleteCrop }) => {
     const [cropTypes, setCropTypes] = useState([]);
     const [loadingCropTypes, setLoadingCropTypes] = useState(true);
     const [cropTypeName, setCropTypeName] = useState('');
+    const [fertilizations, setFertilizations] = useState(crop.fertilizations || []); // State for fertilizations
+    const { deleteFertilization } = useFertilizationContext();
 
     useEffect(() => {
         const fetchCropTypes = async () => {
@@ -74,13 +77,20 @@ const CropDetails = ({ crop, handleDeleteCrop }) => {
         setModalVisible(true);
     };
 
-    const handleDeleteItem = (id, type) => {
+    const handleDeleteFertilization = (id) => {
         Alert.alert(
-            `Delete ${type}`,
-            `Are you sure you want to delete this ${type.toLowerCase()}?`,
+            "Delete Fertilization",
+            "Are you sure you want to delete this Fertilization?",
             [
                 { text: "Cancel", style: "cancel" },
-                { text: "Delete", onPress: () => handleDeleteCrop(id) },
+                { text: "Delete", onPress: async () =>  {
+                    try {
+                        await deleteFertilization(id);
+                        setFertilizations(fertilizations.filter(f => f.id !== id)); // Update state after deletion
+                    } catch (error) {
+                        console.error("Error deleting fertilization:", error);
+                    }
+                }},
             ],
             { cancelable: false }
         );
@@ -107,9 +117,9 @@ const CropDetails = ({ crop, handleDeleteCrop }) => {
                     <Text style={styles.text}>Is Active</Text>
                     <View>
                         {crop.isActive ? (
-                            <Icon name="check" size={22} color="#22734D" style={{marginRight: '10%', textShadowColor: '#22734D', textShadowOffset: { width: -1, height: 1 }, textShadowRadius: 1}} />
+                            <Icon name="check" size={22} color="#22734D" style={{ marginRight: '10%', textShadowColor: '#22734D', textShadowOffset: { width: -1, height: 1 }, textShadowRadius: 1 }} />
                         ) : (
-                            <Icon name="close" size={22} color="#FC7F7F" style={{marginRight: '10%', textShadowColor: '#22734D', textShadowOffset: { width: -1, height: 1 }, textShadowRadius: 1}} />
+                            <Icon name="close" size={22} color="#FC7F7F" style={{ marginRight: '10%', textShadowColor: '#22734D', textShadowOffset: { width: -1, height: 1 }, textShadowRadius: 1 }} />
                         )}
                     </View>
                 </View>
@@ -126,8 +136,8 @@ const CropDetails = ({ crop, handleDeleteCrop }) => {
                 <View style={styles.line} />
                 
                 <ExpandableComponent title="Fertilization" isExpanded={false} backgroundColor="#BAF1BA" style={{ width: '100%' }}>
-                    {crop.fertilizations && crop.fertilizations.length > 0 ? (
-                        crop.fertilizations.map((fertilization, index) => (
+                    {fertilizations && fertilizations.length > 0 ? (
+                        fertilizations.map((fertilization, index) => (
                             <React.Fragment key={index}>
                                 <View style={styles.infoRowContainer}>
                                     <TouchableOpacity 
@@ -142,7 +152,7 @@ const CropDetails = ({ crop, handleDeleteCrop }) => {
                                     <TouchableOpacity onPress={() => navigation.navigate('Edit Fertilization', { fieldId: crop.fieldId, cropId: crop.id, fertilizationIndex: index })}>
                                         <Icon name="edit" size={22} color="#00BFFF" />
                                     </TouchableOpacity>
-                                    <TouchableOpacity onPress={() => handleDeleteItem(fertilization.id, 'Fertilization')}>
+                                    <TouchableOpacity onPress={() => handleDeleteFertilization(fertilization.id)}>
                                         <Icon name="delete" size={22} color="#FC7F7F" />
                                     </TouchableOpacity>
                                 </View>

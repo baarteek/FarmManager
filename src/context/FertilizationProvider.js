@@ -83,7 +83,7 @@ export const FertilizationProvider = ({ children }) => {
         }
     };
 
-    const handleDeleteFertilization = async (id) => {
+    const deleteFertilization = async (id) => {
         setLoading(true);
         try {
             if (!token) {
@@ -107,7 +107,7 @@ export const FertilizationProvider = ({ children }) => {
     };
 
     return (
-        <FertilizationContext.Provider value={{ fertilizations, loading, error, addFertilization, editFertilization, handleDeleteFertilization, fetchFertilizations }}>
+        <FertilizationContext.Provider value={{ fertilizations, loading, error, addFertilization, editFertilization, deleteFertilization, fetchFertilizations }}>
             {children}
         </FertilizationContext.Provider>
     );
