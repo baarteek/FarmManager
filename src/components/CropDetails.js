@@ -173,7 +173,7 @@ const CropDetails = ({ crop, handleDeleteCrop }) => {
                                             <Text style={styles.text}>{fertilization.name}</Text>
                                         </View>
                                     </TouchableOpacity>
-                                    <TouchableOpacity onPress={() => navigation.navigate('Edit Fertilization', { fieldId: crop.fieldId, cropId: crop.id, fertilizationIndex: index })}>
+                                    <TouchableOpacity onPress={() => navigation.navigate('Edit Fertilization', { cropId: crop.id, fertilizationId: fertilization.id })}>
                                         <Icon name="edit" size={22} color="#00BFFF" />
                                     </TouchableOpacity>
                                     <TouchableOpacity onPress={() => handleDeleteFertilization(fertilization.id)}>
