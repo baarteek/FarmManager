@@ -26,20 +26,17 @@ const AddCropScreen = () => {
     const [loadingFields, setLoadingFields] = useState(false);
     const [step, setStep] = useState(1);
 
-    // Fetch farms only once when the component mounts
     useEffect(() => {
         fetchFarmsNamesAndId();
     }, []);
 
     useEffect(() => {
-        // Automatically select the first farm if available
         if (farms.length > 0 && !selectedFarmId) {
             setSelectedFarmId(farms[0].id);
         }
     }, [farms]);
 
     useEffect(() => {
-        // Automatically select the first field if available
         if (fieldList.length > 0 && !selectedFieldId) {
             setSelectedFieldId(fieldList[0].id);
         }

@@ -3,15 +3,17 @@ import { View, Text, TextInput, TouchableOpacity, Alert, Keyboard } from 'react-
 import { ScrollView, TouchableWithoutFeedback } from 'react-native-gesture-handler';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import DateTimePicker from '@react-native-community/datetimepicker';
-import { useFieldContext } from '../../context/FieldProvider';
 import { styles } from '../../styles/AppStyles';
 import { formatDate } from '../../utils/DateUtils';
+import { useFertilizationContext } from '../../context/FertilizationProvider';
+import FertilizationTypePicker from '../../components/FertilizationTypePicker';
+import { formatDecimalInput } from '../../utils/TextUtils';
 
 const AddFertilizationScreen = () => {
     const navigation = useNavigation();
     const route = useRoute();
-    const { fieldId, cropId } = route.params;
-    const { addFertilizationToCrop } = useFieldContext();
+    const { cropId } = route.params;
+    const { addFertilization } = useFertilizationContext();
 
     const [date, setDate] = useState(new Date());
     const [type, setType] = useState('');
@@ -19,22 +21,34 @@ const AddFertilizationScreen = () => {
     const [method, setMethod] = useState('');
     const [description, setDescription] = useState('');
 
-    const handleAddFertilization = () => {
+    const handleAddFertilization = async () => {
+        if (!type || !quantity || !method) {
+            Alert.alert('Validation Error', 'All fields must be filled in.');
+            return;
+        }
+
         const newFertilization = {
+            cropId,
             date: formatDate(date),
-            type,
-            quantity,
+            type: parseInt(type, 10),
+            quantity: formatDecimalInput(quantity),
             method,
             description,
-        };
-        addFertilizationToCrop(fieldId, cropId, newFertilization);
-        Alert.alert(
-            "Fertilization Added",
-            "The new fertilization record has been successfully added.",
-            [
-                { text: "OK", onPress: () => navigation.goBack() }
-            ]
-        );
+        }; 
+
+        try {
+            await addFertilization(newFertilization);
+            Alert.alert(
+                "Fertilization Added",
+                "The new fertilization record has been successfully added.",
+                [
+                    { text: "OK", onPress: () => navigation.goBack() }
+                ]
+            );
+        } catch (err) {
+            console.error('Error adding fertilization:', err.message);
+            Alert.alert('Error', 'Failed to add the fertilization. Please try again later.');
+        }
     };
 
     const onChangeDate = (event, selectedDate) => {
@@ -55,19 +69,20 @@ const AddFertilizationScreen = () => {
                         style={{ alignSelf: 'center', marginVertical: '2%' }}
                     />
                 </View>
-                <Text style={[styles.largeText, { textAlign: 'center' }]}>Type</Text>
-                <TextInput
-                    style={styles.input}
-                    placeholder="Type"
-                    value={type}
-                    onChangeText={setType}
-                />
+                <View style={styles.containerWithBorder}>
+                    <Text style={[styles.largeText, { textAlign: 'center' }]}>Type</Text>
+                    <FertilizationTypePicker
+                        setSelectedFertilizationType={setType}
+                        selectedFertilizationType={type}
+                    />
+                </View>
                 <Text style={[styles.largeText, { textAlign: 'center' }]}>Quantity</Text>
-                <TextInput
+                <TextInput 
                     style={styles.input}
                     placeholder="Quantity"
                     value={quantity}
                     onChangeText={setQuantity}
+                    keyboardType="numeric"
                 />
                 <Text style={[styles.largeText, { textAlign: 'center' }]}>Method</Text>
                 <TextInput

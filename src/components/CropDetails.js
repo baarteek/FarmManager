@@ -155,7 +155,7 @@ const CropDetails = ({ crop, handleDeleteCrop }) => {
                     <View style={[styles.rowContainer, { justifyContent: 'space-around', marginVertical: '5%' }]}>
                         <TouchableOpacity 
                             style={[styles.button, { backgroundColor: '#00E000', width: '80%' }]} 
-                            onPress={() => navigation.navigate('Add Fertilization', { fieldId: crop.fieldId, cropId: crop.id })}
+                            onPress={() => navigation.navigate('Add Fertilization', { cropId: crop.id })}
                         >
                             <Text style={{ textAlign: 'center', fontWeight: 'bold', fontSize: 16, color: '#fff' }}>Add Fertilization</Text>
                         </TouchableOpacity>

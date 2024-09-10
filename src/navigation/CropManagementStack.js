@@ -5,6 +5,8 @@ import EditCropScreen from '../screens/CropManagement/EditCropScreen';
 import { CropProvider } from '../context/CropProvider'; 
 import { FieldProvider } from '../context/FieldProvider';
 import { FarmProvider } from '../context/FarmProvider';
+import { FertilizationProvider } from '../context/FertilizationProvider';
+import AddFertilizationScreen from '../screens/CropManagement/AddFertilizationScreen';
 
 const Stack = createStackNavigator();
 
@@ -13,24 +15,27 @@ const CropManagementStack = () => {
         <FarmProvider>
             <FieldProvider>
                 <CropProvider>
-                    <Stack.Navigator
-                        screenOptions={{
-                            headerStyle: {
-                                borderBottomWidth: 2,
-                            },
-                            headerTintColor: '#276e33',
-                            headerTitleStyle: {
-                                fontWeight: 'bold',
-                                fontSize: 18
-                            },
-                            drawerActiveBackgroundColor: '#276e33',
-                            drawerActiveTintColor: '#276e33'
-                        }}
-                    >
-                        <Stack.Screen name="CropManagementMain" component={CropManagementScreen} options={{ headerShown: false }} />
-                        <Stack.Screen name="Add Crop" component={AddCropScreen} options={{ headerShown: true, title: 'Add Crop' }} />
-                        <Stack.Screen name="Edit Crop" component={EditCropScreen} options={{ headerShown: true, title: 'Edit Crop' }} />
-                    </Stack.Navigator>
+                    <FertilizationProvider>
+                        <Stack.Navigator
+                            screenOptions={{
+                                headerStyle: {
+                                    borderBottomWidth: 2,
+                                },
+                                headerTintColor: '#276e33',
+                                headerTitleStyle: {
+                                    fontWeight: 'bold',
+                                    fontSize: 18
+                                },
+                                drawerActiveBackgroundColor: '#276e33',
+                                drawerActiveTintColor: '#276e33'
+                            }}
+                        >
+                            <Stack.Screen name="CropManagementMain" component={CropManagementScreen} options={{ headerShown: false }} />
+                            <Stack.Screen name="Add Crop" component={AddCropScreen} options={{ headerShown: true, title: 'Add Crop' }} />
+                            <Stack.Screen name="Edit Crop" component={EditCropScreen} options={{ headerShown: true, title: 'Edit Crop' }} />
+                            <Stack.Screen name="Add Fertilization" component={AddFertilizationScreen} options={{ headerShown: true, title: 'Add Fertilization' }} />
+                        </Stack.Navigator>
+                    </FertilizationProvider>
                 </CropProvider>
             </FieldProvider>
         </FarmProvider>
