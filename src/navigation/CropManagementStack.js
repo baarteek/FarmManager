@@ -8,6 +8,8 @@ import { FarmProvider } from '../context/FarmProvider';
 import { FertilizationProvider } from '../context/FertilizationProvider';
 import AddFertilizationScreen from '../screens/CropManagement/AddFertilizationScreen';
 import EditFertilizationScreen from '../screens/CropManagement/EditFertilizationScreen';
+import { PlantProtectionProvider } from '../context/PlantProtectionProvider';
+import AddPlantProtectionScreen from '../screens/CropManagement/AddPlantProtectionScreen';
 
 const Stack = createStackNavigator();
 
@@ -17,26 +19,29 @@ const CropManagementStack = () => {
             <FieldProvider>
                 <CropProvider>
                     <FertilizationProvider>
-                        <Stack.Navigator
-                            screenOptions={{
-                                headerStyle: {
-                                    borderBottomWidth: 2,
-                                },
-                                headerTintColor: '#276e33',
-                                headerTitleStyle: {
-                                    fontWeight: 'bold',
-                                    fontSize: 18
-                                },
-                                drawerActiveBackgroundColor: '#276e33',
-                                drawerActiveTintColor: '#276e33'
-                            }}
-                        >
-                            <Stack.Screen name="CropManagementMain" component={CropManagementScreen} options={{ headerShown: false }} />
-                            <Stack.Screen name="Add Crop" component={AddCropScreen} options={{ headerShown: true, title: 'Add Crop' }} />
-                            <Stack.Screen name="Edit Crop" component={EditCropScreen} options={{ headerShown: true, title: 'Edit Crop' }} />
-                            <Stack.Screen name="Add Fertilization" component={AddFertilizationScreen} options={{ headerShown: true, title: 'Add Fertilization' }} />
-                            <Stack.Screen name="Edit Fertilization" component={EditFertilizationScreen} options={{ headerShown: true, title: 'Edit Fertilization' }} />
-                        </Stack.Navigator>
+                        <PlantProtectionProvider>
+                            <Stack.Navigator
+                                screenOptions={{
+                                    headerStyle: {
+                                        borderBottomWidth: 2,
+                                    },
+                                    headerTintColor: '#276e33',
+                                    headerTitleStyle: {
+                                        fontWeight: 'bold',
+                                        fontSize: 18
+                                    },
+                                    drawerActiveBackgroundColor: '#276e33',
+                                    drawerActiveTintColor: '#276e33'
+                                }}
+                            >
+                                <Stack.Screen name="CropManagementMain" component={CropManagementScreen} options={{ headerShown: false }} />
+                                <Stack.Screen name="Add Crop" component={AddCropScreen} options={{ headerShown: true, title: 'Add Crop' }} />
+                                <Stack.Screen name="Edit Crop" component={EditCropScreen} options={{ headerShown: true, title: 'Edit Crop' }} />
+                                <Stack.Screen name="Add Fertilization" component={AddFertilizationScreen} options={{ headerShown: true, title: 'Add Fertilization' }} />
+                                <Stack.Screen name="Edit Fertilization" component={EditFertilizationScreen} options={{ headerShown: true, title: 'Edit Fertilization' }} />
+                                <Stack.Screen name="Add PlantProtection" component={AddPlantProtectionScreen} options={{ headerShown: true, title:'Add Plant Protection' }} />
+                            </Stack.Navigator>
+                        </PlantProtectionProvider>
                     </FertilizationProvider>
                 </CropProvider>
             </FieldProvider>

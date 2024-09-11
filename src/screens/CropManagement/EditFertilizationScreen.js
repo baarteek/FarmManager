@@ -3,8 +3,8 @@ import { View, Text, TextInput, TouchableOpacity, Alert, Keyboard, ActivityIndic
 import { ScrollView, TouchableWithoutFeedback } from 'react-native-gesture-handler';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import DateTimePicker from '@react-native-community/datetimepicker';
+import moment from 'moment-timezone';  // Importowanie moment-timezone
 import { styles } from '../../styles/AppStyles';
-import { formatDate } from '../../utils/DateUtils';
 import { useFertilizationContext } from '../../context/FertilizationProvider';
 import FertilizationTypePicker from '../../components/FertilizationTypePicker';
 import { formatDecimalInput } from '../../utils/TextUtils';
@@ -28,7 +28,8 @@ const EditFertilizationScreen = () => {
             try {
                 const fertilization = await fetchFertilizationById(fertilizationId);
                 if (fertilization) {
-                    setDate(new Date(fertilization.date));
+                    const localDate = moment.utc(fertilization.date).tz(moment.tz.guess()).toDate();
+                    setDate(localDate);
                     setType(fertilization.type.toString());
                     setQuantity(fertilization.quantity.toString());
                     setMethod(fertilization.method);
@@ -59,7 +60,7 @@ const EditFertilizationScreen = () => {
 
         const updatedFertilization = {
             cropId,
-            date: formatDate(date),
+            date,
             type: parseInt(type, 10),
             quantity: formatDecimalInput(quantity),
             method,
@@ -79,13 +80,24 @@ const EditFertilizationScreen = () => {
             console.error('Error updating fertilization:', error);
             Alert.alert('Error', 'Failed to update the fertilization. Please try again later.');
         } finally {
-            setLoading(false); // Resetuj stan loading po zakończeniu operacji
+            setLoading(false);
         }
     };
 
     const onChangeDate = (event, selectedDate) => {
-        const currentDate = selectedDate || date;
-        setDate(currentDate);
+        if (selectedDate) {
+            const currentDate = new Date(date);
+            currentDate.setFullYear(selectedDate.getFullYear(), selectedDate.getMonth(), selectedDate.getDate());
+            setDate(currentDate);
+        }
+    };
+
+    const onChangeTime = (event, selectedTime) => {
+        if (selectedTime) {
+            const currentDate = new Date(date);
+            currentDate.setHours(selectedTime.getHours(), selectedTime.getMinutes());
+            setDate(currentDate);
+        }
     };
 
     if (initialLoading) {
@@ -106,6 +118,13 @@ const EditFertilizationScreen = () => {
                         mode="date"
                         display="default"
                         onChange={onChangeDate}
+                        style={{ alignSelf: 'center', marginVertical: '2%' }}
+                    />
+                    <DateTimePicker
+                        value={date}
+                        mode="time"
+                        display="default"
+                        onChange={onChangeTime}
                         style={{ alignSelf: 'center', marginVertical: '2%' }}
                     />
                 </View>

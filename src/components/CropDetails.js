@@ -5,7 +5,7 @@ import { useNavigation } from '@react-navigation/native';
 import { styles } from '../styles/AppStyles';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import DetailsModal from './DetailsModal';
-import { formatDate } from '../utils/DateUtils';
+import { formatDate, formatTime } from '../utils/DateUtils';
 import axios from 'axios';
 import { useAuth } from '../context/AuthContext';
 import API_BASE_URL from '../config/apiConfig';
@@ -18,7 +18,7 @@ const CropDetails = ({ crop, handleDeleteCrop }) => {
     const [selectedDetails, setSelectedDetails] = useState(null);
     const [modalTitle, setModalTitle] = useState('');
     const [cropTypes, setCropTypes] = useState([]);
-    const [fertilizationTypes, setFertilizationTypes] = useState([]); // State for fertilization types
+    const [fertilizationTypes, setFertilizationTypes] = useState([]);
     const [loadingCropTypes, setLoadingCropTypes] = useState(true);
     const [cropTypeName, setCropTypeName] = useState('');
     const [fertilizations, setFertilizations] = useState(crop.fertilizations || []);
@@ -75,8 +75,10 @@ const CropDetails = ({ crop, handleDeleteCrop }) => {
     const handleFertilizationClick = async (id) => {
         const fertilization = await fetchFertilizationById(id);
 
+
         const details = {
             Date: formatDate(fertilization.date),
+            Time: formatTime(fertilization.date),
             Type: getFertilizationTypeName(fertilization.type),
             Quantity: `${fertilization.quantity} kg`,
             Method: fertilization.method,
@@ -226,7 +228,7 @@ const CropDetails = ({ crop, handleDeleteCrop }) => {
                     <View style={[styles.rowContainer, { justifyContent: 'space-around', marginVertical: '5%' }]}>
                         <TouchableOpacity 
                             style={[styles.button, { backgroundColor: '#00E000', width: '80%' }]} 
-                            onPress={() => {}}
+                            onPress={() => navigation.navigate('Add PlantProtection', { cropId: crop.id })}
                         >
                             <Text style={{ textAlign: 'center', fontWeight: 'bold', fontSize: 16, color: '#fff' }}>Add Pest or Disease</Text>
                         </TouchableOpacity>

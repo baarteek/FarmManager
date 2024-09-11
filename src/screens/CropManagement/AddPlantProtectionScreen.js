@@ -4,15 +4,15 @@ import { ScrollView, TouchableWithoutFeedback } from 'react-native-gesture-handl
 import { useNavigation, useRoute } from '@react-navigation/native';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { styles } from '../../styles/AppStyles';
-import { useFertilizationContext } from '../../context/FertilizationProvider';
-import FertilizationTypePicker from '../../components/FertilizationTypePicker';
+import { usePlantProtectionContext } from '../../context/PlantProtectionProvider';
+import PlantProtectionTypePicker from '../../components/PlantProtectionTypePicker';
 import { formatDecimalInput } from '../../utils/TextUtils';
 
-const AddFertilizationScreen = () => {
+const AddPlantProtectionScreen = () => {
     const navigation = useNavigation();
     const route = useRoute();
     const { cropId } = route.params;
-    const { addFertilization } = useFertilizationContext();
+    const { addPlantProtection } = usePlantProtectionContext();
 
     const [date, setDate] = useState(new Date());
     const [type, setType] = useState('');
@@ -20,13 +20,13 @@ const AddFertilizationScreen = () => {
     const [method, setMethod] = useState('');
     const [description, setDescription] = useState('');
 
-    const handleAddFertilization = async () => {
+    const handleAddPlantProtection = async () => {
         if (!type || !quantity || !method) {
             Alert.alert('Validation Error', 'All fields must be filled in.');
             return;
         }
 
-        const newFertilization = {
+        const newPlantProtection = {
             cropId,
             date,
             type: parseInt(type, 10),
@@ -36,17 +36,17 @@ const AddFertilizationScreen = () => {
         };
 
         try {
-            await addFertilization(newFertilization);
+            await addPlantProtection(newPlantProtection);
             Alert.alert(
-                "Fertilization Added",
-                "The new fertilization record has been successfully added.",
+                "Plant Protection Added",
+                "The new plant protection record has been successfully added.",
                 [
                     { text: "OK", onPress: () => navigation.goBack() }
                 ]
             );
         } catch (err) {
-            console.error('Error adding fertilization:', err.message);
-            Alert.alert('Error', 'Failed to add the fertilization. Please try again later.');
+            console.error('Error adding plant protection:', err.message);
+            Alert.alert('Error', 'Failed to add the plant protection. Please try again later.');
         }
     };
 
@@ -63,7 +63,7 @@ const AddFertilizationScreen = () => {
     return (
         <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false} style={[styles.mainCantainer, { justifyContent: 'center', alignItems: 'center' }]}>
             <ScrollView style={{ width: '100%', paddingTop: '5%' }}>
-                <Text style={[styles.largeText, { textAlign: 'center' }]}>Fertilization Date</Text>
+                <Text style={[styles.largeText, { textAlign: 'center' }]}>Plant Protection Date</Text>
                 <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center' }}>
                     <DateTimePicker
                         value={date}
@@ -82,9 +82,9 @@ const AddFertilizationScreen = () => {
                 </View>
                 <View style={styles.containerWithBorder}>
                     <Text style={[styles.largeText, { textAlign: 'center' }]}>Type</Text>
-                    <FertilizationTypePicker
-                        setSelectedFertilizationType={setType}
-                        selectedFertilizationType={type}
+                    <PlantProtectionTypePicker
+                        setSelectedPlantProtectionType={setType}
+                        selectedPlantProtectionType={type}
                     />
                 </View>
                 <Text style={[styles.largeText, { textAlign: 'center' }]}>Quantity</Text>
@@ -109,12 +109,12 @@ const AddFertilizationScreen = () => {
                     value={description}
                     onChangeText={setDescription}
                 />
-                <TouchableOpacity style={[styles.button, { margin: '5%', marginTop: '5%', width: '80%', backgroundColor: '#62C962', alignSelf: 'center' }]} onPress={handleAddFertilization}>
-                    <Text style={{ textAlign: 'center', fontWeight: 'bold', fontSize: 22, color: '#fff', marginLeft: '10%', marginRight: '10%' }}>Add Fertilization</Text>
+                <TouchableOpacity style={[styles.button, { margin: '5%', marginTop: '5%', width: '80%', backgroundColor: '#62C962', alignSelf: 'center' }]} onPress={handleAddPlantProtection}>
+                    <Text style={{ textAlign: 'center', fontWeight: 'bold', fontSize: 22, color: '#fff', marginLeft: '10%', marginRight: '10%' }}>Add Plant Protection</Text>
                 </TouchableOpacity>
             </ScrollView>
         </TouchableWithoutFeedback>
     );
 };
 
-export default AddFertilizationScreen;
+export default AddPlantProtectionScreen;

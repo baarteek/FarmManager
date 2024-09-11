@@ -19,4 +19,18 @@ const parseDate = (dateString) => {
     return new Date(year, month - 1, day);
 };
 
-export { formatDate, parseDate };
+const formatTime = (dateInput) => {
+    const date = dateInput instanceof Date ? dateInput : new Date(dateInput);
+    
+    if (isNaN(date.getTime())) {
+        console.error('Invalid date:', dateInput);
+        return '';
+    }
+
+    const hours = String(date.getHours()).padStart(2, '0');
+    const minutes = String(date.getMinutes()).padStart(2, '0');
+
+    return `${hours}:${minutes}`;
+};
+
+export { formatDate, parseDate, formatTime };
