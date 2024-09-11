@@ -1,8 +1,11 @@
 import { ScrollView, StyleSheet, Text, View } from "react-native";
 import InfoCard from "../../components/InfoCard";
-import { styles } from "../../styles/AppStyles";
+import { styles } from '../../styles/AppStyles';
+import { useNavigation } from '@react-navigation/native';
 
 const CalculatorListScreen = () => {
+    const navigation = useNavigation();
+
     return (
         <View style={styles.mainContainer}>
             <ScrollView style={{ backgroundColor: '#fff' }}>
@@ -15,7 +18,7 @@ const CalculatorListScreen = () => {
                         iconBackgroundColor="#8BC34A"
                         borderColor="#388E3C"
                         titleColor="#388E3C"
-                        onPress={() => {}}
+                        onPress={() => navigation.navigate('SeedingRateCalculator')}
                     />
                     <InfoCard 
                         title="Plant Density Calculator"

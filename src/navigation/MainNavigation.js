@@ -8,6 +8,7 @@ import SettingsScreen from '../screens/Settings/SettingsScreen';
 import CalculatorListScreen from '../screens/Calculators/CalculatorListScreen';
 import FarmManagementStack from './FarmManamementStack';
 import CropManagementStack from './CropManagementStack';
+import CalculatorsStack from './CalculatorsStack';
 
 const Drawer = createDrawerNavigator();
 
@@ -54,7 +55,7 @@ const MainNavigation = () => {
             />
             <Drawer.Screen
                 name='Calculators'
-                component={CalculatorListScreen}
+                component={CalculatorsStack}
             />
             <Drawer.Screen 
                 name='Settings'
