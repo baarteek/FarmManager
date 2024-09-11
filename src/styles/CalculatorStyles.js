@@ -84,9 +84,9 @@ export const calculatorStyles = StyleSheet.create({
         borderWidth: 1,
         borderRadius: 20,
         borderColor: '#1f78b4',
-        paddingVertical: 10,
-        paddingHorizontal: 15,
+        padding: '4%',
         backgroundColor: '#e8f1fa',
+        marginHorizontal: '1%',
     },
     unitButtonText: {
         color: '#1f78b4',

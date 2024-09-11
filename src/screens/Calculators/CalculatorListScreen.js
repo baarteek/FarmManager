@@ -51,7 +51,7 @@ const CalculatorListScreen = () => {
                         iconBackgroundColor="#FF9800"
                         borderColor="#F57C00"
                         titleColor="#F57C00"
-                        onPress={() => {}}
+                        onPress={() => navigation.navigate('CropProtectionCalculator')}
                     />
                     <InfoCard 
                         title="Fertilization Calculator"
@@ -60,7 +60,7 @@ const CalculatorListScreen = () => {
                         iconBackgroundColor="#FF9800"
                         borderColor="#F57C00"
                         titleColor="#F57C00"
-                        onPress={() => {}}
+                        onPress={() => navigation.navigate('FertilizationCalculator')}
                     />
                     <InfoCard 
                         title="Plant Water Needs Calculator"
@@ -69,7 +69,7 @@ const CalculatorListScreen = () => {
                         iconBackgroundColor="#FF9800"
                         borderColor="#F57C00"
                         titleColor="#F57C00"
-                        onPress={() => {}}
+                        onPress={() => navigation.navigate('PlantWaterNeedsCalculator')}
                     />
                 </View>
 
