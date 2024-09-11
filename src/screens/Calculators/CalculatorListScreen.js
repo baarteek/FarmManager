@@ -84,7 +84,7 @@ const CalculatorListScreen = () => {
                         iconBackgroundColor="#9C27B0"
                         borderColor="#7B1FA2"
                         titleColor="#7B1FA2"
-                        onPress={() => {}}
+                        onPress={() => navigation.navigate('GrainWeightAfterDryingCalculator')}
                     />
                     <InfoCard 
                         title="Grain Storage Calculator"
@@ -93,7 +93,7 @@ const CalculatorListScreen = () => {
                         iconBackgroundColor="#9C27B0"
                         borderColor="#7B1FA2"
                         titleColor="#7B1FA2"
-                        onPress={() => {}}
+                        onPress={() => navigation.navigate('GrainStorageCalculator')}
                     />
                 </View>
 
