@@ -3,11 +3,11 @@ import { StyleSheet } from 'react-native';
 export const calculatorStyles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#f7f8fa',
         alignItems: 'center',
-        justifyContent: 'flex-start',
+        justifyContent: 'space-around',
         width: '100%',
         height: '100%',
+        marginBottom: '5%',
     },
     contentContainer: {
         width: '90%',
@@ -17,6 +17,7 @@ export const calculatorStyles = StyleSheet.create({
         elevation: 5,
         border: '1px solid',
         borderWidth: 2,
+        backgroundColor:'#FFFFFF',
     },
     inputContainer: {
         alignItems: 'center',
