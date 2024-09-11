@@ -8,7 +8,7 @@ import ResultDisplay from '../../components/ResultDisplay';
 import { View } from 'react-native';
 import { calculatorStyles } from '../../styles/CalculatorStyles';
 
-const SeedingRateCalculator = () => {
+const SeedingRateCalculatorScreen = () => {
     const [fieldSize, setFieldSize] = useState('');
     const [seedRate, setSeedRate] = useState('');
     const [result, setResult] = useState(null);
@@ -91,4 +91,4 @@ const SeedingRateCalculator = () => {
     );
 };
 
-export default SeedingRateCalculator;
+export default SeedingRateCalculatorScreen;

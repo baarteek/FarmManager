@@ -27,7 +27,7 @@ const CalculatorListScreen = () => {
                         iconBackgroundColor="#8BC34A"
                         borderColor="#388E3C"
                         titleColor="#388E3C"
-                        onPress={() => {}}
+                        onPress={() => navigation.navigate('PlantDensityCalculator')}
                     />
                     <InfoCard 
                         title="Sowing Density Calculator"
@@ -36,7 +36,7 @@ const CalculatorListScreen = () => {
                         iconBackgroundColor="#8BC34A"
                         borderColor="#388E3C"
                         titleColor="#388E3C"
-                        onPress={() => {}}
+                        onPress={() => navigation.navigate('SowingDensityCalculator')}
                     />
                 </View>
 

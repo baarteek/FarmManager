@@ -1,18 +1,8 @@
 import { createStackNavigator } from '@react-navigation/stack';
-import CropManagementScreen from '../screens/CropManagement/CropManagementScreen';
-import AddCropScreen from '../screens/CropManagement/AddCropScreen';
-import EditCropScreen from '../screens/CropManagement/EditCropScreen';
-import { CropProvider } from '../context/CropProvider'; 
-import { FieldProvider } from '../context/FieldProvider';
-import { FarmProvider } from '../context/FarmProvider';
-import { FertilizationProvider } from '../context/FertilizationProvider';
-import AddFertilizationScreen from '../screens/CropManagement/AddFertilizationScreen';
-import EditFertilizationScreen from '../screens/CropManagement/EditFertilizationScreen';
-import { PlantProtectionProvider } from '../context/PlantProtectionProvider';
-import AddPlantProtectionScreen from '../screens/CropManagement/AddPlantProtectionScreen';
-import EditPlantProtectionScreen from '../screens/CropManagement/EditPlantProtectionScreen';
 import CalculatorListScreen from '../screens/Calculators/CalculatorListScreen';
-import SeedingRateCalculator from '../screens/Calculators/SeedingRateCalculator';
+import SeedingRateCalculatorScreen from '../screens/Calculators/SeedingRateCalculatorScreen';
+import PlantDensityCalculatorScreen from '../screens/Calculators/PlantDensityCalculatorScreen';
+import SowingDensityCalculatorScreen from '../screens/Calculators/SowingDensityCalculatorScreen';
 
 const Stack = createStackNavigator();
 
@@ -33,7 +23,9 @@ const CalculatorsStack = () => {
                 }}
                 >
                 <Stack.Screen name="CalculatorList" component={CalculatorListScreen} options={{ headerShown: false }} />
-                <Stack.Screen name="SeedingRateCalculator" component={SeedingRateCalculator} options={{ headerShown: true, title: 'Seeding Rate Calculator' }} />
+                <Stack.Screen name="SeedingRateCalculator" component={SeedingRateCalculatorScreen} options={{ headerShown: true, title: 'Seeding Rate Calculator' }} />
+                <Stack.Screen name="PlantDensityCalculator" component={PlantDensityCalculatorScreen} options={{ headerShown: true, title: 'Plant Density Calculator' }} />
+                <Stack.Screen name="SowingDensityCalculator" component={SowingDensityCalculatorScreen} options={{ headerShown: true, title: 'Sowing Density Calculator' }} />
         </Stack.Navigator>
     );
 };
