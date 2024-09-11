@@ -10,6 +10,7 @@ import AddFertilizationScreen from '../screens/CropManagement/AddFertilizationSc
 import EditFertilizationScreen from '../screens/CropManagement/EditFertilizationScreen';
 import { PlantProtectionProvider } from '../context/PlantProtectionProvider';
 import AddPlantProtectionScreen from '../screens/CropManagement/AddPlantProtectionScreen';
+import EditPlantProtectionScreen from '../screens/CropManagement/EditPlantProtectionScreen';
 
 const Stack = createStackNavigator();
 
@@ -40,6 +41,7 @@ const CropManagementStack = () => {
                                 <Stack.Screen name="Add Fertilization" component={AddFertilizationScreen} options={{ headerShown: true, title: 'Add Fertilization' }} />
                                 <Stack.Screen name="Edit Fertilization" component={EditFertilizationScreen} options={{ headerShown: true, title: 'Edit Fertilization' }} />
                                 <Stack.Screen name="Add PlantProtection" component={AddPlantProtectionScreen} options={{ headerShown: true, title:'Add Plant Protection' }} />
+                                <Stack.Screen name="Edit PlantProtection" component={EditPlantProtectionScreen} options={{ headerShown: true, title: 'Edit Plant Protection' }} />
                             </Stack.Navigator>
                         </PlantProtectionProvider>
                     </FertilizationProvider>

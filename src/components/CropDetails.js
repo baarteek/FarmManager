@@ -212,7 +212,7 @@ const CropDetails = ({ crop, handleDeleteCrop }) => {
                                             <Text style={styles.text}>{plantProtection.name}</Text>
                                         </View>
                                     </TouchableOpacity>
-                                    <TouchableOpacity onPress={() => navigation.navigate('Edit Pest or Disease', { fieldId: crop.fieldId, cropId: crop.id, historyIndex: index })}>
+                                    <TouchableOpacity onPress={() => navigation.navigate('Edit PlantProtection', { cropId: crop.id, plantProtectionId: plantProtection.id})}>
                                         <Icon name="edit" size={22} color="#00BFFF" />
                                     </TouchableOpacity>
                                     <TouchableOpacity onPress={() => handleDeleteItem(plantProtection.id, 'Pest or Disease')}>
