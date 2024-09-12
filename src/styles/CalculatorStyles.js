@@ -2,15 +2,15 @@ import { StyleSheet } from 'react-native';
 
 export const calculatorStyles = StyleSheet.create({
     container: {
-        flex: 1,
-        alignItems: 'center',
-        justifyContent: 'space-around',
+        flexGrow: 1,
         width: '100%',
-        height: '100%',
-        marginBottom: '5%',
+        padding: '5%',
+        alignItems: 'center',
+        elevation: 5,
+        marginVertical: '3%',
     },
     contentContainer: {
-        width: '90%',
+        width: '95%',
         padding: '5%',
         borderRadius: 20,
         alignItems: 'center',

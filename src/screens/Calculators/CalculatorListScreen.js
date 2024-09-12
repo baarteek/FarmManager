@@ -108,7 +108,7 @@ const CalculatorListScreen = () => {
                         iconBackgroundColor="#00ACC1"
                         borderColor="#00796B"
                         titleColor="#00796B"
-                        onPress={() => {}}
+                        onPress={() => navigation.navigate('SoilQualityCalculator')}
                     />
                     <InfoCard 
                         title="Crop Cost Calculator"
@@ -117,7 +117,7 @@ const CalculatorListScreen = () => {
                         iconBackgroundColor="#00ACC1"
                         borderColor="#00796B"
                         titleColor="#00796B"
-                        onPress={() => {}}
+                        onPress={() => navigation.navigate('CropCostCalculator')}
                     />
                 </View>
 

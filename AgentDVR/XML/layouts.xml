@@ -1,0 +1,54 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<layouts>
+  <layout name="1 Grid" ident="42d308f3-583c-435c-8abe-66c0c68d399a">
+    <rectangles>
+      <rectangle index="1" coordinates="0,0,100,100" mode="grid"/>
+    </rectangles>
+  </layout>
+    <layout name="Desktop" ident="fcf3ce09-6251-4ee5-b092-b64c1ed88630" main="1">
+		<rectangles>
+			<rectangle index="4" mode="timeline" coordinates="20,75,80,25" interval="3" />
+			<rectangle index="3" mode="grid" coordinates="20,0,25,75" interval="3" />
+			<rectangle index="1" mode="grid" coordinates="45,0,55,75" interval="3" />
+			<rectangle index="5" mode="floorplans" coordinates="0,0,20,30" interval="3" />
+			<rectangle index="2" mode="files" coordinates="0,30,20,70" interval="3" />
+		</rectangles>
+    </layout>
+  <layout name="2 Grids" ident="ffdc18ed-a6dc-4f56-a7ac-2c491309c4ca">
+    <rectangles>
+      <rectangle index="1" coordinates="0,0,100,50" mode="grid"/>
+      <rectangle index="2" coordinates="0,50,100,50" mode="grid"/>
+    </rectangles>
+  </layout>
+  <layout name="Column + Grid" main="1" ident="a1bcf9fa-8881-4036-92c0-54062b9aecbc">
+    <rectangles>
+      <rectangle index="1" coordinates="0,0,30,35"/>
+      <rectangle index="2" coordinates="0,35,30,30" mode="interval" interval="5"/>
+      <rectangle index="3" coordinates="0,65,30,35" mode="interval" interval="5"/>
+      <rectangle index="4" coordinates="30,0,70,100" mode="grid"/>
+    </rectangles>
+  </layout>
+  <layout name="L + Main" main="10" ident="cdd34b72-c828-479e-82b1-74990fb0233a">
+    <rectangles>
+      <rectangle index="1" coordinates="0,0,20,20" mode="interval"/>
+      <rectangle index="2" coordinates="0,20,20,20" mode="interval"/>
+      <rectangle index="3" coordinates="0,40,20,20" mode="interval"/>
+      <rectangle index="4" coordinates="0,60,20,20" mode="interval"/>
+      <rectangle index="5" coordinates="0,80,20,20" mode="interval"/>
+      <rectangle index="6" coordinates="20,80,20,20" mode="interval"/>
+      <rectangle index="7" coordinates="40,80,20,20" mode="interval"/>
+      <rectangle index="8" coordinates="60,80,20,20" mode="interval"/>
+      <rectangle index="9" coordinates="80,80,20,20" mode="interval"/>
+      <rectangle index="10" coordinates="20,0,80,80"/>
+    </rectangles>
+  </layout>
+  <layout name="Alerts + Motion" main="1" ident="b0454de4-1e61-49b9-a46f-80fce616e759">
+    <rectangles>
+      <rectangle index="1" coordinates="30,0,70,100"/>
+      <rectangle index="2" coordinates="0,0,30,35" mode="alert"/>
+      <rectangle index="3" coordinates="0,35,30,30" mode="motion"/>
+      <rectangle index="4" coordinates="0,65,30,35" mode="grid"/>
+    </rectangles>
+  </layout>
+
+</layouts>

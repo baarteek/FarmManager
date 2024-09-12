@@ -1,0 +1,161 @@
+﻿<?xml version="1.0" encoding="utf-16"?>
+<configuration xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <FileVideoExtensions>mp4|h264|mkv|avi|mov|wmv|flv|f4v|webm|hevc</FileVideoExtensions>
+  <FileAudioExtensions>mp3|aac|ogg|wav|flac|aiff|pcm</FileAudioExtensions>
+  <UserIdent>67202610-65fb-4431-9648-55e9a68bb38a</UserIdent>
+  <IPCameraTimeout>0</IPCameraTimeout>
+  <Language>en</Language>
+  <Voice />
+  <AutoSchedule>true</AutoSchedule>
+  <RunTimes>0</RunTimes>
+  <JPEGQuality>75</JPEGQuality>
+  <DefaultFont>DejaVu Sans</DefaultFont>
+  <MJPEGStreamInterval>20</MJPEGStreamInterval>
+  <MailAlertSubject>[EVENT]: [SERVER] [OBJECTNAME]</MailAlertSubject>
+  <MailAlertBody>[EVENT] at [DATE] [TIME]: [SERVER] [OBJECTNAME] [RECORDED] [PLUGIN] [TAGS]&lt;br/&gt;https://www.ispyconnect.com</MailAlertBody>
+  <SMSAlert>[EVENT] at [DATE] [TIME]: [SERVER] [OBJECTNAME] [RECORDED] [PLUGIN] [TAGS]</SMSAlert>
+  <SMTPFromAddress />
+  <SMTPUsername />
+  <SMTPPassword />
+  <SMTPServer />
+  <SMTPPort>587</SMTPPort>
+  <SMTPFullSizeImages>false</SMTPFullSizeImages>
+  <SMTPEmbedImages>true</SMTPEmbedImages>
+  <UseSMTP>false</UseSMTP>
+  <SMTPSSL>true</SMTPSSL>
+  <STUNServers>stun.l.google.com:19302,stun1.l.google.com:19302,stun2.l.google.com:19302</STUNServers>
+  <DefaultrecordOnAlert>false</DefaultrecordOnAlert>
+  <DefaultrecordOnDetect>true</DefaultrecordOnDetect>
+  <FirstRun>true</FirstRun>
+  <NotifyOnDisconnect>false</NotifyOnDisconnect>
+  <NotifyEndpoint />
+  <MachineName>bartek-ZenBook-UX325EA-UX325EA</MachineName>
+  <CommsServer>https://rtcfunc.azurewebsites.net</CommsServer>
+  <MaxCPU>90</MaxCPU>
+  <UniqueID>9b937c9e-473f-47b1-b08a-91dcb093a1eb</UniqueID>
+  <LocalUsername />
+  <LocalPassword />
+  <StreamFPS>15</StreamFPS>
+  <MjpegFPS>10</MjpegFPS>
+  <MaintainAR>true</MaintainAR>
+  <VideoBackground>255,255,255</VideoBackground>
+  <MaxControlsPerColumn>4</MaxControlsPerColumn>
+  <UseGPU>false</UseGPU>
+  <DefaultGPUDecoder />
+  <DefaultGPUEncoder />
+  <WebRTCEncoder />
+  <Priority>32</Priority>
+  <AutoSkip>true</AutoSkip>
+  <PlayAll>false</PlayAll>
+  <Codec>H264</Codec>
+  <SimpleMode>false</SimpleMode>
+  <IOTMode>false</IOTMode>
+  <LocalNotifications>true</LocalNotifications>
+  <ScannedNetwork>false</ScannedNetwork>
+  <CycleDelay>0</CycleDelay>
+  <Armed>true</Armed>
+  <VLCDir />
+  <FFMPEG_DIR />
+  <APIPassword>false</APIPassword>
+  <MaxMJPEGSize>1920x1080</MaxMJPEGSize>
+  <DefaultMJPEGSize>320x240</DefaultMJPEGSize>
+  <ArmDelay>15</ArmDelay>
+  <TurnServerState>0</TurnServerState>
+  <TurnServerPort>3478</TurnServerPort>
+  <TurnServerMinPort>50000</TurnServerMinPort>
+  <TurnServerMaxPort>50010</TurnServerMaxPort>
+  <EnableZeroConf>true</EnableZeroConf>
+  <BindInterface>*</BindInterface>
+  <ServerPort>8090</ServerPort>
+  <SSLServerPort>0</SSLServerPort>
+  <SSLCert>/home/bartek/Desktop/FarmManager/AgentDVR/YOUR_CERT.p12</SSLCert>
+  <SSLPassword />
+  <DisarmCode>1234</DisarmCode>
+  <StorageNotifyEmail />
+  <StorageNotifyEmailLimit>75</StorageNotifyEmailLimit>
+  <StorageNotifyEmailLastSent>2001-01-01T00:00:00</StorageNotifyEmailLastSent>
+  <ArchiveCheckTimeStamp>2024-09-12T08:27:39.9092936Z</ArchiveCheckTimeStamp>
+  <DriveFullEmailLastSent>2001-01-01T00:00:00</DriveFullEmailLastSent>
+  <StorageNotifyEmailIntervalHours>12</StorageNotifyEmailIntervalHours>
+  <DeepStackAIURL />
+  <DeepStackAIRetryDelay>30</DeepStackAIRetryDelay>
+  <DeepStackAIAPIKey />
+  <DeepStackObjects>person,bicycle,car,motorcycle,airplane,bus,train,truck,boat,traffic light,fire hydrant,stop sign,parking meter,bench,bird,cat,dog,horse,sheep,cow,elephant,bear,zebra,giraffe,backpack,umbrella,handbag,tie,suitcase,frisbee,skis,snowboard,sports ball,kite,baseball bat,baseball glove,skateboard,surfboard,tennis racket,bottle,wine glass,cup,fork,knife,spoon,bowl,banana,apple,sandwich,orange,broccoli,carrot,hot dog,pizza,donot,cake,chair,couch,potted plant,bed,dining table,toilet,tv,laptop,mouse,remote,keyboard,cell phone,microwave,oven,toaster,sink,refrigerator,book,clock,vase,scissors,teddy bear,hair dryer,toothbrush</DeepStackObjects>
+  <DeepStackModelEndpoint>/v1/vision/detection</DeepStackModelEndpoint>
+  <DeepStackTimeout>10</DeepStackTimeout>
+  <AddToDatabase>true</AddToDatabase>
+  <ONVIFDetectors />
+  <ONVIFDetectorLogging>false</ONVIFDetectorLogging>
+  <MaxStreamSize>2K</MaxStreamSize>
+  <PlateRecognizerToken />
+  <PlateRecognizerPlateList />
+  <PlateRecognizerPlateReloadInterval>30</PlateRecognizerPlateReloadInterval>
+  <PlateRecognizerConfig />
+  <PlateRecognizerRegions />
+  <PlateRecognizerNormalize>true</PlateRecognizerNormalize>
+  <PlateRecognizerPlateURL>https://api.platerecognizer.com/v1/plate-reader/</PlateRecognizerPlateURL>
+  <AccessSessionTimeoutMinutes>0</AccessSessionTimeoutMinutes>
+  <StorageCheckIntervalMinutes>60</StorageCheckIntervalMinutes>
+  <StorageRunGC>false</StorageRunGC>
+  <UseOpenCVTextRendering>false</UseOpenCVTextRendering>
+  <ExperimentalFeatures>false</ExperimentalFeatures>
+  <BlockExternalAccess>false</BlockExternalAccess>
+  <AutoLockTags />
+  <ArmProfileID />
+  <DisarmProfileID />
+  <LastProfileID>0</LastProfileID>
+  <Filters>[]</Filters>
+  <HDUID />
+  <License />
+  <TimeFormat>MMM DD YYYY h:mm:ss A</TimeFormat>
+  <TimeFormatSmall>MMM DD h:mm A</TimeFormatSmall>
+  <DateFormat>MMM DD YYYY</DateFormat>
+  <CultureCode>en-US</CultureCode>
+  <MultiChannelAudio>false</MultiChannelAudio>
+  <PTT>false</PTT>
+  <MaxFiles>20000</MaxFiles>
+  <MaxAlerts>100</MaxAlerts>
+  <MaxPhotosPerDevice>2000</MaxPhotosPerDevice>
+  <SignalRConnectTimeout>120</SignalRConnectTimeout>
+  <SignalRTransportType>0</SignalRTransportType>
+  <SignalRCommsLogging>false</SignalRCommsLogging>
+  <MaxViews>9</MaxViews>
+  <MaxPlans>9</MaxPlans>
+  <WaitForRemoteConnection>false</WaitForRemoteConnection>
+  <NDIGroups />
+  <NDIExtraIPs />
+  <NDIShowLocal>true</NDIShowLocal>
+  <Logo />
+  <ShowLogo>false</ShowLogo>
+  <ShowHelp>true</ShowHelp>
+  <ShowRemote>true</ShowRemote>
+  <ShowLicensing>true</ShowLicensing>
+  <InfoText />
+  <MaxSessions>0</MaxSessions>
+  <SkipToContent>false</SkipToContent>
+  <EnableUpdateCheck>true</EnableUpdateCheck>
+  <HighPerfResize>false</HighPerfResize>
+  <SSLOnly>false</SSLOnly>
+  <AudioOutDevice>Auto</AudioOutDevice>
+  <TimeMachineScrubbing>false</TimeMachineScrubbing>
+  <NestConfig />
+  <ONVIFDiscovery>true</ONVIFDiscovery>
+  <ProductName>Agent</ProductName>
+  <RecordingTags />
+  <ImageTags />
+  <Permissions />
+  <MQTT />
+  <RTMP />
+  <Logging LogWebRTCLevel="5" LogLevel="3" />
+  <Cloud S3Valid="no" />
+  <OpenAI />
+  <Claude />
+  <AIServers />
+  <RTMPServers />
+  <FTPServers />
+  <MediaDirectories>
+    <Directory Entry="/home/bartek/Desktop/FarmManager/AgentDVR/Media/WebServerRoot/Media/" MaxSize="1000" MaxAge="168" ArchiveDirectoryNew="" />
+  </MediaDirectories>
+  <Users />
+  <LDAP />
+</configuration>
