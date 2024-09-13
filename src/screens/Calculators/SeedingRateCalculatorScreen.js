@@ -6,7 +6,7 @@ import CalculateButton from '../../components/CalculateButton';
 import ResultDisplay from '../../components/ResultDisplay';
 import { View } from 'react-native';
 import { calculatorStyles } from '../../styles/CalculatorStyles';
-
+import { formatDecimalInput } from '../../utils/TextUtils';
 const SeedingRateCalculatorScreen = () => {
     const [thousandGrainWeight, setThousandGrainWeight] = useState(''); 
     const [plantDensity, setPlantDensity] = useState(''); 
@@ -14,9 +14,9 @@ const SeedingRateCalculatorScreen = () => {
     const [result, setResult] = useState(null);
 
     const handleCalculate = () => {
-        const tgwNum = parseFloat(thousandGrainWeight);
-        const densityNum = parseFloat(plantDensity);
-        const germinationNum = parseFloat(germinationPower);
+        const tgwNum = formatDecimalInput(thousandGrainWeight);
+        const densityNum = formatDecimalInput(plantDensity);
+        const germinationNum = formatDecimalInput(germinationPower);
 
         if (isNaN(tgwNum) || isNaN(densityNum) || isNaN(germinationNum) || germinationNum <= 0) {
             alert('Please enter valid numbers for TGW, plant density, and germination power (greater than 0).');

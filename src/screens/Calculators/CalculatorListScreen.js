@@ -87,37 +87,13 @@ const CalculatorListScreen = () => {
                         onPress={() => navigation.navigate('GrainWeightAfterDryingCalculator')}
                     />
                     <InfoCard 
-                        title="Grain Storage Calculator"
-                        description="Calculate optimal storage conditions for your grain."
+                        title="Grain Storage Capacity Calculator"
+                        description="Calculate how much grain (in tons) can be stored in a given storage capacity based on grain type and volume."
                         iconName="store"
                         iconBackgroundColor="#9C27B0"
                         borderColor="#7B1FA2"
                         titleColor="#7B1FA2"
-                        onPress={() => navigation.navigate('GrainStorageCalculator')}
-                    />
-                </View>
-
-                <View style={calculatorStyles.separator} />
-
-                <View style={calculatorStyles.categoryContainer}>
-                    <Text style={[calculatorStyles.categoryTitle, { color: '#00796B' }]}>Soil and Crop Quality</Text>
-                    <InfoCard 
-                        title="Soil Quality Assessment Calculator"
-                        description="Assess the quality of your soil based on various parameters."
-                        iconName="assessment"
-                        iconBackgroundColor="#00ACC1"
-                        borderColor="#00796B"
-                        titleColor="#00796B"
-                        onPress={() => navigation.navigate('SoilQualityCalculator')}
-                    />
-                    <InfoCard 
-                        title="Crop Cost Calculator"
-                        description="Analyze the costs associated with different crops."
-                        iconName="attach-money"
-                        iconBackgroundColor="#00ACC1"
-                        borderColor="#00796B"
-                        titleColor="#00796B"
-                        onPress={() => navigation.navigate('CropCostCalculator')}
+                        onPress={() => navigation.navigate('GrainStorageCapacityCalculator')}
                     />
                 </View>
 
@@ -132,7 +108,7 @@ const CalculatorListScreen = () => {
                         iconBackgroundColor="#607D8B"
                         borderColor="#455A64"
                         titleColor="#455A64"
-                        onPress={() => {}}
+                        onPress={() => navigation.navigate('FuelConsumptionCalculator')}
                     />
                     <InfoCard 
                         title="Machinery Efficiency Calculator"
@@ -141,7 +117,7 @@ const CalculatorListScreen = () => {
                         iconBackgroundColor="#607D8B"
                         borderColor="#455A64"
                         titleColor="#455A64"
-                        onPress={() => {}}
+                        onPress={() => navigation.navigate('MachineryEfficiencyCalculator')}
                     />
                 </View>
             </ScrollView>

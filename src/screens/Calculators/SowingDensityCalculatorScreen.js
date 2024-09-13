@@ -7,30 +7,28 @@ import CalculateButton from '../../components/CalculateButton';
 import ResultDisplay from '../../components/ResultDisplay';
 import { View } from 'react-native';
 import { calculatorStyles } from '../../styles/CalculatorStyles';
+import { formatDecimalInput } from '../../utils/TextUtils';
 
 const SowingDensityCalculatorScreen = () => {
     const [areaSize, setAreaSize] = useState('');
     const [seedsPerArea, setSeedsPerArea] = useState('');
     const [result, setResult] = useState(null);
-    const [unit, setUnit] = useState('square meters');
+    const [unit, setUnit] = useState('ares'); 
 
     const handleCalculate = () => {
-        const areaSizeNum = parseFloat(areaSize);
-        const seedsPerAreaNum = parseFloat(seedsPerArea);
+        const areaSizeNum = formatDecimalInput(areaSize);
+        const seedsPerAreaNum = formatDecimalInput(seedsPerArea);
 
         if (isNaN(areaSizeNum) || isNaN(seedsPerAreaNum) || seedsPerAreaNum <= 0) {
             alert('Please enter valid numbers for area size and seeds per area.');
             return;
         }
 
-        const multiplier = unit === 'hectares' ? 10000 : 1;
-        const sowingDensityResult = areaSizeNum * multiplier * seedsPerAreaNum;
+        const multiplier = unit === 'hectares' ? 100 : 1;  
 
-        if (sowingDensityResult % 1 === 0) {
-            setResult(Math.round(sowingDensityResult));
-        } else {
-            setResult(parseFloat(sowingDensityResult.toFixed(2)));
-        }
+        const totalSeeds = areaSizeNum * multiplier * seedsPerAreaNum;
+
+        setResult(parseFloat(totalSeeds.toFixed(2)));  
     };
 
     const handleUnitChange = (selectedUnit) => {
@@ -60,25 +58,25 @@ const SowingDensityCalculatorScreen = () => {
             <View style={calculatorStyles.contentContainer}>
                 <UnitSelector 
                     units={[
-                        { label: 'Square Meters', value: 'square meters' },
-                        { label: 'Hectares', value: 'hectares' }
+                        { label: 'Ares', value: 'ares' },  
+                        { label: 'Hectares', value: 'hectares' }  
                     ]}
                     selectedUnit={unit}
                     onUnitChange={handleUnitChange}
                 />
 
                 <InputField 
-                    label={`Area Size (${unit === 'square meters' ? 'm²' : 'hectares'}):`} 
+                    label={`Area Size (${unit === 'ares' ? 'ares' : 'hectares'}):`} 
                     value={areaSize} 
                     onChangeText={handleAreaSizeChange} 
                     placeholder={`Enter area size in ${unit}`} 
                 />
 
                 <InputField 
-                    label="Seeds per Area Unit (e.g., seeds per m²):" 
+                    label={`Seeds per Area Unit (e.g., seeds per ${unit === 'ares' ? 'ares' : 'hectare'}):`} 
                     value={seedsPerArea} 
                     onChangeText={handleSeedsPerAreaChange} 
-                    placeholder={`Enter seeds per ${unit === 'square meters' ? 'm²' : 'hectare'}`} 
+                    placeholder={`Enter seeds per ${unit === 'ares' ? 'ares' : 'hectare'}`} 
                 />
 
                 <CalculateButton onPress={handleCalculate} />

@@ -7,6 +7,7 @@ import CalculateButton from '../../components/CalculateButton';
 import ResultDisplay from '../../components/ResultDisplay';
 import { View } from 'react-native';
 import { calculatorStyles } from '../../styles/CalculatorStyles';
+import { formatDecimalInput } from '../../utils/TextUtils';
 
 const FertilizationCalculatorScreen = () => {
     const [areaSize, setAreaSize] = useState('');
@@ -15,22 +16,18 @@ const FertilizationCalculatorScreen = () => {
     const [unit, setUnit] = useState('kilograms per hectare');
 
     const handleCalculate = () => {
-        const areaSizeNum = parseFloat(areaSize);
-        const fertilizerRateNum = parseFloat(fertilizerRate);
+        const areaSizeNum = formatDecimalInput(areaSize);
+        const fertilizerRateNum = formatDecimalInput(fertilizerRate);
 
-        if (isNaN(areaSizeNum) || isNaN(fertilizerRateNum) || fertilizerRateNum <= 0) {
-            alert('Please enter valid numbers for field area and fertilizer rate.');
+        if (isNaN(areaSizeNum) || isNaN(fertilizerRateNum) || areaSizeNum <= 0 || fertilizerRateNum <= 0) {
+            alert('Please enter valid positive numbers for field area and fertilizer rate.');
             return;
         }
 
-        const multiplier = unit === 'kilograms per hectare' ? 1 : 0.1;
+        const multiplier = unit === 'kilograms per hectare' ? 1 : 0.01;
         const fertilizerAmount = areaSizeNum * fertilizerRateNum * multiplier;
 
-        if (fertilizerAmount % 1 === 0) {
-            setResult(Math.round(fertilizerAmount));
-        } else {
-            setResult(parseFloat(fertilizerAmount.toFixed(2)));
-        }
+        setResult(parseFloat(fertilizerAmount.toFixed(2)));
     };
 
     const handleUnitChange = (selectedUnit) => {
@@ -83,13 +80,15 @@ const FertilizationCalculatorScreen = () => {
 
                 <CalculateButton onPress={handleCalculate} />
 
-                <ResultDisplay 
-                    result={result} 
-                    label="Required Fertilizer Amount" 
-                    icon="spa" 
-                    iconColor="#F57C00" 
-                    unit='kilograms'
-                />
+                {result !== null && (
+                    <ResultDisplay 
+                        result={result} 
+                        label="Required Fertilizer Amount" 
+                        icon="spa" 
+                        iconColor="#F57C00" 
+                        unit='kilograms'
+                    />
+                )}
             </View>
         </CalculatorLayout>
     );

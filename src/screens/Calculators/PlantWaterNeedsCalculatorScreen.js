@@ -7,6 +7,7 @@ import CalculateButton from '../../components/CalculateButton';
 import ResultDisplay from '../../components/ResultDisplay';
 import { View } from 'react-native';
 import { calculatorStyles } from '../../styles/CalculatorStyles';
+import { formatDecimalInput } from '../../utils/TextUtils';
 
 const PlantWaterNeedsCalculatorScreen = () => {
     const [areaSize, setAreaSize] = useState('');
@@ -15,29 +16,23 @@ const PlantWaterNeedsCalculatorScreen = () => {
     const [unit, setUnit] = useState('liters per square meter');
 
     const handleCalculate = () => {
-        const areaSizeNum = parseFloat(areaSize);
-        const waterRateNum = parseFloat(waterRate);
+        const areaSizeNum = formatDecimalInput(areaSize);
+        const waterRateNum = formatDecimalInput(waterRate);
 
-        if (isNaN(areaSizeNum) || isNaN(waterRateNum) || waterRateNum <= 0) {
-            alert('Please enter valid numbers for field area and water rate.');
+        if (isNaN(areaSizeNum) || isNaN(waterRateNum) || areaSizeNum <= 0 || waterRateNum <= 0) {
+            alert('Please enter valid positive numbers for field area and water rate.');
             return;
         }
 
         const multiplier = unit === 'liters per hectare' ? 10000 : 1;
         const waterAmount = areaSizeNum * waterRateNum * multiplier;
 
-        if (waterAmount % 1 === 0) {
-            setResult(Math.round(waterAmount));
-        } else {
-            setResult(parseFloat(waterAmount.toFixed(2)));
-        }
+        setResult(parseFloat(waterAmount.toFixed(2)));
     };
 
     const handleUnitChange = (selectedUnit) => {
         setUnit(selectedUnit);
-        setAreaSize('');
-        setWaterRate('');
-        setResult(null);
+        resetInputsAndResult();
     };
 
     const handleAreaSizeChange = (value) => {
@@ -47,6 +42,12 @@ const PlantWaterNeedsCalculatorScreen = () => {
 
     const handleWaterRateChange = (value) => {
         setWaterRate(value);
+        setResult(null);
+    };
+
+    const resetInputsAndResult = () => {
+        setAreaSize('');
+        setWaterRate('');
         setResult(null);
     };
 
@@ -83,13 +84,15 @@ const PlantWaterNeedsCalculatorScreen = () => {
 
                 <CalculateButton onPress={handleCalculate} />
 
-                <ResultDisplay 
-                    result={result} 
-                    label="Required Water Amount" 
-                    icon="opacity" 
-                    iconColor="#F57C00" 
-                    unit='liters'
-                />
+                {result !== null && (
+                    <ResultDisplay 
+                        result={result} 
+                        label="Required Water Amount" 
+                        icon="opacity" 
+                        iconColor="#F57C00" 
+                        unit='liters'
+                    />
+                )}
             </View>
         </CalculatorLayout>
     );

@@ -6,6 +6,7 @@ import CalculateButton from '../../components/CalculateButton';
 import ResultDisplay from '../../components/ResultDisplay';
 import { View } from 'react-native';
 import { calculatorStyles } from '../../styles/CalculatorStyles';
+import { formatDecimalInput } from '../../utils/TextUtils';
 
 const GrainWeightAfterDryingCalculatorScreen = () => {
     const [initialWeight, setInitialWeight] = useState('');
@@ -14,9 +15,9 @@ const GrainWeightAfterDryingCalculatorScreen = () => {
     const [result, setResult] = useState(null);
 
     const handleCalculate = () => {
-        const initialWeightNum = parseFloat(initialWeight);
-        const initialMoistureNum = parseFloat(initialMoisture);
-        const finalMoistureNum = parseFloat(finalMoisture);
+        const initialWeightNum = formatDecimalInput(initialWeight);
+        const initialMoistureNum = formatDecimalInput(initialMoisture);
+        const finalMoistureNum = formatDecimalInput(finalMoisture);
 
         if (
             isNaN(initialWeightNum) ||
@@ -30,15 +31,11 @@ const GrainWeightAfterDryingCalculatorScreen = () => {
             alert('Please enter valid numbers. Initial weight must be positive, and initial moisture must be greater than final moisture.');
             return;
         }
-
+    
         const driedWeight = initialWeightNum * (100 - initialMoistureNum) / (100 - finalMoistureNum);
-
-        if (driedWeight % 1 === 0) {
-            setResult(Math.round(driedWeight));
-        } else {
-            setResult(parseFloat(driedWeight.toFixed(2)));
-        }
-    };
+    
+        setResult(parseFloat(driedWeight.toFixed(2)));
+    };    
 
     const handleInitialWeightChange = (value) => {
         setInitialWeight(value);

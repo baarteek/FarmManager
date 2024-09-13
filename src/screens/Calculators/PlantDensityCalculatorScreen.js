@@ -1,52 +1,47 @@
 import React, { useState } from 'react';
 import CalculatorLayout from '../../components/CalculatorLayout';
 import CalculatorTitle from '../../components/CalculatorTitle';
-import UnitSelector from '../../components/UnitSelector';
 import InputField from '../../components/InputField';
 import CalculateButton from '../../components/CalculateButton';
 import ResultDisplay from '../../components/ResultDisplay';
 import { View } from 'react-native';
 import { calculatorStyles } from '../../styles/CalculatorStyles';
+import { formatDecimalInput } from '../../utils/TextUtils';
 
 const PlantDensityCalculatorScreen = () => {
-    const [areaSize, setAreaSize] = useState('');
-    const [plantSpacing, setPlantSpacing] = useState('');
+    const [plantCount, setPlantCount] = useState('');
+    const [rowLength, setRowLength] = useState('');
+    const [rowSpacing, setRowSpacing] = useState(''); 
     const [result, setResult] = useState(null);
-    const [unit, setUnit] = useState('square meters');
 
     const handleCalculate = () => {
-        const areaSizeNum = parseFloat(areaSize);
-        const plantSpacingNum = parseFloat(plantSpacing);
+        const plantCountNum = formatDecimalInput(plantCount);
+        const rowLengthNum = formatDecimalInput(rowLength);
+        const rowSpacingNum = formatDecimalInput(rowSpacing);
 
-        if (isNaN(areaSizeNum) || isNaN(plantSpacingNum) || plantSpacingNum <= 0) {
-            alert('Please enter valid numbers for area size and plant spacing.');
+        if (isNaN(plantCountNum) || isNaN(rowLengthNum) || isNaN(rowSpacingNum) || rowLengthNum <= 0 || rowSpacingNum <= 0) {
+            alert('Please enter valid numbers for plant count, row length, and row spacing.');
             return;
         }
 
-        const multiplier = unit === 'hectares' ? 10000 : 1;
-        const plantDensityResult = (areaSizeNum * multiplier) / (plantSpacingNum * plantSpacingNum);
+        const rowLengthMeters = rowLengthNum / 100;
+        const plantDensityResult = (plantCountNum / rowLengthMeters) * (100 / rowSpacingNum);
 
-        if (plantDensityResult % 1 === 0) {
-            setResult(Math.round(plantDensityResult));
-        } else {
-            setResult(parseFloat(plantDensityResult.toFixed(2)));
-        }
+        setResult(parseFloat(plantDensityResult.toFixed(2)));
     };
 
-    const handleUnitChange = (selectedUnit) => {
-        setUnit(selectedUnit);
-        setAreaSize('');
-        setPlantSpacing('');
+    const handlePlantCountChange = (value) => {
+        setPlantCount(value);
         setResult(null);
     };
 
-    const handleAreaSizeChange = (value) => {
-        setAreaSize(value);
+    const handleRowLengthChange = (value) => {
+        setRowLength(value);
         setResult(null);
     };
 
-    const handlePlantSpacingChange = (value) => {
-        setPlantSpacing(value);
+    const handleRowSpacingChange = (value) => {
+        setRowSpacing(value);
         setResult(null);
     };
 
@@ -54,31 +49,29 @@ const PlantDensityCalculatorScreen = () => {
         <CalculatorLayout>
             <CalculatorTitle 
                 title="Plant Density Calculator"
-                description="Determine the optimal plant density for your fields based on area size and spacing between plants."
+                description="Determine the plant density (plants per m²) for your field based on plant count, row length, and row spacing."
             />
 
             <View style={calculatorStyles.contentContainer}>
-                <UnitSelector 
-                    units={[
-                        { label: 'Square Meters', value: 'square meters' },
-                        { label: 'Hectares', value: 'hectares' }
-                    ]}
-                    selectedUnit={unit}
-                    onUnitChange={handleUnitChange}
+                <InputField 
+                    label="Number of Plants in Measured Row:" 
+                    value={plantCount} 
+                    onChangeText={handlePlantCountChange} 
+                    placeholder="Enter number of plants in the measured row" 
                 />
 
                 <InputField 
-                    label={`Area Size (${unit === 'square meters' ? 'm²' : 'hectares'}):`} 
-                    value={areaSize} 
-                    onChangeText={handleAreaSizeChange} 
-                    placeholder={`Enter area size in ${unit}`} 
+                    label="Length of Measured Row (cm):" 
+                    value={rowLength} 
+                    onChangeText={handleRowLengthChange} 
+                    placeholder="Enter length of the row in cm" 
                 />
 
                 <InputField 
-                    label="Plant Spacing (meters):" 
-                    value={plantSpacing} 
-                    onChangeText={handlePlantSpacingChange} 
-                    placeholder="Enter spacing between plants in meters" 
+                    label="Row Spacing (cm):" 
+                    value={rowSpacing} 
+                    onChangeText={handleRowSpacingChange} 
+                    placeholder="Enter spacing between rows in cm" 
                 />
 
                 <CalculateButton onPress={handleCalculate} />
@@ -88,7 +81,7 @@ const PlantDensityCalculatorScreen = () => {
                     label="Plant Density" 
                     icon="nature" 
                     iconColor="#388E3C" 
-                    unit='plants per area unit'
+                    unit='plants/m²'
                 />
             </View>
         </CalculatorLayout>

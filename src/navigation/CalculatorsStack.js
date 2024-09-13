@@ -7,9 +7,9 @@ import CropProtectionCalculatorScreen from '../screens/Calculators/CropProtectio
 import FertilizationCalculatorScreen from '../screens/Calculators/FertilizationCalculatorScreen';
 import PlantWaterNeedsCalculatorScreen from '../screens/Calculators/PlantWaterNeedsCalculatorScreen';
 import GrainWeightAfterDryingCalculatorScreen from '../screens/Calculators/GrainWeightAfterDryingCalculatorScreen';
-import GrainStorageCalculatorScreen from '../screens/Calculators/GrainStorageCalculatorScreen';
-import SoilQualityCalculatorScreen from '../screens/Calculators/SoilQualityCalculatorScreen';
-import CropCostCalculatorScreen from '../screens/Calculators/CropCostCalculatorScreen';
+import GrainStorageCapacityCalculatorScreen from '../screens/Calculators/GrainStorageCapacityCalculatorScreen';
+import FuelConsumptionCalculatorScreen from '../screens/Calculators/FuelConsumptionCalculatorScreen';
+import MachineryEfficiencyCalculatorScreen from '../screens/Calculators/MachineryEfficiencyCalculatorScreen';
 
 const Stack = createStackNavigator();
 
@@ -20,7 +20,7 @@ const CalculatorsStack = () => {
                 headerStyle: {
                     borderBottomWidth: 2,
                     },
-                    headerTintColor: '#276e33',
+                    headerTintColor: '#1f78b4',
                     headerTitleStyle: {
                         fontWeight: 'bold',
                         fontSize: 18
@@ -37,9 +37,9 @@ const CalculatorsStack = () => {
                 <Stack.Screen name="FertilizationCalculator" component={FertilizationCalculatorScreen} options={{ headerShown: true, title: 'Fertilization Calculator' }} />
                 <Stack.Screen name="PlantWaterNeedsCalculator" component={PlantWaterNeedsCalculatorScreen} options={{ headerShown: true, title: 'Plant Water Needs Calculator' }} />
                 <Stack.Screen name="GrainWeightAfterDryingCalculator" component={GrainWeightAfterDryingCalculatorScreen} options={{ headerShown: true, title: 'Grain Weight After Drying Calculator' }} />
-                <Stack.Screen name="GrainStorageCalculator" component={GrainStorageCalculatorScreen} options={{ headerShown: true, title: 'Grain Storage Calculator' }} />
-                <Stack.Screen name="SoilQualityCalculator" component={SoilQualityCalculatorScreen} options={{ headerShown: true, title: 'Soil Quality Calculator' }} />
-                <Stack.Screen name="CropCostCalculator" component={CropCostCalculatorScreen} options={{ headerShown: true, title: 'Crop Cost Calculator' }} />
+                <Stack.Screen name="GrainStorageCapacityCalculator" component={GrainStorageCapacityCalculatorScreen} options={{ headerShown: true, title: 'Grain Storage Capacity Calculator' }} />
+                <Stack.Screen name="FuelConsumptionCalculator" component={FuelConsumptionCalculatorScreen} options={{ headerShown: true, title: 'Fuel Consumption Calculator' }} />
+                <Stack.Screen name="MachineryEfficiencyCalculator" component={MachineryEfficiencyCalculatorScreen} options={{ headerShown: true, title: 'Machinery Efficiency Calculator' }} />
         </Stack.Navigator>
     );
 };

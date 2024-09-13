@@ -7,10 +7,9 @@ export const calculatorStyles = StyleSheet.create({
         padding: '5%',
         alignItems: 'center',
         elevation: 5,
-        marginVertical: '3%',
     },
     contentContainer: {
-        width: '95%',
+        width: '98%',
         padding: '5%',
         borderRadius: 20,
         alignItems: 'center',
@@ -58,20 +57,35 @@ export const calculatorStyles = StyleSheet.create({
         textAlign: 'center',
     },
     resultContainer: {
-        flexDirection: 'row',
-        justifyContent: 'center',
-        alignItems: 'center',
+        alignItems: 'center', 
+        justifyContent: 'center',  
         marginTop: '5%',
         padding: '5%',
         backgroundColor: '#ffffff',
         borderRadius: 16,
         elevation: 4,
+        width: '90%',
+    },
+    resultIcon: {
+        marginBottom: '3%',
     },
     resultText: {
         color: '#2c3e50',
-        fontSize: 22,
+        fontSize: 18,
+        textAlign: 'center',
+        marginBottom: '3%',
+    },
+    resultValueContainer: {
+        alignItems: 'center',
+    },
+    resultValue: {
+        color: '#1f78b4',
+        fontSize: 24,
         fontWeight: 'bold',
-        marginLeft: 10,
+    },
+    resultUnit: {
+        color: '#1f78b4',
+        fontSize: 18,
     },
     unitSelector: {
         flexDirection: 'row',
