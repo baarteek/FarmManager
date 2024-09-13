@@ -1,2 +1,0 @@
-﻿REM ispy-internal
-ALLOFF
