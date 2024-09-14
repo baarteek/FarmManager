@@ -11,6 +11,7 @@ import { SoilMeasurementProvider } from '../context/SoilMeasurementProvider';
 import { PlotNumberProvider } from '../context/PlotNumberProvider';
 import AddPlotNumberScreen from '../screens/FieldManagement/AddPlotNumberScreen';
 import EditPlotNumberScreen from '../screens/FieldManagement/EditPlotNumberScreen';
+import GMLUploaderScreen from '../screens/FieldManagement/GMLUploaderScreen';
 
 
 const Stack = createStackNavigator();
@@ -43,6 +44,7 @@ const FieldmanagementStack = () => {
                             <Stack.Screen name='Edit Soil Measurement' component={EditSoilMeasurementScreen} options={{headerShown: true, title: 'Edit Soil Measurement'}} />
                             <Stack.Screen name='Add Plot Number' component={AddPlotNumberScreen} options={{headerShown: true, title: 'Add Plot Number'}} />
                             <Stack.Screen name='Edit Plot Number' component={EditPlotNumberScreen} options={{headerShown: true, title: 'Edit Plot Number'}} />
+                            <Stack.Screen name='Add Fields From File' component={GMLUploaderScreen} options={{headerShown: true, title: 'Add Fields From File'}} />
                         </Stack.Navigator>
                     </PlotNumberProvider>
                 </SoilMeasurementProvider>

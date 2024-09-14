@@ -68,6 +68,10 @@ const AddFieldScreen = () => {
                 <TouchableOpacity style={[styles.button, { margin: '5%', marginTop: '5%', width: '80%', backgroundColor: '#62C962', alignSelf: 'center' }]} onPress={handleAddField}>
                     <Text style={{ textAlign: 'center', fontWeight: 'bold', fontSize: 22, color: '#fff' }}>Add New Field</Text>
                 </TouchableOpacity>
+                <View style={[styles.line, {borderColor: '#525252'}]} />
+                <TouchableOpacity style={[styles.button, { margin: '5%', marginTop: '5%', width: '80%', backgroundColor: '#525252', alignSelf: 'center' }]} onPress={ () => navigation.navigate('Add Fields From File') }>
+                    <Text style={{ textAlign: 'center', fontWeight: 'bold', fontSize: 22, color: '#fff' }}>Add Fields From File</Text>
+                </TouchableOpacity>
             </ScrollView>
         </TouchableWithoutFeedback>
     );
