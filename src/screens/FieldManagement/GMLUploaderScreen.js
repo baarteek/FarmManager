@@ -2,11 +2,13 @@ import React, { useState } from "react";
 import { Button, View, Text, ActivityIndicator } from "react-native";
 import * as DocumentPicker from 'expo-document-picker';
 import { uploadGMLFileToServer } from "../../utils/FileUtils";
+import { useAuth } from "../../context/AuthContext";
 
 const GMLUploaderScreen = () => {
   const [fileName, setFileName] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const { token } = useAuth();
 
   const handleFilePicker = async () => {
     try {
@@ -14,7 +16,7 @@ const GMLUploaderScreen = () => {
         type: '*/*',
       });
 
-      console.log('picked file:', res);
+
 
       if (!res.canceled && res.assets && res.assets.length > 0) {
         const file = res.assets[0];
@@ -36,13 +38,14 @@ const GMLUploaderScreen = () => {
           type: file.mimeType || 'application/octet-stream',
         });
 
-        await uploadGMLFileToServer(formData);
+        await uploadGMLFileToServer(formData, token);
       } else if (res.canceled) {
         setError('User cancelled file picker');
+        console.log('File picker cancelled');
       }
     } catch (err) {
       console.log('Error picking document', err);
-      setError(err.message);
+      setError(err.message || 'Unknown error occurred while picking the document');
     } finally {
       setLoading(false);
     }
