@@ -1,8 +1,10 @@
 import React, { useRef } from 'react';
-import { StyleSheet, View, Text } from 'react-native';
+import { StyleSheet, View, Text, TouchableOpacity } from 'react-native';
 import MapView, { Marker, Circle } from 'react-native-maps';
 import useLocation from '../../hooks/useLocation';
-import CenterMapButton from '../../components/CenterMapButton';
+import CenterMapButton from '../../components/CenterMapButton'; 
+import FunctionListButton from '../../components/FunctionListButton';
+import LoadingView from '../../components/LoadingView';
 
 const MapScreen = () => {
   const { location, errorMsg } = useLocation();
@@ -20,7 +22,7 @@ const MapScreen = () => {
   };
 
   if (errorMsg) {
-    return <Text>{errorMsg}</Text>;
+    return ;
   }
 
   return (
@@ -47,11 +49,23 @@ const MapScreen = () => {
               fillColor="rgba(0, 150, 255, 0.2)"
             />
           </MapView>
-          
+
           <CenterMapButton onPress={centerMapOnLocation} />
+
+          <FunctionListButton>
+            <TouchableOpacity onPress={() => alert('Funkcja 1')}>
+              <Text style={styles.listItem}>Function 1</Text>
+            </TouchableOpacity>
+            <TouchableOpacity onPress={() => alert('Funkcja 2')}>
+              <Text style={styles.listItem}>Function 2</Text>
+            </TouchableOpacity>
+            <TouchableOpacity onPress={() => alert('Funkcja 3')}>
+              <Text style={styles.listItem}>Function 3</Text>
+            </TouchableOpacity>
+          </FunctionListButton>
         </>
       ) : (
-        <Text>Ładowanie lokalizacji...</Text>
+        <LoadingView title='Loading location' />
       )}
     </View>
   );
@@ -63,6 +77,12 @@ const styles = StyleSheet.create({
   },
   map: {
     ...StyleSheet.absoluteFillObject,
+  },
+  listItem: {
+    padding: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: '#ccc',
+    fontSize: 16,
   },
 });
 
