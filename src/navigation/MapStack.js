@@ -1,11 +1,4 @@
-import { createStackNavigator } from "@react-navigation/stack";
-import FarmManagementScreen from "../screens/FarmManagement/FarmManagementScreen";
-import { FarmProvider } from "../context/FarmProvider";
-import AddFarmScreen from "../screens/FarmManagement/AddFarmScreen";
-import FarmEditScreen from "../screens/FarmManagement/FarmEditScreen";
-import AddFieldScreen from "../screens/FieldManagement/AddFieldScreen"
-import EditFieldScreen from "../screens/FieldManagement/EditFieldScreen";
-import { FieldProvider } from "../context/FieldProvider";
+import { createStackNavigator } from "@react-navigation/stack";;
 import { MapProvider } from "../context/MapProvider";
 import MapScreen from "../screens/Map/MapScreen";
 
@@ -28,7 +21,7 @@ const MapStack = () => {
                         drawerActiveTintColor: '#276e33'
                     }}
                 >
-                    <Stack.Screen name="Map" component={MapScreen} options={{ headerShown: false }} />
+                    <Stack.Screen name="MapScreen" component={MapScreen} options={{ headerShown: false }} />
                 </Stack.Navigator>
         </MapProvider>
     )
