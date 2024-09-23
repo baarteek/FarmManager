@@ -26,7 +26,6 @@ export const MapProvider = ({ children }) => {
                 }
             });
             setMapData(response.data);
-            console.log('Map data fetched successfully:', response.data);
             setError(null);
         } catch (err) {
             console.error('Error fetching map data:', err.message);
