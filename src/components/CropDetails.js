@@ -257,7 +257,7 @@ const CropDetails = ({ crop, handleDeleteCrop }) => {
                                         <Text style={styles.text}>{plantProtection.name}</Text>
                                     </View>
                                 </TouchableOpacity>
-                                <TouchableOpacity onPress={() => navigation.navigate('Edit PlantProtection', { cropId: crop.id, plantProtectionId: plantProtection.id})}>
+                                <TouchableOpacity onPress={() => navigation.navigate('Edit Plant Protection', { cropId: crop.id, plantProtectionId: plantProtection.id})}>
                                     <Icon name="edit" size={22} color="#00BFFF" />
                                 </TouchableOpacity>
                                 <TouchableOpacity onPress={() => handleDeletePlantProtection(plantProtection.id)}>
@@ -273,7 +273,7 @@ const CropDetails = ({ crop, handleDeleteCrop }) => {
                 <View style={[styles.rowContainer, { justifyContent: 'space-around', marginVertical: '5%' }]}>
                     <TouchableOpacity 
                         style={[styles.button, { backgroundColor: '#00E000', width: '80%' }]} 
-                        onPress={() => navigation.navigate('Add PlantProtection', { cropId: crop.id })}
+                        onPress={() => navigation.navigate('Add Plant Protection', { cropId: crop.id })}
                     >
                         <Text style={{ textAlign: 'center', fontWeight: 'bold', fontSize: 16, color: '#fff' }}>Add Plant Protection</Text>
                     </TouchableOpacity>

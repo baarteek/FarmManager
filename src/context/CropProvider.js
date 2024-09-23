@@ -39,10 +39,34 @@ export const CropProvider = ({ children }) => {
         fetchActiveCrops();
     }, [token]);
 
+    const fetchCropById = async (cropId) => {
+        setLoading(true);
+        try {
+            if (!token) {
+                throw new Error('No token found');
+            }
+
+            const response = await axios.get(`${API_BASE_URL}/Crops/${cropId}`, {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            });
+            setError(null);
+            setCrops(response.data);
+            return response.data;
+        } catch (err) {
+            console.error('Error fetching crop:', err.message);
+            setError('Failed to load crop details. Please try again later.');
+            throw err;
+        } finally {
+            setLoading(false);
+        }
+    };
+
     const addCrop = async (newCrop) => {
         setLoading(true);
         try {
-            if(!token) {
+            if (!token) {
                 throw new Error('No token found');
             }
 
@@ -53,7 +77,7 @@ export const CropProvider = ({ children }) => {
                 }
             });
             setCrops(prevCrops => [...prevCrops, response.data]);
-        } catch(err) {
+        } catch (err) {
             console.error('Error adding crop:', err.message);
             setError('Failed to add crop. Please try again later.');
         } finally {
@@ -64,7 +88,7 @@ export const CropProvider = ({ children }) => {
     const editCrop = async (cropId, updatedCrop) => {
         setLoading(true);
         try {
-            if(!token) {
+            if (!token) {
                 throw new Error('No token found');
             }
 
@@ -90,7 +114,7 @@ export const CropProvider = ({ children }) => {
     const handleDeleteCrop = async (id) => {
         setLoading(true);
         try {
-            if(!token) {
+            if (!token) {
                 throw new Error('No token found');
             }
 
@@ -102,7 +126,7 @@ export const CropProvider = ({ children }) => {
 
             setCrops(prevCrops => prevCrops.filter(crop => crop.id !== id));
             setError(null);
-        } catch(err) {
+        } catch (err) {
             console.error('Error deleting crop:', err.message);
             setError('Failed to delete crop. Please try again later.');
         } finally {
@@ -111,7 +135,7 @@ export const CropProvider = ({ children }) => {
     };
 
     return (
-        <CropContext.Provider value={{ crops, loading, error, addCrop, editCrop, handleDeleteCrop, fetchActiveCrops }}>
+        <CropContext.Provider value={{ crops, loading, error, addCrop, editCrop, handleDeleteCrop, fetchActiveCrops, fetchCropById }}>
             {children}
         </CropContext.Provider>
     );
