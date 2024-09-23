@@ -1,15 +1,24 @@
-import React, { useRef, useState } from 'react';
+import React, { useRef, useEffect, useState } from 'react';
 import { StyleSheet, View, Text, TouchableOpacity } from 'react-native';
-import MapView, { Marker, Circle } from 'react-native-maps';
+import MapView, { Polygon, Marker } from 'react-native-maps';
+import { useMapContext } from '../../context/MapProvider';
 import useLocation from '../../hooks/useLocation';
 import CenterMapButton from '../../components/CenterMapButton'; 
 import FunctionListButton from '../../components/FunctionListButton';
 import LoadingView from '../../components/LoadingView';
+import { parseCoordinates } from '../../utils/CoordinateUtils'; 
 
 const MapScreen = () => {
   const { location, errorMsg } = useLocation();
+  const { mapData, loading, error, fetchMapData } = useMapContext();
   const mapRef = useRef(null);
   const [mapType, setMapType] = useState('hybrid');
+
+  useEffect(() => {
+    if (location) {
+      fetchMapData('90673cf9-dbf8-4133-b465-2b7d47ca2a00');
+    }
+  }, [location]);
 
   const centerMapOnLocation = () => {
     if (location && mapRef.current) {
@@ -41,19 +50,17 @@ const MapScreen = () => {
             initialRegion={location}
             showsUserLocation={true}
           >
-            <Marker
-              coordinate={{ latitude: location.latitude, longitude: location.longitude }}
-              title="Moja lokalizacja"
-              description="Tutaj jesteś!"
-              pinColor='blue'
-            />
+            {mapData && mapData.map((field, index) => (
+              <Polygon
+                key={index}
+                coordinates={parseCoordinates(field.coordinates)}
+                strokeColor="#FF0000"
+                fillColor="rgba(255, 0, 0, 0.3)"
+                strokeWidth={2}
+              />
+            ))}
 
-            <Circle
-              center={{ latitude: location.latitude, longitude: location.longitude }}
-              radius={100}
-              strokeColor="rgba(0, 150, 255, 0.5)"
-              fillColor="rgba(0, 150, 255, 0.2)"
-            />
+
           </MapView>
 
           <CenterMapButton onPress={centerMapOnLocation} />
@@ -67,7 +74,7 @@ const MapScreen = () => {
           </FunctionListButton>
         </>
       ) : (
-        <LoadingView title='Loading location' />
+        <LoadingView title='Loading location...' />
       )}
     </View>
   );
