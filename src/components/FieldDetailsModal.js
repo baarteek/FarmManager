@@ -10,27 +10,27 @@ const FieldDetailsModal = ({ isVisible, onClose, field }) => {
 
   const navigateToSoilMeasurements = () => {
     isVisible && onClose();
-    navigation.navigate('AddSoilMeasurement', { fieldId: field.fieldId });
+    navigation.navigate('Add Soil Measurement', { fieldId: field.fieldId });
   };
 
   const navigateToFertilization = () => {
     isVisible && onClose();
-    navigation.navigate('AddFertilization', { fieldId: field.cropId });
+    navigation.navigate('Add Fertilization', { fieldId: field.cropId });
   };
 
   const navigateToPlantProtections = () => {
     isVisible && onClose();
-    navigation.navigate('AddPlantProtection', { cropId: field.cropId });
+    navigation.navigate('Add Plant Protection', { cropId: field.cropId });
   };
 
   const navigateToCropDetails = () => {
     isVisible && onClose();
-    navigation.navigate('CropDetails', { cropId: field.cropId });
+    navigation.navigate('Crop Details', { cropId: field.cropId });
   };
 
   const navigateToFieldDetails = () => {
     isVisible && onClose();
-    navigation.navigate('FieldDetails', { fieldId: field.fieldId });
+    navigation.navigate('Field Details', { fieldId: field.fieldId });
   };
 
   return (
