@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React, { useRef, useState } from 'react';
 import { StyleSheet, View, Text, TouchableOpacity } from 'react-native';
 import MapView, { Marker, Circle } from 'react-native-maps';
 import useLocation from '../../hooks/useLocation';
@@ -9,6 +9,7 @@ import LoadingView from '../../components/LoadingView';
 const MapScreen = () => {
   const { location, errorMsg } = useLocation();
   const mapRef = useRef(null);
+  const [mapType, setMapType] = useState('hybrid');
 
   const centerMapOnLocation = () => {
     if (location && mapRef.current) {
@@ -21,8 +22,12 @@ const MapScreen = () => {
     }
   };
 
+  const toggleMapType = () => {
+    setMapType((prevType) => (prevType === 'standard' ? 'hybrid' : 'standard'));
+  };
+
   if (errorMsg) {
-    return ;
+    return <Text>Error: {errorMsg}</Text>;
   }
 
   return (
@@ -32,6 +37,7 @@ const MapScreen = () => {
           <MapView
             ref={mapRef}
             style={styles.map}
+            mapType={mapType}
             initialRegion={location}
             showsUserLocation={true}
           >
@@ -53,14 +59,10 @@ const MapScreen = () => {
           <CenterMapButton onPress={centerMapOnLocation} />
 
           <FunctionListButton>
-            <TouchableOpacity onPress={() => alert('Funkcja 1')}>
-              <Text style={styles.listItem}>Function 1</Text>
-            </TouchableOpacity>
-            <TouchableOpacity onPress={() => alert('Funkcja 2')}>
-              <Text style={styles.listItem}>Function 2</Text>
-            </TouchableOpacity>
-            <TouchableOpacity onPress={() => alert('Funkcja 3')}>
-              <Text style={styles.listItem}>Function 3</Text>
+            <TouchableOpacity onPress={toggleMapType}>
+              <Text style={styles.listItem}>
+                {mapType === 'standard' ? 'Change to satellite view' : 'Change to normal view'}
+              </Text>
             </TouchableOpacity>
           </FunctionListButton>
         </>
