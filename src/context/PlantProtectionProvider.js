@@ -14,7 +14,12 @@ export const PlantProtectionProvider = ({ children }) => {
     const [error, setError] = useState(null);
 
     const fetchPlantProtectionById = async (id) => {
+        setLoading(true);
         try {
+            if (!token) {
+                throw new Error('No token found');
+            }
+
             const response = await axios.get(`${API_BASE_URL}/PlantProtections/${id}`, {
                 headers: {
                     Authorization: `Bearer ${token}`
@@ -24,6 +29,8 @@ export const PlantProtectionProvider = ({ children }) => {
         } catch (err) {
             console.error('Error fetching plant protection:', err.message);
             throw err;
+        } finally {
+            setLoading(false);
         }
     };
 

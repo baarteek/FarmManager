@@ -52,7 +52,6 @@ export const CropProvider = ({ children }) => {
                 }
             });
             setError(null);
-            setCrops(response.data);
             return response.data;
         } catch (err) {
             console.error('Error fetching crop:', err.message);

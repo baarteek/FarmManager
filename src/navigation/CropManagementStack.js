@@ -11,6 +11,7 @@ import EditFertilizationScreen from '../screens/CropManagement/EditFertilization
 import { PlantProtectionProvider } from '../context/PlantProtectionProvider';
 import AddPlantProtectionScreen from '../screens/CropManagement/AddPlantProtectionScreen';
 import EditPlantProtectionScreen from '../screens/CropManagement/EditPlantProtectionScreen';
+import { CultivationOperationProvider } from '../context/CultivationOperationProvider';
 
 const Stack = createStackNavigator();
 
@@ -19,32 +20,34 @@ const CropManagementStack = () => {
         <FarmProvider>
             <FieldProvider>
                 <CropProvider>
-                    <FertilizationProvider>
-                        <PlantProtectionProvider>
-                            <Stack.Navigator
-                                screenOptions={{
-                                    headerStyle: {
-                                        borderBottomWidth: 2,
-                                    },
-                                    headerTintColor: '#276e33',
-                                    headerTitleStyle: {
-                                        fontWeight: 'bold',
-                                        fontSize: 18
-                                    },
-                                    drawerActiveBackgroundColor: '#276e33',
-                                    drawerActiveTintColor: '#276e33'
-                                }}
-                            >
-                                <Stack.Screen name="CropManagementMain" component={CropManagementScreen} options={{ headerShown: false }} />
-                                <Stack.Screen name="Add Crop" component={AddCropScreen} options={{ headerShown: true, title: 'Add Crop' }} />
-                                <Stack.Screen name="Edit Crop" component={EditCropScreen} options={{ headerShown: true, title: 'Edit Crop' }} />
-                                <Stack.Screen name="Add Fertilization" component={AddFertilizationScreen} options={{ headerShown: true, title: 'Add Fertilization' }} />
-                                <Stack.Screen name="Edit Fertilization" component={EditFertilizationScreen} options={{ headerShown: true, title: 'Edit Fertilization' }} />
-                                <Stack.Screen name="Add Plant Protection" component={AddPlantProtectionScreen} options={{ headerShown: true, title:'Add Plant Protection' }} />
-                                <Stack.Screen name="Edit Plant Protection" component={EditPlantProtectionScreen} options={{ headerShown: true, title: 'Edit Plant Protection' }} />
-                            </Stack.Navigator>
-                        </PlantProtectionProvider>
-                    </FertilizationProvider>
+                    <CultivationOperationProvider>
+                        <FertilizationProvider>
+                            <PlantProtectionProvider>
+                                <Stack.Navigator
+                                    screenOptions={{
+                                        headerStyle: {
+                                            borderBottomWidth: 2,
+                                        },
+                                        headerTintColor: '#276e33',
+                                        headerTitleStyle: {
+                                            fontWeight: 'bold',
+                                            fontSize: 18
+                                        },
+                                        drawerActiveBackgroundColor: '#276e33',
+                                        drawerActiveTintColor: '#276e33'
+                                    }}
+                                >
+                                    <Stack.Screen name="CropManagementMain" component={CropManagementScreen} options={{ headerShown: false }} />
+                                    <Stack.Screen name="Add Crop" component={AddCropScreen} options={{ headerShown: true, title: 'Add Crop' }} />
+                                    <Stack.Screen name="Edit Crop" component={EditCropScreen} options={{ headerShown: true, title: 'Edit Crop' }} />
+                                    <Stack.Screen name="Add Fertilization" component={AddFertilizationScreen} options={{ headerShown: true, title: 'Add Fertilization' }} />
+                                    <Stack.Screen name="Edit Fertilization" component={EditFertilizationScreen} options={{ headerShown: true, title: 'Edit Fertilization' }} />
+                                    <Stack.Screen name="Add Plant Protection" component={AddPlantProtectionScreen} options={{ headerShown: true, title:'Add Plant Protection' }} />
+                                    <Stack.Screen name="Edit Plant Protection" component={EditPlantProtectionScreen} options={{ headerShown: true, title: 'Edit Plant Protection' }} />
+                                </Stack.Navigator>
+                            </PlantProtectionProvider>
+                        </FertilizationProvider>
+                    </CultivationOperationProvider>
                 </CropProvider>
             </FieldProvider>
         </FarmProvider>

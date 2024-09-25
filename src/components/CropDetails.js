@@ -11,6 +11,7 @@ import { useAuth } from '../context/AuthContext';
 import API_BASE_URL from '../config/apiConfig';
 import { useFertilizationContext } from '../context/FertilizationProvider';
 import { usePlantProtectionContext } from '../context/PlantProtectionProvider'; 
+import { useCultivationOperationContext } from '../context/CultivationOperationProvider';
 
 const CropDetails = ({ crop, handleDeleteCrop }) => {
     const navigation = useNavigation();
@@ -25,9 +26,11 @@ const CropDetails = ({ crop, handleDeleteCrop }) => {
     const [cropTypeName, setCropTypeName] = useState('');
     const [fertilizations, setFertilizations] = useState(crop.fertilizations || []);
     const [plantProtections, setPlantProtections] = useState(crop.plantProtections || []); 
+    const [ cultivationOperations, setCultivationOperations] = useState(crop.cultivationOperations || []);
 
     const { fetchFertilizationById, deleteFertilization } = useFertilizationContext();
     const { fetchPlantProtectionById, deletePlantProtection } = usePlantProtectionContext();
+    const { fetchCultivationOperationById, deleteCultivationOperation } = useCultivationOperationContext();
 
     useEffect(() => {
         const fetchCropTypes = async () => {
@@ -113,6 +116,20 @@ const CropDetails = ({ crop, handleDeleteCrop }) => {
         setModalVisible(true);
     };
 
+    const handleCultivateOperationClick = async (id) => {
+        const operation = await fetchCultivationOperationById(id);
+
+        const details = {
+            Name: operation.name,
+            Date: formatDate(operation.date),
+            Description: operation.description,
+        }
+
+        setSelectedDetails(details);
+        setModalTitle('Cultivation Operation Details');
+        setModalVisible(true);
+    };
+
     const handlePlantProtectionClick = async (id) => {
         const plantProtection = await fetchPlantProtectionById(id);
 
@@ -139,6 +156,25 @@ const CropDetails = ({ crop, handleDeleteCrop }) => {
                     try {
                         await deleteFertilization(id);
                         setFertilizations(fertilizations.filter(f => f.id !== id));
+                    } catch (error) {
+                        console.error("Error deleting fertilization:", error);
+                    }
+                }},
+            ],
+            { cancelable: false }
+        );
+    };
+
+    const handleCultivationOperationDelete = async (id) => {
+        Alert.alert(
+            "Delete Fertilization",
+            "Are you sure you want to delete this Cultivation Operation?",
+            [
+                { text: "Cancel", style: "cancel" },
+                { text: "Delete", onPress: async () =>  {
+                    try {
+                        await deleteCultivationOperation(id);
+                        setCultivationOperations(cultivationOperations.filter(co => co.id !== id));
                     } catch (error) {
                         console.error("Error deleting fertilization:", error);
                     }
@@ -195,16 +231,44 @@ const CropDetails = ({ crop, handleDeleteCrop }) => {
                     </View>
                 </View>
                 <View style={styles.line} />
-                <View style={styles.infoRowContainer}>
-                    <Text style={styles.text}>Sowing Date:</Text>
-                    <Text style={styles.text}>{formatDate(crop.sowingDate)}</Text>  
-                </View>
-                <View style={styles.line} />
-                <View style={styles.infoRowContainer}>
-                    <Text style={styles.text}>Harvest Date:</Text>
-                    <Text style={styles.text}>{formatDate(crop.harvestDate)}</Text> 
-                </View>
-                <View style={styles.line} />
+
+                <ExpandableComponent title="Cultivation Operation" isExpanded={false} backgroundColor="#BAF1BA" style={{ width: '100%' }}>
+                    {cultivationOperations && cultivationOperations.length > 0 ? (
+                        cultivationOperations.map((operation, index) => (
+                            <React.Fragment key={index}>
+                                <View style={styles.infoRowContainer}>
+                                    <TouchableOpacity 
+                                        style={{ width: '70%' }} 
+                                        onPress={() => handleCultivateOperationClick(operation.id)}
+                                    >
+                                        <View style={styles.rowContainer}>
+                                            <Icon name="search" size={22} color="#A9A9A9" style={{ marginRight: '3%' }} />
+                                            <Text style={styles.text}>{operation.name}</Text>
+                                        </View>
+                                    </TouchableOpacity>
+                                    <TouchableOpacity onPress={() => navigation.navigate('Edit Cultivation Operation', { cropId: crop.id, operationId: operation.id })}>
+                                        <Icon name="edit" size={22} color="#00BFFF" />
+                                    </TouchableOpacity>
+                                    <TouchableOpacity onPress={() => handleCultivationOperationDelete(operation.id)}>
+                                        <Icon name="delete" size={22} color="#FC7F7F" />
+                                    </TouchableOpacity>
+                                </View>
+                                <View style={[styles.line, { borderColor: '#22734D', marginBottom: '5%', marginTop: '5%' }]} />
+                            </React.Fragment>
+                        ))
+                    ) : (
+                        <Text style={[styles.text, { textAlign: 'center' }]}>No fertilization history available</Text>
+                    )}
+                    <View style={[styles.rowContainer, { justifyContent: 'space-around', marginVertical: '5%' }]}>
+                        <TouchableOpacity 
+                            style={[styles.button, { backgroundColor: '#00E000', width: '80%' }]} 
+                            onPress={() => navigation.navigate('Add Fertilization', { cropId: crop.id })}
+                        >
+                            <Text style={{ textAlign: 'center', fontWeight: 'bold', fontSize: 16, color: '#fff' }}>Add Fertilization</Text>
+                        </TouchableOpacity>
+                    </View>
+                </ExpandableComponent>
+
                 
                 <ExpandableComponent title="Fertilization" isExpanded={false} backgroundColor="#BAF1BA" style={{ width: '100%' }}>
                     {fertilizations && fertilizations.length > 0 ? (
