@@ -257,14 +257,14 @@ const CropDetails = ({ crop, handleDeleteCrop }) => {
                             </React.Fragment>
                         ))
                     ) : (
-                        <Text style={[styles.text, { textAlign: 'center' }]}>No fertilization history available</Text>
+                        <Text style={[styles.text, { textAlign: 'center' }]}>No cultivation operation history available</Text>
                     )}
                     <View style={[styles.rowContainer, { justifyContent: 'space-around', marginVertical: '5%' }]}>
                         <TouchableOpacity 
                             style={[styles.button, { backgroundColor: '#00E000', width: '80%' }]} 
-                            onPress={() => navigation.navigate('Add Fertilization', { cropId: crop.id })}
+                            onPress={() => navigation.navigate('Add Cultivation Operation', { cropId: crop.id })}
                         >
-                            <Text style={{ textAlign: 'center', fontWeight: 'bold', fontSize: 16, color: '#fff' }}>Add Fertilization</Text>
+                            <Text style={{ textAlign: 'center', fontWeight: 'bold', fontSize: 16, color: '#fff' }}>Add Cultivation Operation</Text>
                         </TouchableOpacity>
                     </View>
                 </ExpandableComponent>

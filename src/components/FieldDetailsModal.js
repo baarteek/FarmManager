@@ -33,6 +33,11 @@ const FieldDetailsModal = ({ isVisible, onClose, field }) => {
     navigation.navigate('Field Details', { fieldId: field.fieldId });
   };
 
+  const navigateToCultivationOperations = () => {
+    isVisible && onClose();
+    navigation.navigate('Add Cultivation Operation', { cropId: field.cropId });
+  };
+
   return (
     <Modal
       visible={isVisible}
@@ -72,6 +77,11 @@ const FieldDetailsModal = ({ isVisible, onClose, field }) => {
             <Text style={styles.actionButtonText}>Add Soil Measurements</Text>
           </TouchableOpacity>
 
+          <TouchableOpacity style={[styles.actionButton, styles.cultivationOperationButton]} onPress={navigateToCultivationOperations}>
+            <Icon name="tractor" size={20} color="white" style={styles.icon} />
+            <Text style={styles.actionButtonText}>Add Cultivation Operation</Text>
+          </TouchableOpacity>
+
           <TouchableOpacity style={[styles.actionButton, styles.fertilizationButton]} onPress={navigateToFertilization}>
             <Icon name="leaf" size={20} color="white" style={styles.icon} />
             <Text style={styles.actionButtonText}>Add Fertilization</Text>
@@ -98,6 +108,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+    marginTop: 22,
     backgroundColor: 'rgba(0, 0, 0, 0.5)',
   },
   modalContent: {
@@ -145,19 +156,22 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   cropDetailsButton: {
-    backgroundColor: '#FF5722',
+    backgroundColor: '#4CAF50',
   },
   fieldDetailsButton: {
     backgroundColor: '#795548',
   },
   soilButton: {
-    backgroundColor: '#FF9800',
+    backgroundColor: '#FF9800', 
+  },
+  cultivationOperationButton: {
+    backgroundColor: '#2196F3',
   },
   fertilizationButton: {
-    backgroundColor: '#4CAF50',
+    backgroundColor: '#FFC107',
   },
   plantProtectionButton: {
-    backgroundColor: '#2196F3',
+    backgroundColor: '#F44336',
   },
   actionButtonText: {
     color: 'white',
