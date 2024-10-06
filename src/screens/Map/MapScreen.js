@@ -9,7 +9,7 @@ import LoadingView from '../../components/LoadingView';
 import { parseCoordinates } from '../../utils/CoordinateUtils';
 import FieldDetailsModal from '../../components/FieldDetailsModal';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import { calculateDistance, calculateMidpoint } from '../../utils/MapCalculations';
+import { calculateDistance, calculateMidpoint, calculatePolygonArea } from '../../utils/MapCalculations';
 
 const MapScreen = () => {
   const { location, errorMsg } = useLocation();
@@ -19,8 +19,10 @@ const MapScreen = () => {
   const [selectedField, setSelectedField] = useState(null);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [distanceMode, setDistanceMode] = useState(false);
+  const [polygonMode, setPolygonMode] = useState(false);
   const [points, setPoints] = useState([]);
   const [lines, setLines] = useState([]);
+  const [polygons, setPolygons] = useState([]);
 
   const colors = ['#FF0000', '#00FF00', '#0000FF', '#FFFF00', '#FF00FF', '#00FFFF'];
   const [colorIndex, setColorIndex] = useState(0);
@@ -47,7 +49,7 @@ const MapScreen = () => {
   };
 
   const handlePolygonPress = (field) => {
-    if(!distanceMode) {
+    if (!distanceMode && !polygonMode) {
       setSelectedField(field);
       setIsModalVisible(true);
     }
@@ -65,11 +67,46 @@ const MapScreen = () => {
       setColorIndex(0);
     }
     setDistanceMode(!distanceMode);
+    if (!distanceMode) {
+      setPolygonMode(false);
+      setPolygons([]);
+    }
+  };
+
+  const togglePolygonMode = () => {
+    if (polygonMode) {
+      setPoints([]);
+      setPolygons([]);
+      setColorIndex(0);
+    }
+    setPolygonMode(!polygonMode);
+    if (!polygonMode) {
+      setDistanceMode(false);
+      setLines([]);
+    }
   };
 
   const handleMapPress = (e) => {
+    const newPoint = e.nativeEvent.coordinate;
+
+    if (polygonMode) {
+      if (points.length > 2 && newPoint.latitude === points[0].latitude && newPoint.longitude === points[0].longitude) {
+        const area = calculatePolygonArea(points);
+        const newPolygon = {
+          points,
+          area,
+          color: colors[colorIndex],
+        };
+
+        setPolygons([...polygons, newPolygon]);
+        setColorIndex((prevIndex) => (prevIndex + 1) % colors.length);
+        setPoints([]);
+      } else {
+        setPoints([...points, newPoint]);
+      }
+    }
+
     if (distanceMode) {
-      const newPoint = e.nativeEvent.coordinate;
       setPoints([...points, newPoint]);
 
       if (points.length === 1) {
@@ -77,13 +114,13 @@ const MapScreen = () => {
           points: [points[0], newPoint],
           color: colors[colorIndex],
           distance: calculateDistance(points[0], newPoint),
-          midpoint: calculateMidpoint(points[0], newPoint)
+          midpoint: calculateMidpoint(points[0], newPoint),
         };
 
-        setLines([...lines, newLine]);  
+        setLines([...lines, newLine]);
         setColorIndex((prevIndex) => (prevIndex + 1) % colors.length);
-    
-        setPoints([]); 
+
+        setPoints([]);
       }
     }
   };
@@ -136,6 +173,25 @@ const MapScreen = () => {
                 </Marker>
               </React.Fragment>
             ))}
+
+            {polygons.map((polygon, index) => (
+              <React.Fragment key={index}>
+                <Polygon
+                  coordinates={polygon.points}
+                  strokeColor={polygon.color}
+                  fillColor="rgba(0, 255, 0, 0.2)"
+                  strokeWidth={2}
+                />
+                <Marker
+                  coordinate={calculateMidpoint(polygon.points[0], polygon.points[2])}
+                  anchor={{ x: 0.5, y: 0.5 }}
+                >
+                  <View style={styles.areaLabel}>
+                    <Text style={styles.areaText}>{`${polygon.area} ha`}</Text>
+                  </View>
+                </Marker>
+              </React.Fragment>
+            ))}
           </MapView>
 
           <CenterMapButton onPress={centerMapOnLocation} />
@@ -151,6 +207,12 @@ const MapScreen = () => {
               <Ionicons name="analytics-outline" size={20} color="black" />
               <Text style={styles.listItem}>
                 {distanceMode ? 'Cancel measuring distance' : 'Measure distance'}
+              </Text>
+            </TouchableOpacity>
+            <TouchableOpacity onPress={togglePolygonMode} style={styles.listItemContainer}>
+              <Ionicons name="shapes-outline" size={20} color="black" />
+              <Text style={styles.listItem}>
+                {polygonMode ? 'Cancel polygon mode' : 'Start polygon mode'}
               </Text>
             </TouchableOpacity>
           </FunctionListButton>
@@ -194,6 +256,17 @@ const styles = StyleSheet.create({
     borderColor: '#000',
   },
   distanceText: {
+    fontSize: 12,
+    fontWeight: 'bold',
+  },
+  areaLabel: {
+    backgroundColor: 'white',
+    padding: 2,
+    borderRadius: 5,
+    borderWidth: 1,
+    borderColor: '#000',
+  },
+  areaText: {
     fontSize: 12,
     fontWeight: 'bold',
   },
