@@ -3,19 +3,21 @@ import { Button, View, Text, ActivityIndicator } from "react-native";
 import * as DocumentPicker from 'expo-document-picker';
 import { uploadGMLFileToServer } from "../../utils/FileUtils";
 import { useAuth } from "../../context/AuthContext";
+import { useRoute } from "@react-navigation/native";
 
 const GMLUploaderScreen = () => {
   const [fileName, setFileName] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const { token } = useAuth();
+  const route = useRoute();
+  const { farmId } = route.params;
 
-  const handleFilePicker = async () => {
+  const handleFilePicker = async (farmId) => {
     try {
       const res = await DocumentPicker.getDocumentAsync({
         type: '*/*',
       });
-
 
 
       if (!res.canceled && res.assets && res.assets.length > 0) {
@@ -38,7 +40,7 @@ const GMLUploaderScreen = () => {
           type: file.mimeType || 'application/octet-stream',
         });
 
-        await uploadGMLFileToServer(formData, token);
+        await uploadGMLFileToServer(formData, token, farmId);
       } else if (res.canceled) {
         setError('User cancelled file picker');
         console.log('File picker cancelled');
@@ -53,7 +55,7 @@ const GMLUploaderScreen = () => {
 
   return (
     <View>
-      <Button title="Pick GML File" onPress={handleFilePicker} />
+      <Button title="Pick GML File" onPress={() => handleFilePicker(farmId)} />
       {fileName ? <Text>Selected File: {fileName}</Text> : null}
       {loading && <ActivityIndicator size="large" color="#0000ff" />}
       {error ? <Text style={{ color: 'red' }}>{error}</Text> : null}

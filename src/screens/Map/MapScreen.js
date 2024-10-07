@@ -84,7 +84,7 @@ const MapScreen = () => {
       setDistanceMode(false);
       setLines([]);
     }
-  };
+  }; 
 
   const handleMapPress = (e) => {
     const newPoint = e.nativeEvent.coordinate;
