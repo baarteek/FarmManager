@@ -1,7 +1,8 @@
 import React, { useRef, useEffect, useState } from 'react';
-import { StyleSheet, View, Text, TouchableOpacity, Alert } from 'react-native';
+import { StyleSheet, View, Text, TouchableOpacity } from 'react-native';
 import MapView, { Marker, Polygon, Polyline } from 'react-native-maps';
 import { useMapContext } from '../../context/MapProvider';
+import { useFarmContext } from '../../context/FarmProvider';
 import useLocation from '../../hooks/useLocation';
 import CenterMapButton from '../../components/CenterMapButton'; 
 import FunctionListButton from '../../components/FunctionListButton';
@@ -10,11 +11,14 @@ import { parseCoordinates } from '../../utils/CoordinateUtils';
 import FieldDetailsModal from '../../components/FieldDetailsModal';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { calculateDistance, calculateMidpoint, calculatePolygonArea } from '../../utils/MapCalculations';
+import ErrorView from '../../components/ErrorView';
+import ActionSheet from 'react-native-actionsheet';
 
 const MapScreen = () => {
   const { location, errorMsg } = useLocation();
-  const { mapData, loading, error, fetchMapData } = useMapContext();
   const mapRef = useRef(null);
+  const { mapData, fetchMapDataByUser, fetchMapDataByFarmId } = useMapContext();
+  const { farmList, fetchFarmsNamesAndId } = useFarmContext();
   const [mapType, setMapType] = useState('hybrid');
   const [selectedField, setSelectedField] = useState(null);
   const [isModalVisible, setIsModalVisible] = useState(false);
@@ -23,15 +27,20 @@ const MapScreen = () => {
   const [points, setPoints] = useState([]);
   const [lines, setLines] = useState([]);
   const [polygons, setPolygons] = useState([]);
-
+  const [selectedFarmId, setSelectedFarmId] = useState(null);
   const colors = ['#FF0000', '#00FF00', '#0000FF', '#FFFF00', '#FF00FF', '#00FFFF'];
   const [colorIndex, setColorIndex] = useState(0);
+  const actionSheetRef = useRef(null);
 
   useEffect(() => {
     if (location) {
-      fetchMapData('90673cf9-dbf8-4133-b465-2b7d47ca2a00');
+      fetchMapDataByUser();
     }
   }, [location]);
+
+  useEffect(() => {
+    fetchFarmsNamesAndId();
+  }, []);
 
   const centerMapOnLocation = () => {
     if (location && mapRef.current) {
@@ -84,7 +93,20 @@ const MapScreen = () => {
       setDistanceMode(false);
       setLines([]);
     }
-  }; 
+  };
+
+  const handleFarmSelection = async (farmId) => {
+    setSelectedFarmId(farmId);
+    if (farmId === 'all') {
+      await fetchMapDataByUser();
+    } else {
+      await fetchMapDataByFarmId(farmId);
+    }
+  };
+
+  const showActionSheet = () => {
+    actionSheetRef.current.show();
+  };
 
   const handleMapPress = (e) => {
     const newPoint = e.nativeEvent.coordinate;
@@ -126,7 +148,7 @@ const MapScreen = () => {
   };
 
   if (errorMsg) {
-    return <Text>Error: {errorMsg}</Text>;
+    return <ErrorView message={errorMsg} />;
   }
 
   return (
@@ -197,6 +219,10 @@ const MapScreen = () => {
           <CenterMapButton onPress={centerMapOnLocation} />
 
           <FunctionListButton>
+            <TouchableOpacity onPress={showActionSheet} style={styles.listItemContainer}>
+              <Ionicons name="leaf-outline" size={20} color="black" />
+              <Text style={styles.listItem}>Choose Farm</Text>
+            </TouchableOpacity>
             <TouchableOpacity onPress={toggleMapType} style={styles.listItemContainer}>
               <Ionicons name="map-outline" size={20} color="black" />
               <Text style={styles.listItem}>
@@ -217,7 +243,21 @@ const MapScreen = () => {
             </TouchableOpacity>
           </FunctionListButton>
 
-          <FieldDetailsModal 
+          <ActionSheet
+            ref={actionSheetRef}
+            title={'Select a Farm'}
+            options={['All Farms', ...farmList.map(farm => farm.name), 'Cancel']}
+            cancelButtonIndex={farmList.length + 1}
+            onPress={(index) => {
+              if (index === 0) {
+                handleFarmSelection('all'); 
+              } else if (index !== farmList.length + 1) {
+                handleFarmSelection(farmList[index - 1].id); 
+              }
+            }}
+          />
+
+          <FieldDetailsModal
             isVisible={isModalVisible}
             onClose={closeModal}
             field={selectedField}

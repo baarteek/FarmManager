@@ -13,7 +13,30 @@ export const MapProvider = ({ children }) => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
-    const fetchMapData = async (farmId) => {
+    const fetchMapDataByUser = async () => {
+        setLoading(true);
+        try {
+            if(!token) {
+                throw new Error('No token found');
+            }
+
+            const response = await axios.get(`${API_BASE_URL}/MapData/user`, {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            });
+
+            setMapData(response.data);
+            setError(null);
+        } catch (err) {
+            console.error('Error fetching map data:', err.message);
+            setError('Failed to load map data. Please try again later.');
+        } finally {
+            setLoading(false);
+        }
+    }
+
+    const fetchMapDataByFarmId = async (farmId) => {
         setLoading(true);
         try {
             if(!token) {
@@ -36,7 +59,7 @@ export const MapProvider = ({ children }) => {
     };
 
     return (
-            <MapContext.Provider value={{ mapData, loading, error, fetchMapData }}>
+            <MapContext.Provider value={{ mapData, loading, error, fetchMapDataByUser, fetchMapDataByFarmId }}>
                 {children}
             </MapContext.Provider>
         );
