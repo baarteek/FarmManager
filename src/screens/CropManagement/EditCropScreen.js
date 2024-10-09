@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, TextInput, TouchableOpacity, Alert, Keyboard, ActivityIndicator, Switch } from 'react-native';
 import { ScrollView, TouchableWithoutFeedback } from 'react-native-gesture-handler';
 import { useNavigation, useRoute } from '@react-navigation/native';
-import DateTimePicker from '@react-native-community/datetimepicker';
 import { styles } from '../../styles/AppStyles';
 import { useCropContext } from '../../context/CropProvider';
 import CropTypePicker from '../../components/CropTypePicker';
@@ -15,8 +14,6 @@ const EditCropScreen = () => {
 
     const [name, setName] = useState('');
     const [type, setType] = useState('');
-    const [sowingDate, setSowingDate] = useState(new Date());
-    const [harvestDate, setHarvestDate] = useState(new Date());
     const [isActive, setIsActive] = useState(false);
     const [initialLoading, setInitialLoading] = useState(true);
 
@@ -26,8 +23,6 @@ const EditCropScreen = () => {
         if (crop) {
             setName(crop.name);
             setType(crop.type.toString());
-            setSowingDate(new Date(crop.sowingDate));
-            setHarvestDate(new Date(crop.harvestDate));
             setIsActive(crop.isActive);
         } else {
             Alert.alert("Error", "Crop not found.");
@@ -50,8 +45,6 @@ const EditCropScreen = () => {
             id,
             name,
             type: parseInt(type, 10),
-            sowingDate: sowingDate,
-            harvestDate: harvestDate,
             isActive
         };
 
@@ -110,26 +103,6 @@ const EditCropScreen = () => {
                 <View style={styles.containerWithBorder}>
                     <Text style={[styles.largeText, { textAlign: 'center' }]}>Select Crop Type</Text>
                     <CropTypePicker selectedCropType={type} setSelectedCropType={setType} />
-                </View>
-                <Text style={[styles.largeText, { textAlign: 'center' }]}>Sowing Date</Text>
-                <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center' }}>
-                    <DateTimePicker
-                        value={sowingDate}
-                        mode="date"
-                        display="default"
-                        onChange={onChangeSowingDate}
-                        style={{ alignSelf: 'center', marginVertical: '2%' }}
-                    />
-                </View>
-                <Text style={[styles.largeText, { textAlign: 'center' }]}>Harvest Date</Text>
-                <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center' }}>
-                    <DateTimePicker
-                        value={harvestDate}
-                        mode="date"
-                        display="default"
-                        onChange={onChangeHarvestDate}
-                        style={{ alignSelf: 'center', marginVertical: '2%' }}
-                    />
                 </View>
                 <TouchableOpacity 
                     style={[styles.button, { margin: '5%', marginTop: '5%', width: '80%', backgroundColor: '#62C962', alignSelf: 'center' }]} 

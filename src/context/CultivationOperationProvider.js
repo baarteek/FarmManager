@@ -43,7 +43,7 @@ export const CultivationOperationProvider = ({ children }) => {
             setOperations(response.data);
             setError(null);
         } catch (err) {
-            console.error('Error fetching cutlivation operation:', err.message);
+            console.error('Error fetching cultivation operation:', err.message);
             throw err;
         } finally {
             setLoading(false);

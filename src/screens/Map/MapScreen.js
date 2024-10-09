@@ -219,7 +219,7 @@ const MapScreen = () => {
           <CenterMapButton onPress={centerMapOnLocation} />
 
           <FunctionListButton>
-            <TouchableOpacity onPress={showActionSheet} style={styles.listItemContainer}>
+           <TouchableOpacity onPress={showActionSheet} style={styles.listItemContainer}>
               <Ionicons name="leaf-outline" size={20} color="black" />
               <Text style={styles.listItem}>Choose Farm</Text>
             </TouchableOpacity>

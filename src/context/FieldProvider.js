@@ -111,9 +111,9 @@ export const FieldProvider = ({ children }) => {
                 crops: response.data.crops || []
             };
 
-            setFields(prevFields => prevFields.map(field => 
-                field.id === fieldId ? editedField : field
-            ));
+            setFields(prevFields =>
+                prevFields.map(field => (field.id === fieldId ? editedField : field))
+            );
             setError(null);
         } catch (err) {
             console.error('Error editing field:', err.message);

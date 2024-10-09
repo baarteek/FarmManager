@@ -20,6 +20,8 @@ import EditPlantProtectionScreen from "../screens/CropManagement/EditPlantProtec
 import { CultivationOperationProvider } from "../context/CultivationOperationProvider";
 import AddCultivationOperationScreen from "../screens/CropManagement/AddCultivationOperationScreen";
 import { FarmProvider } from "../context/FarmProvider";
+import EditSoilMeasurementScreen from "../screens/FieldManagement/EditSoilMeasurementScreen";
+import EditPlotNumberScreen from "../screens/FieldManagement/EditPlotNumberScreen";
 
 const Stack = createStackNavigator();
 
@@ -52,9 +54,11 @@ const MapStack = () => {
                                                 <Stack.Screen name="Add Plant Protection" component={AddPlantProtectionScreen} options={{ headerShown: true, title:'Add Plant Protection' }} />
                                                 <Stack.Screen name="Add Fertilization" component={AddFertilizationScreen} options={{ headerShown: true, title: 'Add Fertilization' }} />
                                                 <Stack.Screen name='Add Soil Measurement' component={AddSoilMeasurementScreen} options={{headerShown: true, title: 'Add Soil Measurement'}} />
+                                                <Stack.Screen name='Edit Soil Measurement' component={EditSoilMeasurementScreen} options={{headerShown: true, title: 'Edit Soil Measurement'}} />
                                                 <Stack.Screen name='Field Details' component={FieldDetailsScreen} options={{headerShown: true, title: 'Field Details'}} />
                                                 <Stack.Screen name="Crop Details" component={CropDetailsScreen} options={{ headerShown: true, title: 'Crop Details' }} />
                                                 <Stack.Screen name='Add Plot Number' component={AddPlotNumberScreen} options={{headerShown: true, title: 'Add Plot Number'}} />
+                                                <Stack.Screen name='Edit Plot Number' component={EditPlotNumberScreen} options={{headerShown: true, title: 'Edit Plot Number'}} />
                                                 <Stack.Screen name="Edit Field" component={EditFieldScreen} options={{ headerShown: true, title: 'Edit Field' }} />
                                                 <Stack.Screen name="Edit Crop" component={EditCropScreen} options={{ headerShown: true, title: 'Edit Crop' }} />
                                                 <Stack.Screen name="Edit Fertilization" component={EditFertilizationScreen} options={{ headerShown: true, title: 'Edit Fertilization' }} />

@@ -183,9 +183,6 @@ const FieldDetails = ({ fieldData, onDelete }) => {
                     </TouchableOpacity>
                 </ExpandableComponent>
 
-                <TouchableOpacity style={[styles.button, { marginTop: '5%', paddingVertical: '1%', backgroundColor: '#BAF1BA' }]} onPress={() => navigation.navigate('Show Crops', { fieldId: fieldData.id })}>
-                    <Text style={{ textAlign: 'center', fontWeight: 'bold', fontSize: 20, marginLeft: '10%', marginRight: '10%', color: '#22734D' }}>Show Crops</Text>
-                </TouchableOpacity>
                 <View style={[styles.rowContainer, { justifyContent: 'space-around', marginTop: '3%' }]}>
                     <TouchableOpacity style={[styles.button, { backgroundColor: '#00BFFF', width: '40%' }]}  onPress={() => navigation.navigate('Edit Field', { field: fieldData })}>
                         <Text style={{ textAlign: 'center', fontWeight: 'bold', fontSize: 16, color: '#fff', marginHorizontal: 10 }}>Edit Field</Text>

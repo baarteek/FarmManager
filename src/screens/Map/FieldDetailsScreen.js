@@ -1,10 +1,9 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { ScrollView, View, Text, TouchableOpacity, ActivityIndicator, RefreshControl } from "react-native";
+import { ScrollView, View, Text, TouchableOpacity, ActivityIndicator, RefreshControl, Alert } from "react-native";
 import { styles } from "../../styles/AppStyles";
 import FieldDetails from "../../components/FieldDetails";
 import { useFieldContext } from '../../context/FieldProvider';
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
-import FloatingActionButton from '../../components/FloatingActionButton';
 import ErrorView from '../../components/ErrorView';
 import WarningView from '../../components/WarningView';
 

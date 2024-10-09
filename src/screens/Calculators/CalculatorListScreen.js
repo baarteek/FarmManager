@@ -8,7 +8,7 @@ const CalculatorListScreen = () => {
 
     return (
         <View style={styles.mainContainer}>
-            <ScrollView style={{ backgroundColor: '#fff' }}>
+            <ScrollView style={{ backgroundColor: '#fff' }} showsVerticalScrollIndicator={false}>
                 <View style={calculatorStyles.categoryContainer}>
                     <Text style={[calculatorStyles.categoryTitle, { color: '#388E3C' }]}>Seeding and Planting</Text>
                     <InfoCard 

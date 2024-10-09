@@ -4,7 +4,6 @@ import { styles } from "../../styles/AppStyles";
 import CropDetails from "../../components/CropDetails";
 import { useCropContext } from '../../context/CropProvider';
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
-import FloatingActionButton from '../../components/FloatingActionButton';
 import ErrorView from '../../components/ErrorView';
 import WarningView from '../../components/WarningView';
 
@@ -47,6 +46,7 @@ const CropDetailsScreen = ({ route }) => {
     };
 
     const confirmDelete = (id) => {
+        console.log(id);
         Alert.alert("Confirm Deletion", "Are you sure you want to delete this crop?",
             [
                 {
@@ -113,7 +113,7 @@ const CropDetailsScreen = ({ route }) => {
             >
                 <CropDetails 
                     crop={crop} 
-                    onDelete={() => confirmDelete(crop.id)}
+                    handleDeleteCrop={() => confirmDelete(crop.id)}
                     onEdit={() => navigation.navigate('Edit Crop', { crop })}
                 />
             </ScrollView>

@@ -15,7 +15,7 @@ const FieldDetailsModal = ({ isVisible, onClose, field }) => {
 
   const navigateToFertilization = () => {
     isVisible && onClose();
-    navigation.navigate('Add Fertilization', { fieldId: field.cropId });
+    navigation.navigate('Add Fertilization', { cropId: field.cropId });
   };
 
   const navigateToPlantProtections = () => {

@@ -122,6 +122,7 @@ const CropDetails = ({ crop, handleDeleteCrop }) => {
         const details = {
             Name: operation.name,
             Date: formatDate(operation.date),
+            Time: formatTime(operation.date),
             Description: operation.description,
         }
 
@@ -135,6 +136,7 @@ const CropDetails = ({ crop, handleDeleteCrop }) => {
 
         const details = {
             Date: formatDate(plantProtection.date),
+            Time: formatTime(plantProtection.date),
             Type: getPlantProtectionTypeName(plantProtection.type),
             Quantity: `${plantProtection.quantity} kg`,
             Method: plantProtection.method,

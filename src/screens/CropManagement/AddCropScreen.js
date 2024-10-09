@@ -20,8 +20,6 @@ const AddCropScreen = () => {
     const [selectedFieldId, setSelectedFieldId] = useState('');
     const [name, setName] = useState('');
     const [type, setType] = useState('');
-    const [sowingDate, setSowingDate] = useState(new Date());
-    const [harvestDate, setHarvestDate] = useState(new Date());
     const [isActive, setIsActive] = useState(true);
     const [loadingFields, setLoadingFields] = useState(false);
     const [step, setStep] = useState(1);
@@ -62,8 +60,6 @@ const AddCropScreen = () => {
         const newCrop = {
             name,
             type: parseInt(type, 10),
-            sowingDate,
-            harvestDate,
             isActive,
             fieldId: selectedFieldId
         };
@@ -207,26 +203,6 @@ const AddCropScreen = () => {
                         <View style={styles.containerWithBorder}>
                             <Text style={[styles.largeText, { textAlign: 'center' }]}>Select Crop Type</Text>
                             <CropTypePicker selectedCropType={type} setSelectedCropType={setType} />
-                        </View>
-                        <Text style={[styles.largeText, { textAlign: 'center' }]}>Sowing Date</Text>
-                        <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center' }}>
-                            <DateTimePicker
-                                value={sowingDate}
-                                mode="date"
-                                display="default"
-                                onChange={onChangeSowingDate}
-                                style={{ alignSelf: 'center', marginVertical: '2%' }}
-                            />
-                        </View>
-                        <Text style={[styles.largeText, { textAlign: 'center' }]}>Harvest Date</Text>
-                        <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center' }}>
-                            <DateTimePicker
-                                value={harvestDate}
-                                mode="date"
-                                display="default"
-                                onChange={onChangeHarvestDate}
-                                style={{ alignSelf: 'center', marginVertical: '2%' }}
-                            />
                         </View>
                         <TouchableOpacity 
                             style={[styles.button, { margin: '5%', marginTop: '5%', width: '80%', backgroundColor: '#62C962', alignSelf: 'center' }]} 
