@@ -10,6 +10,7 @@ import FarmManagementStack from './FarmManamementStack';
 import CropManagementStack from './CropManagementStack';
 import CalculatorsStack from './CalculatorsStack';
 import MapStack from './MapStack';
+import ReportsStack from './ReportsStack';
 
 const Drawer = createDrawerNavigator();
 
@@ -53,6 +54,10 @@ const MainNavigation = () => {
             <Drawer.Screen
                 name="Map"
                 component={MapStack}
+            />
+            <Drawer.Screen
+                name="Reports"
+                component={ReportsStack}
             />
             <Drawer.Screen
                 name='Calculators'
