@@ -5,6 +5,7 @@ import { useNavigation, useRoute } from '@react-navigation/native';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { styles } from '../../styles/AppStyles';
 import { useCultivationOperationContext } from '../../context/CultivationOperationProvider';
+import AgrotechnicalInterventionList from '../../components/AgrotechnicalInterventionList';
 
 const AddCultivationOperationScreen = () => {
     const navigation = useNavigation();
@@ -14,6 +15,7 @@ const AddCultivationOperationScreen = () => {
 
     const [date, setDate] = useState(new Date());
     const [name, setName] = useState('');
+    const [agrotechnicalIntervention, setAgrotechnicalIntervention] = useState(0);
     const [description, setDescription] = useState('');
 
     const handleAddCultivationOperation = async () => {
@@ -26,6 +28,7 @@ const AddCultivationOperationScreen = () => {
             cropId,
             date,
             name,
+            agrotechnicalIntervention,
             description,
         };
 
@@ -55,8 +58,8 @@ const AddCultivationOperationScreen = () => {
     };
 
     return (
-        <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false} style={[styles.mainContainer, { justifyContent: 'center', alignItems: 'center' }]}>
-            <ScrollView style={{ width: '100%', paddingTop: '5%' }}>
+        <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false} style={[styles.mainContainer, { justifyContent: 'center', alignItems: 'center', paddingBottom: '5%',  backgroundColor: '#fff' }]}>
+            <ScrollView showsVerticalScrollIndicator={false} style={{ width: '100%', paddingTop: '5%'}}>
                 <Text style={[styles.largeText, { textAlign: 'center' }]}>Cultivation Operation Date</Text>
                 <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center' }}>
                     <DateTimePicker
@@ -88,6 +91,7 @@ const AddCultivationOperationScreen = () => {
                     value={description}
                     onChangeText={setDescription}
                 />
+                <AgrotechnicalInterventionList selectedOption={agrotechnicalIntervention} setSelectedOption={setAgrotechnicalIntervention} />
                 <TouchableOpacity style={[styles.button, { margin: '5%', marginTop: '5%', width: '80%', backgroundColor: '#62C962', alignSelf: 'center' }]} onPress={handleAddCultivationOperation}>
                     <Text style={{ textAlign: 'center', fontWeight: 'bold', fontSize: 22, color: '#fff', marginLeft: '10%', marginRight: '10%' }}>Add Operation</Text>
                 </TouchableOpacity>
