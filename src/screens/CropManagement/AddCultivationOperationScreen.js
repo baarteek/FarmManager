@@ -19,8 +19,8 @@ const AddCultivationOperationScreen = () => {
     const [description, setDescription] = useState('');
 
     const handleAddCultivationOperation = async () => {
-        if (!name || !description) {
-            Alert.alert('Validation Error', 'All fields must be filled in.');
+        if (!name) {
+            Alert.alert('Validation Error', 'Name must be filled in.');
             return;
         }
 

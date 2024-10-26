@@ -4,7 +4,7 @@ import axios from "axios";
 import API_BASE_URL from "../config/apiConfig";
 import LoadingView from "./LoadingView";
 import ErrorView from "./ErrorView";
-import { Text, View, FlatList, TouchableOpacity, StyleSheet } from "react-native";
+import { Text, View, TouchableOpacity, ScrollView, StyleSheet } from "react-native";
 
 const AgrotechnicalInterventionList = ({ selectedOption, setSelectedOption }) => {
     const { token } = useAuth();
@@ -45,12 +45,9 @@ const AgrotechnicalInterventionList = ({ selectedOption, setSelectedOption }) =>
         return <ErrorView message={error} />;
     }
 
-    const selectedOptionInfo = agrotechnicalInterventions.find(
-        (option) => option.value === selectedOption
-    );
-
-    const renderOption = ({ item }) => (
+    const renderOption = (item) => (
         <TouchableOpacity
+            key={item.value}
             style={[
                 styles.optionContainer,
                 selectedOption === item.value && styles.selectedOption
@@ -65,12 +62,9 @@ const AgrotechnicalInterventionList = ({ selectedOption, setSelectedOption }) =>
     return (
         <View style={styles.cardContainer}>
             <Text style={styles.title}>Selection of agrotechnical intervention</Text>
-            <FlatList
-                data={agrotechnicalInterventions}
-                keyExtractor={(item) => item.value.toString()}
-                renderItem={renderOption}
-                contentContainerStyle={styles.listContainer}
-            />
+            <ScrollView contentContainerStyle={styles.listContainer}>
+                {agrotechnicalInterventions.map(renderOption)}
+            </ScrollView>
         </View>
     );
 };

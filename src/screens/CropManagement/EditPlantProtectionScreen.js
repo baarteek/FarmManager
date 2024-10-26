@@ -7,6 +7,7 @@ import moment from 'moment-timezone';
 import { styles } from '../../styles/AppStyles';
 import { usePlantProtectionContext } from '../../context/PlantProtectionProvider';
 import PlantProtectionTypePicker from '../../components/PlantProtectionTypePicker';
+import AgrotechnicalInterventionList from '../../components/AgrotechnicalInterventionList';
 import { formatDecimalInput } from '../../utils/TextUtils';
 
 const EditPlantProtectionScreen = () => {
@@ -18,7 +19,7 @@ const EditPlantProtectionScreen = () => {
     const [date, setDate] = useState(new Date());
     const [type, setType] = useState('');
     const [quantity, setQuantity] = useState('');
-    const [method, setMethod] = useState('');
+    const [agrotechnicalIntervention, setAgrotechnicalIntervention] = useState(0);
     const [description, setDescription] = useState('');
     const [initialLoading, setInitialLoading] = useState(true);
     const [loading, setLoading] = useState(false);
@@ -32,7 +33,7 @@ const EditPlantProtectionScreen = () => {
                     setDate(localDate);
                     setType(plantProtection.type.toString());
                     setQuantity(plantProtection.quantity.toString());
-                    setMethod(plantProtection.method);
+                    setAgrotechnicalIntervention(plantProtection.agrotechnicalIntervention);
                     setDescription(plantProtection.description);
                 } else {
                     Alert.alert("Error", "Plant protection record not found.");
@@ -51,7 +52,7 @@ const EditPlantProtectionScreen = () => {
     }, [plantProtectionId, navigation]);
 
     const handleSave = async () => {
-        if (!type || !quantity || !method) {
+        if (!type || !quantity || !agrotechnicalIntervention) {
             Alert.alert('Validation Error', 'All fields must be filled in.');
             return;
         }
@@ -63,7 +64,7 @@ const EditPlantProtectionScreen = () => {
             date,
             type: parseInt(type, 10),
             quantity: formatDecimalInput(quantity),
-            method,
+            agrotechnicalIntervention,
             description,
         };
 
@@ -143,12 +144,10 @@ const EditPlantProtectionScreen = () => {
                     onChangeText={setQuantity}
                     keyboardType="numeric"
                 />
-                <Text style={[styles.largeText, { textAlign: 'center' }]}>Method</Text>
-                <TextInput
-                    style={styles.input}
-                    placeholder="Method"
-                    value={method}
-                    onChangeText={setMethod}
+                <Text style={[styles.largeText, { textAlign: 'center' }]}>Agrotechnical Intervention</Text>
+                <AgrotechnicalInterventionList 
+                    selectedOption={agrotechnicalIntervention} 
+                    setSelectedOption={setAgrotechnicalIntervention} 
                 />
                 <Text style={[styles.largeText, { textAlign: 'center' }]}>Description</Text>
                 <TextInput
@@ -165,7 +164,7 @@ const EditPlantProtectionScreen = () => {
                     {loading ? (
                         <ActivityIndicator size="large" color="#fff" />
                     ) : (
-                        <Text style={{ textAlign: 'center', fontWeight: 'bold', fontSize: 22, color: '#fff', marginLeft: '10%', marginRight: '10%' }}>Save Changes</Text>
+                        <Text style={{ textAlign: 'center', fontWeight: 'bold', fontSize: 22, color: '#fff' }}>Save Changes</Text>
                     )}
                 </TouchableOpacity>
             </ScrollView>

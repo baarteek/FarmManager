@@ -6,6 +6,7 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 import { styles } from '../../styles/AppStyles';
 import { useFertilizationContext } from '../../context/FertilizationProvider';
 import FertilizationTypePicker from '../../components/FertilizationTypePicker';
+import AgrotechnicalInterventionList from '../../components/AgrotechnicalInterventionList';
 import { formatDecimalInput } from '../../utils/TextUtils';
 
 const AddFertilizationScreen = () => {
@@ -17,11 +18,11 @@ const AddFertilizationScreen = () => {
     const [date, setDate] = useState(new Date());
     const [type, setType] = useState('');
     const [quantity, setQuantity] = useState('');
-    const [method, setMethod] = useState('');
+    const [agrotechnicalIntervention, setAgrotechnicalIntervention] = useState(0);
     const [description, setDescription] = useState('');
 
     const handleAddFertilization = async () => {
-        if (!type || !quantity || !method) {
+        if (!type || !quantity || !agrotechnicalIntervention) {
             Alert.alert('Validation Error', 'All fields must be filled in.');
             return;
         }
@@ -31,7 +32,7 @@ const AddFertilizationScreen = () => {
             date,
             type: parseInt(type, 10),
             quantity: formatDecimalInput(quantity),
-            method,
+            agrotechnicalIntervention, 
             description,
         };
 
@@ -95,12 +96,10 @@ const AddFertilizationScreen = () => {
                     onChangeText={setQuantity}
                     keyboardType="numeric"
                 />
-                <Text style={[styles.largeText, { textAlign: 'center' }]}>Method</Text>
-                <TextInput
-                    style={styles.input}
-                    placeholder="Method"
-                    value={method}
-                    onChangeText={setMethod}
+                <Text style={[styles.largeText, { textAlign: 'center' }]}>Agrotechnical Intervention</Text>
+                <AgrotechnicalInterventionList 
+                    selectedOption={agrotechnicalIntervention} 
+                    setSelectedOption={setAgrotechnicalIntervention} 
                 />
                 <Text style={[styles.largeText, { textAlign: 'center' }]}>Description</Text>
                 <TextInput

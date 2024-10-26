@@ -6,6 +6,7 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 import moment from 'moment-timezone';
 import { styles } from '../../styles/AppStyles';
 import { useCultivationOperationContext } from '../../context/CultivationOperationProvider';
+import AgrotechnicalInterventionList from '../../components/AgrotechnicalInterventionList';
 
 const EditCultivationOperationScreen = () => {
     const navigation = useNavigation();
@@ -16,6 +17,7 @@ const EditCultivationOperationScreen = () => {
     const [date, setDate] = useState(new Date());
     const [name, setName] = useState('');
     const [description, setDescription] = useState('');
+    const [agrotechnicalIntervention, setAgrotechnicalIntervention] = useState(0);
     const [initialLoading, setInitialLoading] = useState(true);
     const [loading, setLoading] = useState(false);
 
@@ -28,6 +30,7 @@ const EditCultivationOperationScreen = () => {
                     setDate(localDate);
                     setName(operation.name);
                     setDescription(operation.description);
+                    setAgrotechnicalIntervention(operation.agrotechnicalIntervention);
                 } else {
                     Alert.alert("Error", "Cultivation operation not found.");
                     navigation.goBack();
@@ -45,8 +48,8 @@ const EditCultivationOperationScreen = () => {
     }, [operationId, navigation]);
 
     const handleSave = async () => {
-        if (!name || !description) {
-            Alert.alert('Validation Error', 'All fields must be filled in.');
+        if (!name) {
+            Alert.alert('Validation Error', 'Name must be filled in.');
             return;
         }
 
@@ -57,6 +60,7 @@ const EditCultivationOperationScreen = () => {
             date,
             name,
             description,
+            agrotechnicalIntervention,
         };
 
         try {
@@ -101,7 +105,7 @@ const EditCultivationOperationScreen = () => {
     }
 
     return (
-        <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false} style={[styles.mainContainer, { justifyContent: 'center', alignItems: 'center' }]}>
+        <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false} style={[styles.mainContainer, { justifyContent: 'center', alignItems: 'center', paddingBottom: '5%', backgroundColor: '#fff' }]}>
             <ScrollView style={{ width: '100%', paddingTop: '5%' }}>
                 <Text style={[styles.largeText, { textAlign: 'center' }]}>Cultivation Operation Date</Text>
                 <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center' }}>
@@ -133,6 +137,10 @@ const EditCultivationOperationScreen = () => {
                     placeholder="Description"
                     value={description}
                     onChangeText={setDescription}
+                />
+                <AgrotechnicalInterventionList 
+                    selectedOption={agrotechnicalIntervention} 
+                    setSelectedOption={setAgrotechnicalIntervention} 
                 />
                 <TouchableOpacity 
                     style={[styles.button, { margin: '5%', marginTop: '5%', width: '80%', backgroundColor: '#62C962', alignSelf: 'center' }]} 

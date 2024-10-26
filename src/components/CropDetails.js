@@ -12,6 +12,7 @@ import API_BASE_URL from '../config/apiConfig';
 import { useFertilizationContext } from '../context/FertilizationProvider';
 import { usePlantProtectionContext } from '../context/PlantProtectionProvider'; 
 import { useCultivationOperationContext } from '../context/CultivationOperationProvider';
+import AgrotechnicalInterventionList from './AgrotechnicalInterventionList';
 
 const CropDetails = ({ crop, handleDeleteCrop }) => {
     const navigation = useNavigation();
@@ -107,7 +108,7 @@ const CropDetails = ({ crop, handleDeleteCrop }) => {
             Time: formatTime(fertilization.date),
             Type: getFertilizationTypeName(fertilization.type),
             Quantity: `${fertilization.quantity} kg`,
-            Method: fertilization.method,
+            Intervention: fertilization.agrotechnicalIntervention,
             Description: fertilization.description
         };
         
@@ -123,6 +124,7 @@ const CropDetails = ({ crop, handleDeleteCrop }) => {
             Name: operation.name,
             Date: formatDate(operation.date),
             Time: formatTime(operation.date),
+            Intervention: operation.agrotechnicalIntervention,
             Description: operation.description,
         }
 
@@ -139,7 +141,7 @@ const CropDetails = ({ crop, handleDeleteCrop }) => {
             Time: formatTime(plantProtection.date),
             Type: getPlantProtectionTypeName(plantProtection.type),
             Quantity: `${plantProtection.quantity} kg`,
-            Method: plantProtection.method,
+            Intervention: plantProtection.agrotechnicalIntervention,
             Description: plantProtection.description
         };
         
