@@ -2,6 +2,7 @@ import { createStackNavigator } from '@react-navigation/stack';
 import ReportsScreen from '../screens/Reports/ReportsScreen';
 import ReportsProvider from '../context/ReportsProvider';
 import { FarmProvider } from '../context/FarmProvider';
+import ViewReportScreen from '../screens/Reports/ViewReportScreen';
 
 const Stack = createStackNavigator();
 
@@ -24,6 +25,7 @@ const ReportsStack = () => {
                     }}
                 >
                     <Stack.Screen name='ReportsMain' component={ReportsScreen} options={{ headerShown: false }} />
+                    <Stack.Screen name="ViewReport" component={ViewReportScreen} options={{ headerShown: true, title: 'Report' }}/>
                 </Stack.Navigator>
             </ReportsProvider>
         </FarmProvider>
