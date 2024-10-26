@@ -2,6 +2,8 @@ import { createContext, useContext, useState } from "react";
 import { useAuth } from "./AuthContext";
 import axios from "axios";
 import API_BASE_URL from "../config/apiConfig";
+import * as FileSystem from 'expo-file-system';
+import * as Sharing from 'expo-sharing';
 
 const ReportsContext = createContext();
 
@@ -34,8 +36,47 @@ const ReportsProvider = ({ children }) => {
         }
     };
 
+    const downloadAgrotechnicalActivitiesReportXLS = async (farmId) => {
+        setLoading(true);
+        try {
+           const downloadUrl = `${API_BASE_URL}/Report/excel/${farmId}`;
+           const date = new Date();
+            const formattedDate = 
+                date.getFullYear().toString() +
+                String(date.getMonth() + 1).padStart(2, '0') +
+                String(date.getDate()).padStart(2, '0') + "_" +
+                String(date.getHours()).padStart(2, '0') +
+                String(date.getMinutes()).padStart(2, '0');
+           const fileUri = FileSystem.documentDirectory + `report_${formattedDate}`;
+           const downloadResumable = FileSystem.createDownloadResumable(
+                downloadUrl,
+                fileUri,
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                }
+           );
+
+           const { uri } = await downloadResumable.downloadAsync();
+           console.log('Finished downloading to ', uri);
+           setError(null);
+
+            if (await Sharing.isAvailableAsync()) {
+                await Sharing.shareAsync(uri);
+            } else {
+                alert('Sharing is not available on this platform');
+            }
+        } catch (err) {
+            console.error('Error fetching reports:', err.message);
+            setError('Failed to load report. Pleas try again later');
+        } finally {
+            setLoading(false);
+        }
+    };
+
     return (
-        <ReportsContext.Provider value={{ loading, error, setError, fetchAgrotechnicalActivitiesReport }} >
+        <ReportsContext.Provider value={{ loading, error, setError, fetchAgrotechnicalActivitiesReport, downloadAgrotechnicalActivitiesReportXLS }} >
             {children}
         </ReportsContext.Provider>
     )

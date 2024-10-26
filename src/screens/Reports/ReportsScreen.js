@@ -13,26 +13,35 @@ import { useNavigation } from "@react-navigation/native";
 const ReportsScreen = () => {
     const  navigation = useNavigation();
     const {farms, fetchFarmsNamesAndId, loading: farmsLoading, error: farmsError, setError: setFarmsError} = useFarmContext();
-    const {data, loading: reportsLoading, error: reportsError, setError: setReportsError, fetchAgrotechnicalActivitiesReport} = useReportsContext();
+    const {loading: reportsLoading, error: reportsError, setError: setReportsError, fetchAgrotechnicalActivitiesReport, downloadAgrotechnicalActivitiesReportXLS} = useReportsContext();
     const [step, setStep] = useState(0);
     const [selectedFarmId, setSelectedFarmId] = useState('');
+    const [selectedReportType, setSelectedReportType] = useState('');
 
     useEffect(() => {
         fetchFarmsNamesAndId();
     }, []);
 
-    const handleFetchFarms = async () => {
+    const handleGenerateReport = async () => {
         if (selectedFarmId === '' || selectedFarmId === null) {
             setStep(0);
             return;
         }
         try {
-            const data = await fetchAgrotechnicalActivitiesReport(selectedFarmId);
-            if(data === null) {
-                setStep(0);
-                return;
+            if (selectedReportType === 'html') {
+                const data = await fetchAgrotechnicalActivitiesReport(selectedFarmId);
+                if (data === null) {
+                    setStep(0);
+                    return;
+                }
+                navigation.navigate('ViewReport', { htmlContent: data });
+            } else if (selectedReportType === 'xls') {
+                console.log('xls');
+                await downloadAgrotechnicalActivitiesReportXLS(selectedFarmId);
+                
+            } else if (selectedReportType === 'pdf') {
+                // TODO
             }
-            navigation.navigate('ViewReport', { htmlContent: data });
         } catch (error) {
             console.error('Report error:', error);
         } finally {
@@ -80,7 +89,10 @@ const ReportsScreen = () => {
                                 iconBackgroundColor="#4CAF50"
                                 borderColor="#388E3C"
                                 titleColor="#388E3C"
-                                onPress={() => setStep(1)}
+                                onPress={() => {
+                                    setSelectedReportType('html');
+                                    setStep(1);
+                                }}
                             />
 
                             <InfoCard 
@@ -90,7 +102,10 @@ const ReportsScreen = () => {
                                 iconBackgroundColor="#FF5722"
                                 borderColor="#E64A19"
                                 titleColor="#E64A19"
-                                onPress={() => setStep(1)}
+                                onPress={() => {
+                                    setSelectedReportType('pdf');
+                                    setStep(1);
+                                }}
                             />
 
                             <InfoCard 
@@ -100,7 +115,10 @@ const ReportsScreen = () => {
                                 iconBackgroundColor="#2196F3"
                                 borderColor="#1976D2"
                                 titleColor="#1976D2"
-                                onPress={() => setStep(1)}
+                                onPress={() => {
+                                    setSelectedReportType('xls');
+                                    setStep(1);
+                                }}
                             />
                         </View>
                     </ScrollView>
@@ -119,7 +137,7 @@ const ReportsScreen = () => {
                             </Picker>
                             <TouchableOpacity 
                                 style={[styles.button, { margin: '5%', width: '80%', backgroundColor: '#62C962', alignSelf: 'center' }]} 
-                                onPress={handleFetchFarms}
+                                onPress={handleGenerateReport}
                                 disabled={!selectedFarmId}
                             >
                                 <Text style={{ textAlign: 'center', fontWeight: 'bold', fontSize: 22, color: '#fff' }}>
