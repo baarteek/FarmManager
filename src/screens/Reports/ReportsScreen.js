@@ -13,7 +13,7 @@ import { useNavigation } from "@react-navigation/native";
 const ReportsScreen = () => {
     const  navigation = useNavigation();
     const {farms, fetchFarmsNamesAndId, loading: farmsLoading, error: farmsError, setError: setFarmsError} = useFarmContext();
-    const {loading: reportsLoading, error: reportsError, setError: setReportsError, fetchAgrotechnicalActivitiesReport, downloadAgrotechnicalActivitiesReportXLS} = useReportsContext();
+    const {loading: reportsLoading, error: reportsError, setError: setReportsError, fetchAgrotechnicalActivitiesReport, downloadAgrotechnicalActivitiesReportXLS, downloadAgrotechnicalActivitiesReportPDF} = useReportsContext();
     const [step, setStep] = useState(0);
     const [selectedFarmId, setSelectedFarmId] = useState('');
     const [selectedReportType, setSelectedReportType] = useState('');
@@ -36,11 +36,9 @@ const ReportsScreen = () => {
                 }
                 navigation.navigate('ViewReport', { htmlContent: data });
             } else if (selectedReportType === 'xls') {
-                console.log('xls');
-                await downloadAgrotechnicalActivitiesReportXLS(selectedFarmId);
-                
+                await downloadAgrotechnicalActivitiesReportXLS(selectedFarmId);            
             } else if (selectedReportType === 'pdf') {
-                // TODO
+                await downloadAgrotechnicalActivitiesReportPDF(selectedFarmId);
             }
         } catch (error) {
             console.error('Report error:', error);

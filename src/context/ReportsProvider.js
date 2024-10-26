@@ -30,7 +30,7 @@ const ReportsProvider = ({ children }) => {
             return response.data;
         } catch (err) {
             console.error('Error fetching reports:', err.message);
-            setError('Failed to load report. Pleas try again later');
+            setError('Failed to load report. Please try again later');
         } finally {
             setLoading(false);
         }
@@ -39,16 +39,16 @@ const ReportsProvider = ({ children }) => {
     const downloadAgrotechnicalActivitiesReportXLS = async (farmId) => {
         setLoading(true);
         try {
-           const downloadUrl = `${API_BASE_URL}/Report/excel/${farmId}`;
-           const date = new Date();
+            const downloadUrl = `${API_BASE_URL}/Report/excel/${farmId}`;
+            const date = new Date();
             const formattedDate = 
                 date.getFullYear().toString() +
                 String(date.getMonth() + 1).padStart(2, '0') +
                 String(date.getDate()).padStart(2, '0') + "_" +
                 String(date.getHours()).padStart(2, '0') +
                 String(date.getMinutes()).padStart(2, '0');
-           const fileUri = FileSystem.documentDirectory + `report_${formattedDate}`;
-           const downloadResumable = FileSystem.createDownloadResumable(
+            const fileUri = FileSystem.documentDirectory + `report_${formattedDate}.xls`;
+            const downloadResumable = FileSystem.createDownloadResumable(
                 downloadUrl,
                 fileUri,
                 {
@@ -56,11 +56,11 @@ const ReportsProvider = ({ children }) => {
                         Authorization: `Bearer ${token}`,
                     },
                 }
-           );
+            );
 
-           const { uri } = await downloadResumable.downloadAsync();
-           console.log('Finished downloading to ', uri);
-           setError(null);
+            const { uri } = await downloadResumable.downloadAsync();
+            console.log('Finished downloading to ', uri);
+            setError(null);
 
             if (await Sharing.isAvailableAsync()) {
                 await Sharing.shareAsync(uri);
@@ -69,14 +69,61 @@ const ReportsProvider = ({ children }) => {
             }
         } catch (err) {
             console.error('Error fetching reports:', err.message);
-            setError('Failed to load report. Pleas try again later');
+            setError('Failed to load report. Please try again later');
         } finally {
             setLoading(false);
         }
     };
 
+    const downloadAgrotechnicalActivitiesReportPDF = async (farmId) => {
+        setLoading(true);
+        try {
+            const downloadUrl = `${API_BASE_URL}/Report/pdf/${farmId}`;
+            const date = new Date();
+            const formattedDate = 
+                date.getFullYear().toString() +
+                String(date.getMonth() + 1).padStart(2, '0') +
+                String(date.getDate()).padStart(2, '0') + "_" +
+                String(date.getHours()).padStart(2, '0') +
+                String(date.getMinutes()).padStart(2, '0');
+            const fileUri = FileSystem.documentDirectory + `report_${formattedDate}.pdf`;
+            const downloadResumable = FileSystem.createDownloadResumable(
+                downloadUrl,
+                fileUri,
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                        Accept: 'application/pdf',
+                    },
+                }
+            );
+    
+            const { uri } = await downloadResumable.downloadAsync();
+            console.log('Finished downloading to ', uri);
+            setError(null);
+    
+            if (await Sharing.isAvailableAsync()) {
+                await Sharing.shareAsync(uri);
+            } else {
+                alert('Sharing is not available on this platform');
+            }
+        } catch (err) {
+            console.error('Error fetching reports:', err.message);
+            setError('Failed to load report. Please try again later');
+        } finally {
+            setLoading(false);
+        }
+    };    
+
     return (
-        <ReportsContext.Provider value={{ loading, error, setError, fetchAgrotechnicalActivitiesReport, downloadAgrotechnicalActivitiesReportXLS }} >
+        <ReportsContext.Provider value={{ 
+            loading, 
+            error, 
+            setError, 
+            fetchAgrotechnicalActivitiesReport, 
+            downloadAgrotechnicalActivitiesReportXLS, 
+            downloadAgrotechnicalActivitiesReportPDF 
+        }}>
             {children}
         </ReportsContext.Provider>
     )
