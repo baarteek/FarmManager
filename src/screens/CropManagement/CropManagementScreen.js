@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { Alert, ScrollView, View, ActivityIndicator, RefreshControl } from "react-native";
 import CropDetails from "../../components/CropDetails";
 import { useNavigation } from "@react-navigation/native";
@@ -8,10 +8,14 @@ import ErrorView from "../../components/ErrorView";
 import { useCropContext } from '../../context/CropProvider';
 import { styles } from '../../styles/AppStyles';
 
+import SearchFilter from '../../components/SearchFilter';
+
 const CropManagementScreen = () => {
     const navigation = useNavigation();
     const { crops, loading, handleDeleteCrop, fetchActiveCrops, error } = useCropContext();
     const [refreshing, setRefreshing] = useState(false);
+
+    const [searchQuery, setSearchQuery] = useState('');
 
     const confirmDeleteCrop = (id) => {
         Alert.alert("Confirm Deletion", "Are you sure you want to delete this crop?",
@@ -36,6 +40,16 @@ const CropManagementScreen = () => {
         setRefreshing(false);
     };
 
+
+    const filteredCrops = useMemo(() => {
+        if (!searchQuery) {
+            return crops;
+        }
+        return crops.filter(crop =>
+            crop.name.toLowerCase().includes(searchQuery.toLowerCase())
+        );
+    }, [crops, searchQuery]);
+
     if (loading) {
         return (
             <View style={[styles.mainContainer, { backgroundColor: '#fff', height: '100%' }]}>
@@ -59,14 +73,23 @@ const CropManagementScreen = () => {
 
     return (
         <View style={[{ width: '100%', height: '100%', backgroundColor: '#fff' }]}>
-            {crops.length === 0 ? (
+            {/* Pasek wyszukiwania */}
+            <SearchFilter 
+                searchQuery={searchQuery}
+                onSearchQueryChange={setSearchQuery}
+            />
+
+            {filteredCrops.length === 0 ? (
                 <ScrollView 
                     style={styles.mainCantainer}
                     refreshControl={
                         <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
                     }
                 >
-                    <WarningView title="No crops available" message="Please add crops by clicking the plus button" />
+                    <WarningView
+                        title="No crops available"
+                        message="Please add crops by clicking the plus button or try a different search"
+                    />
                 </ScrollView>
             ) : (
                 <ScrollView
@@ -75,16 +98,17 @@ const CropManagementScreen = () => {
                         <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
                     }
                 >
-                    {crops.map((crop) => (
+                    {filteredCrops.map((crop) => (
                         <CropDetails 
-                            crop={crop} 
-                            key={crop.id} 
+                            crop={crop}
+                            key={crop.id}
                             handleDeleteCrop={() => confirmDeleteCrop(crop.id)}
                             onEdit={() => navigation.navigate('Edit Crop', { id: crop.id })}
                         />
                     ))}
                 </ScrollView>
             )}
+
             <FloatingActionButton onPress={() => navigation.navigate('Add Crop')} />
         </View>
     );

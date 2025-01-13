@@ -4,7 +4,21 @@ import { styles } from '../styles/AppStyles';
 import { FontAwesome6, MaterialCommunityIcons, Entypo } from '@expo/vector-icons';
 
 const LatestOperations = ({ data }) => {
-    if (!data) {
+    const isEmptyDate = (dateString) => {
+        const date = new Date(dateString);
+        return isNaN(date.getTime()) || date.getTime() === new Date('1970-01-01').getTime();
+    };
+
+    const isDataEmpty = () => {
+        return (
+            !data ||
+            (!data.cultivationOperationName && isEmptyDate(data.cultivationOperationDate) && !data.cultivationOperationDescription && !data.cultivationOperationCrop) &&
+            (!data.plantProtectionName && isEmptyDate(data.plantProtectionDate) && !data.plantProtectionDescription && !data.plantProtectionCrop) &&
+            (!data.fertilizationName && isEmptyDate(data.fertilizationDate) && !data.fertilizationDescription && !data.fertilizationCrop)
+        );
+    };
+
+    if (isDataEmpty()) {
         return (
             <View style={styles.bottomContainer}>
                 <Text style={styles.warningText}>No recent operations available.</Text>
@@ -13,7 +27,8 @@ const LatestOperations = ({ data }) => {
     }
 
     const formatDate = (dateString) => {
-        return new Date(dateString).toLocaleDateString();
+        const date = new Date(dateString);
+        return isEmptyDate(dateString) ? "No Date" : date.toLocaleDateString();
     };
 
     const renderRow = (label, value) => {
