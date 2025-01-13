@@ -3,16 +3,21 @@ import { createDrawerNavigator } from "@react-navigation/drawer";
 import HomeScreen from '../screens/Home/HomeScreen';
 import WeatherScreen from '../screens/Weather/WeatherScreen';
 import FieldmanagementStack from './FieldManagementStack';
-import MapScreen from '../screens/Map/MapScreen';
 import SettingsScreen from '../screens/Settings/SettingsScreen';
-import CalculatorListScreen from '../screens/Calculators/CalculatorListScreen';
 import FarmManagementStack from './FarmManamementStack';
 import CropManagementStack from './CropManagementStack';
 import CalculatorsStack from './CalculatorsStack';
 import MapStack from './MapStack';
 import ReportsStack from './ReportsStack';
+import { HomePageInfoProvider } from '../context/HomePageInfoProvider'; 
 
 const Drawer = createDrawerNavigator();
+
+const HomeScreenWithProvider = () => (
+    <HomePageInfoProvider>
+        <HomeScreen />
+    </HomePageInfoProvider>
+);
 
 const MainNavigation = () => {
     return (
@@ -33,7 +38,7 @@ const MainNavigation = () => {
         >
             <Drawer.Screen 
                 name="Home"
-                component={HomeScreen}
+                component={HomeScreenWithProvider}  // ZAMIANA na komponent z providerem
             />
             <Drawer.Screen 
                 name="Weather"
