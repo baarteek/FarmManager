@@ -16,9 +16,13 @@ export default {
       "**/*"
     ],
     ios: {
-      supportsTablet: true
+      supportsTablet: true,
+      "infoPlist": {
+        "NSLocationWhenInUseUsageDescription": "App needs access to your location."
+      }
     },
     android: {
+      "permissions": ["ACCESS_FINE_LOCATION", "ACCESS_COARSE_LOCATION"],
       adaptiveIcon: {
         foregroundImage: "./assets/adaptive-icon.png",
         backgroundColor: "#ffffff"
@@ -33,7 +37,8 @@ export default {
       favicon: "./assets/favicon.png"
     },
     plugins: [
-      "expo-font"
+      "expo-font",
+      "expo-location"
     ]
   }
 };

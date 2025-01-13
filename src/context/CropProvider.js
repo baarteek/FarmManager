@@ -4,7 +4,6 @@ import { useAuth } from './AuthContext';
 import API_BASE_URL from '../config/apiConfig';
 
 const CropContext = createContext();
-
 export const useCropContext = () => useContext(CropContext);
 
 export const CropProvider = ({ children }) => {

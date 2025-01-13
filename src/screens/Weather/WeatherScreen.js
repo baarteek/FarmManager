@@ -1,7 +1,7 @@
 import { ScrollView, Text, View } from "react-native";
 import { styles } from "../../styles/AppStyles";
 import useWeatherData from "../../hooks/useWeatherData";
-import { useLocationContext } from "../../context/useLocationContext";
+import { useLocationContext } from "../../context/LocationProvider";
 import LoadingView from "../../components/LoadingView";
 import ErrorView from "../../components/ErrorView";
 import { FontAwesome6, Feather, Entypo, Ionicons } from '@expo/vector-icons';
