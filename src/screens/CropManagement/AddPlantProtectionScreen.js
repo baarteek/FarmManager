@@ -62,8 +62,7 @@ const AddPlantProtectionScreen = () => {
     };
 
     return (
-        <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false} style={[styles.mainCantainer, { justifyContent: 'center', alignItems: 'center' }]}>
-            <ScrollView style={{ width: '100%', paddingTop: '5%' }}>
+            <ScrollView style={styles.mainCantainer}>
                 <Text style={[styles.largeText, { textAlign: 'center' }]}>Plant Protection Date</Text>
                 <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center' }}>
                     <DateTimePicker
@@ -112,7 +111,6 @@ const AddPlantProtectionScreen = () => {
                     <Text style={{ textAlign: 'center', fontWeight: 'bold', fontSize: 22, color: '#fff' }}>Add Plant Protection</Text>
                 </TouchableOpacity>
             </ScrollView>
-        </TouchableWithoutFeedback>
     );
 };
 

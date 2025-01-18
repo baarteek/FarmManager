@@ -41,8 +41,7 @@ const AddFieldScreen = () => {
     };
 
     return (
-        <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false} style={[styles.mainCantainer, { justifyContent: 'center', alignItems: 'center' }]}>
-            <ScrollView style={{ width: '100%', paddingTop: '5%' }}>
+            <ScrollView style={styles.mainCantainer}>
                 <Text style={[styles.largeText, { textAlign: 'center' }]}>Field Name</Text>
                 <TextInput
                     style={styles.input}
@@ -73,7 +72,6 @@ const AddFieldScreen = () => {
                     <Text style={{ textAlign: 'center', fontWeight: 'bold', fontSize: 22, color: '#fff' }}>Add Fields From File</Text>
                 </TouchableOpacity>
             </ScrollView>
-        </TouchableWithoutFeedback>
     );
 };
 

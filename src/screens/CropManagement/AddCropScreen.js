@@ -137,8 +137,7 @@ const AddCropScreen = () => {
     }
 
     return (
-        <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false} style={[styles.mainContainer, { justifyContent: 'center', alignItems: 'center', height: '100%', backgroundColor: '#fff' }]}>
-            <ScrollView style={{ width: '100%', paddingTop: '10%' }}>
+            <ScrollView style={styles.mainCantainer}>
                 {step === 1 && (
                     <>
                         <Text style={[styles.largeText, { textAlign: 'center' }]}>Select Farm</Text>
@@ -220,7 +219,6 @@ const AddCropScreen = () => {
                     </>
                 )}
             </ScrollView>
-        </TouchableWithoutFeedback>
     );
 };
 

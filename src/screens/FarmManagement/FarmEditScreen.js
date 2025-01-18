@@ -73,8 +73,7 @@ const FarmEditScreen = () => {
     }
 
     return (
-        <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false} style={[styles.mainCantainer, { justifyContent: 'center', alignItems: 'center' }]} >
-            <ScrollView style={{ width: '100%', paddingTop: '10%' }}>
+            <ScrollView style={styles.mainCantainer}>
                 <Text style={[styles.largeText, { textAlign: 'center' }]}>Farm Name</Text>
                 <TextInput
                     style={styles.input}
@@ -111,7 +110,6 @@ const FarmEditScreen = () => {
                     )}
                 </TouchableOpacity>
             </ScrollView>
-        </TouchableWithoutFeedback>
     );
 };
 

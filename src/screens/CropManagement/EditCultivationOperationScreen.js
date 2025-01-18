@@ -105,8 +105,7 @@ const EditCultivationOperationScreen = () => {
     }
 
     return (
-        <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false} style={[styles.mainContainer, { justifyContent: 'center', alignItems: 'center', paddingBottom: '5%', backgroundColor: '#fff' }]}>
-            <ScrollView style={{ width: '100%', paddingTop: '5%' }}>
+            <ScrollView style={styles.mainCantainer}>
                 <Text style={[styles.largeText, { textAlign: 'center' }]}>Cultivation Operation Date</Text>
                 <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center' }}>
                     <DateTimePicker
@@ -154,7 +153,6 @@ const EditCultivationOperationScreen = () => {
                     )}
                 </TouchableOpacity>
             </ScrollView>
-        </TouchableWithoutFeedback>
     );
 };
 

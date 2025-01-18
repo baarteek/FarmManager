@@ -58,8 +58,7 @@ const AddSoilMeasurementScreen = () => {
     };
 
     return (
-        <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false} style={[styles.mainCantainer, { justifyContent: 'center', alignItems: 'center' }]}>
-            <ScrollView style={{ width: '100%', paddingTop: '5%' }}>
+            <ScrollView style={styles.mainCantainer}>
                 <Text style={[styles.largeText, { textAlign: 'center' }]}>Date</Text>
                 <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center' }}>
                     <DateTimePicker
@@ -116,7 +115,6 @@ const AddSoilMeasurementScreen = () => {
                     )}
                 </TouchableOpacity>
             </ScrollView>
-        </TouchableWithoutFeedback>
     );
 };
 

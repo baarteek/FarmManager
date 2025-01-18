@@ -64,8 +64,7 @@ const EditPlotNumberScreen = () => {
     };
 
     return (
-        <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false} style={[styles.mainCantainer, { justifyContent: 'center', alignItems: 'center' }]}>
-            <ScrollView style={{ width: '100%', paddingTop: '5%' }}>
+            <ScrollView style={styles.mainCantainer}>
                 <Text style={[styles.largeText, { textAlign: 'center' }]}>Parcel Number</Text>
                 <TextInput
                     style={styles.input}
@@ -95,7 +94,6 @@ const EditPlotNumberScreen = () => {
                     )}
                 </TouchableOpacity>
             </ScrollView>
-        </TouchableWithoutFeedback>
     );
 };
 

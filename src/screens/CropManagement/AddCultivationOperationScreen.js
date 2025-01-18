@@ -58,8 +58,7 @@ const AddCultivationOperationScreen = () => {
     };
 
     return (
-        <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false} style={[styles.mainContainer, { justifyContent: 'center', alignItems: 'center', paddingBottom: '5%',  backgroundColor: '#fff' }]}>
-            <ScrollView showsVerticalScrollIndicator={false} style={{ width: '100%', paddingTop: '5%'}}>
+            <ScrollView style={styles.mainCantainer}>
                 <Text style={[styles.largeText, { textAlign: 'center' }]}>Cultivation Operation Date</Text>
                 <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center' }}>
                     <DateTimePicker
@@ -96,7 +95,6 @@ const AddCultivationOperationScreen = () => {
                     <Text style={{ textAlign: 'center', fontWeight: 'bold', fontSize: 22, color: '#fff', marginLeft: '10%', marginRight: '10%' }}>Add Operation</Text>
                 </TouchableOpacity>
             </ScrollView>
-        </TouchableWithoutFeedback>
     );
 };
 
