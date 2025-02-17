@@ -1,3 +1,3 @@
-const API_BASE_URL = 'http://127.0.0.1:7244';
+const API_BASE_URL = 'http://192.168.0.239:7244';
 
 export default API_BASE_URL;

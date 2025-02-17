@@ -121,7 +121,6 @@ const FieldManagementScreen = () => {
         );
     }
     
-
     return (
         <View style={styles.mainCantainer}>
             <ScrollView 

@@ -69,7 +69,7 @@ const CropDetailsScreen = ({ route }) => {
     if (loading) {
         return (
             <View style={styles.mainContainer}>
-                <ActivityIndicator size="large" color="#00ff00" />
+                <ActivityIndicator  color="#00ff00" />
             </View>
         );
     }
