@@ -2,14 +2,12 @@ import React, { useState } from "react";
 import { Button, View, Text, ActivityIndicator } from "react-native";
 import * as DocumentPicker from 'expo-document-picker';
 import { uploadGMLFileToServer } from "../../utils/FileUtils";
-import { useAuth } from "../../context/AuthContext";
 import { useRoute } from "@react-navigation/native";
 
 const GMLUploaderScreen = () => {
   const [fileName, setFileName] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
-  const { token } = useAuth();
   const route = useRoute();
   const { farmId } = route.params;
 

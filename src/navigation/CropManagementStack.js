@@ -40,14 +40,14 @@ const CropManagementStack = () => {
                                     }}
                                 >
                                     <Stack.Screen name="CropManagementMain" component={CropManagementScreen} options={{ headerShown: false }} />
-                                    <Stack.Screen name="Add Crop" component={AddCropScreen} options={{ headerShown: true, title: 'Add Crop' }} />
-                                    <Stack.Screen name="Edit Crop" component={EditCropScreen} options={{ headerShown: true, title: 'Edit Crop' }} />
-                                    <Stack.Screen name="Add Fertilization" component={AddFertilizationScreen} options={{ headerShown: true, title: 'Add Fertilization' }} />
-                                    <Stack.Screen name="Edit Fertilization" component={EditFertilizationScreen} options={{ headerShown: true, title: 'Edit Fertilization' }} />
-                                    <Stack.Screen name="Add Plant Protection" component={AddPlantProtectionScreen} options={{ headerShown: true, title:'Add Plant Protection' }} />
-                                    <Stack.Screen name="Edit Plant Protection" component={EditPlantProtectionScreen} options={{ headerShown: true, title: 'Edit Plant Protection' }} />
-                                    <Stack.Screen name="Add Cultivation Operation" component={AddCultivationOperationScreen} options={{ headerShown: true, title: 'Add Cultivation Operation' }} />
-                                    <Stack.Screen name="Edit Cultivation Operation" component={EditCultivationOperationScreen} options={{ headerShown: true, title: 'Edit Cultivation Operation' }} />
+                                    <Stack.Screen name="Dodaj Uprawę" component={AddCropScreen} options={{ headerShown: true, title: 'Dodaj Uprawę' }} />
+                                    <Stack.Screen name="Edytuj Uprawę" component={EditCropScreen} options={{ headerShown: true, title: 'Edytuj Uprawę' }} />
+                                    <Stack.Screen name="Dodaj Nawożenie" component={AddFertilizationScreen} options={{ headerShown: true, title: 'Dodaj Nawożenie' }} />
+                                    <Stack.Screen name="Edytuj Nawożenie" component={EditFertilizationScreen} options={{ headerShown: true, title: 'Edytuj Nawożenie' }} />
+                                    <Stack.Screen name="Dodaj Ochronę Roślin" component={AddPlantProtectionScreen} options={{ headerShown: true, title: 'Dodaj Ochronę Roślin' }} />
+                                    <Stack.Screen name="Edytuj Ochronę Roślin" component={EditPlantProtectionScreen} options={{ headerShown: true, title: 'Edytuj Ochronę Roślin' }} />
+                                    <Stack.Screen name="Dodaj Zabieg Uprawowy" component={AddCultivationOperationScreen} options={{ headerShown: true, title: 'Dodaj Zabieg Uprawowy' }} />
+                                    <Stack.Screen name="Edytuj Zabieg Uprawowy" component={EditCultivationOperationScreen} options={{ headerShown: true, title: 'Edytuj Zabieg Uprawowy' }} />
                                 </Stack.Navigator>
                             </PlantProtectionProvider>
                         </FertilizationProvider>

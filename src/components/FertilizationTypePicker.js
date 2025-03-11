@@ -1,45 +1,31 @@
 import React, { useEffect, useState } from 'react';
 import { View, ActivityIndicator, Text } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
-import { useAuth } from '../context/AuthContext';
-import axios from 'axios';
-import API_BASE_URL from '../config/apiConfig';
+
+const fertilizationTypeList = [
+    { id: 0, name: "Nie wybrano" },
+    { id: 1, name: "Organiczne" },
+    { id: 2, name: "Nieorganiczne" },
+    { id: 3, name: "O przedłużonym uwalnianiu" },
+    { id: 4, name: "Płynne" },
+    { id: 5, name: "Granulowane" },
+    { id: 6, name: "Dolistne" },
+    { id: 7, name: "Hydroponiczne" },
+    { id: 8, name: "Kontrolowanego uwalniania" },
+    { id: 9, name: "Bio-nawóz" },
+    { id: 10, name: "Obornik" },
+    { id: 11, name: "Kompost" },
+    { id: 12, name: "Zielony nawóz" },
+    { id: 13, name: "Inne" }
+];
 
 const FertilizationTypePicker = ({ selectedFertilizationType, setSelectedFertilizationType }) => {
     const [fertilizationTypes, setFertilizationTypes] = useState([]);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(null);
-    const { token } = useAuth();
 
     useEffect(() => {
-        fetchFertilizationTypes();
+        setFertilizationTypes(fertilizationTypeList);
+        setSelectedFertilizationType(fertilizationTypeList[0].id);
     }, []);
-
-    const fetchFertilizationTypes = async () => {
-        try {
-            const response = await axios.get(`${API_BASE_URL}/Fertilizations/fertilizationType`, {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                    'Content-Type': 'application/json'
-                }
-            });
-            setFertilizationTypes(response.data);
-            setSelectedFertilizationType(response.data[0]?.id);
-        } catch (error) {
-            console.error("Error fetching fertilization types:", error);
-            setError("Failed to load fertilization types. Please try again later.");
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    if (loading) {
-        return <ActivityIndicator size="large" color="#0000ff" />;
-    }
-
-    if (error) {
-        return <Text style={{ color: 'red', textAlign: 'center' }}>{error}</Text>;
-    }
 
     return (
         <View>

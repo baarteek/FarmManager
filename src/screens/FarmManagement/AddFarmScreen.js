@@ -1,88 +1,95 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, Keyboard, Alert, ActivityIndicator } from "react-native";
+import { View, Text, TextInput, TouchableOpacity, Alert, ActivityIndicator, ScrollView } from "react-native";
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { styles } from "../../styles/AppStyles";
-import { ScrollView, TouchableWithoutFeedback } from 'react-native-gesture-handler';
 import { useNavigation } from "@react-navigation/native";
-import { useFarmContext } from '../../context/FarmProvider';
 import { formatDecimalInput } from '../../utils/TextUtils';
 
 const AddFarmScreen = () => {
     const navigation = useNavigation();
-    const { addFarm, loading } = useFarmContext(); 
     const [name, setName] = useState('');
     const [location, setLocation] = useState('');
     const [totalArea, setTotalArea] = useState('');
+    const [loading, setLoading] = useState(false);
 
     const handleAddFarm = async () => {
         if (!name || !totalArea) {
             Alert.alert(
-                "Missing Information",
-                "Please provide both a name and a total area for the farm."
+                "Brak danych",
+                "Podaj nazwę oraz powierzchnię gospodarstwa."
             );
             return;
         }
 
         const newFarm = {
+            id: Date.now().toString(),
             name,
             location,
             totalArea: formatDecimalInput(totalArea),
         };
 
+        setLoading(true);
         try {
-            await addFarm(newFarm);
+            const storedFarms = await AsyncStorage.getItem('farms');
+            const farms = storedFarms ? JSON.parse(storedFarms) : [];
+            const updatedFarms = [...farms, newFarm];
+
+            await AsyncStorage.setItem('farms', JSON.stringify(updatedFarms));
+
             Alert.alert(
-                "Farm Added",
-                "The new farm has been successfully added.",
-                [
-                    { text: "OK", onPress: () => navigation.goBack() }
-                ]
+                "Dodano gospodarstwo",
+                "Nowe gospodarstwo zostało pomyślnie dodane.",
+                [{ text: "OK", onPress: () => navigation.goBack() }]
             );
         } catch (error) {
             Alert.alert(
-                "Error",
-                "Failed to add the farm. Please try again later."
+                "Błąd",
+                "Nie udało się dodać gospodarstwa. Spróbuj ponownie."
             );
+            console.error("Błąd zapisu gospodarstwa:", error);
+        } finally {
+            setLoading(false);
         }
     };
 
     return (
-            <ScrollView style={styles.mainCantainer}>
-                <Text style={[styles.largeText, { textAlign: 'center' }]}>Farm Name</Text>
-                <TextInput
-                    style={styles.input}
-                    placeholder="Enter farm name"
-                    value={name}
-                    onChangeText={setName}
-                />
-                <Text style={[styles.largeText, { textAlign: 'center' }]}>Location</Text>
-                <TextInput
-                    style={styles.input}
-                    placeholder="Enter farm location"
-                    value={location}
-                    onChangeText={setLocation}
-                />
-                <Text style={[styles.largeText, { textAlign: 'center' }]}>Total Area (ha)</Text>
-                <TextInput
-                    style={styles.input}
-                    placeholder="0.00 ha"
-                    value={totalArea}
-                    onChangeText={setTotalArea}
-                    keyboardType="numeric"
-                />
-                <TouchableOpacity 
-                    style={[styles.button, { margin: '5%', marginTop: '5%', width: '80%', backgroundColor: '#62C962', alignSelf: 'center' }]} 
-                    onPress={handleAddFarm}
-                    disabled={loading}
-                >
-                    {loading ? (
-                        <ActivityIndicator size="large" color="#fff" />
-                    ) : (
-                        <Text style={{ textAlign: 'center', fontWeight: 'bold', fontSize: 22, color: '#fff', marginHorizontal: 10 }}>
-                            Add New Farm
-                        </Text>
-                    )}
-                </TouchableOpacity>
-            </ScrollView>
+        <ScrollView style={styles.mainContainer}>
+            <Text style={[styles.largeText, { textAlign: 'center' }]}>Nazwa gospodarstwa</Text>
+            <TextInput
+                style={styles.input}
+                placeholder="Wpisz nazwę gospodarstwa"
+                value={name}
+                onChangeText={setName}
+            />
+            <Text style={[styles.largeText, { textAlign: 'center' }]}>Lokalizacja</Text>
+            <TextInput
+                style={styles.input}
+                placeholder="Wpisz lokalizację gospodarstwa"
+                value={location}
+                onChangeText={setLocation}
+            />
+            <Text style={[styles.largeText, { textAlign: 'center' }]}>Powierzchnia całkowita (ha)</Text>
+            <TextInput
+                style={styles.input}
+                placeholder="0.00 ha"
+                value={totalArea}
+                onChangeText={setTotalArea}
+                keyboardType="numeric"
+            />
+            <TouchableOpacity 
+                style={[styles.button, { margin: '5%', width: '80%', backgroundColor: '#62C962', alignSelf: 'center' }]} 
+                onPress={handleAddFarm}
+                disabled={loading}
+            >
+                {loading ? (
+                    <ActivityIndicator size="large" color="#fff" />
+                ) : (
+                    <Text style={{ textAlign: 'center', fontWeight: 'bold', fontSize: 22, color: '#fff', marginHorizontal: 10 }}>
+                        Dodaj gospodarstwo
+                    </Text>
+                )}
+            </TouchableOpacity>
+        </ScrollView>
     );
 };
 

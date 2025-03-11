@@ -6,372 +6,334 @@ import { styles } from '../styles/AppStyles';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import DetailsModal from './DetailsModal';
 import { formatDate, formatTime } from '../utils/DateUtils';
-import axios from 'axios';
-import { useAuth } from '../context/AuthContext';
-import API_BASE_URL from '../config/apiConfig';
-import { useFertilizationContext } from '../context/FertilizationProvider';
-import { usePlantProtectionContext } from '../context/PlantProtectionProvider'; 
-import { useCultivationOperationContext } from '../context/CultivationOperationProvider';
-import AgrotechnicalInterventionList from './AgrotechnicalInterventionList';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
+const cropTypeMapping = {
+  0: "Nie wybrano",
+  1: "Zboże",
+  2: "Warzywo",
+  3: "Owoc",
+  4: "Roślina strączkowa",
+  5: "Roślina oleista",
+  6: "Roślina korzeniowa",
+  7: "Roślina bulwiasta",
+  8: "Roślina pastewna",
+  9: "Roślina włóknista",
+  10: "Przyprawa",
+  11: "Roślina lecznicza",
+  12: "Roślina ozdobna",
+  13: "Inna"
+};
 
 const CropDetails = ({ crop, handleDeleteCrop }) => {
-    const navigation = useNavigation();
-    const { token } = useAuth();
-    const [modalVisible, setModalVisible] = useState(false);
-    const [selectedDetails, setSelectedDetails] = useState(null);
-    const [modalTitle, setModalTitle] = useState('');
-    const [cropTypes, setCropTypes] = useState([]);
-    const [fertilizationTypes, setFertilizationTypes] = useState([]);
-    const [plantProtectionTypes, setPlantProtectionTypes] = useState([]);
-    const [loadingCropTypes, setLoadingCropTypes] = useState(true);
-    const [cropTypeName, setCropTypeName] = useState('');
-    const [fertilizations, setFertilizations] = useState(crop.fertilizations || []);
-    const [plantProtections, setPlantProtections] = useState(crop.plantProtections || []); 
-    const [ cultivationOperations, setCultivationOperations] = useState(crop.cultivationOperations || []);
+  const navigation = useNavigation();
+  const [modalVisible, setModalVisible] = useState(false);
+  const [selectedDetails, setSelectedDetails] = useState(null);
+  const [modalTitle, setModalTitle] = useState('');
+  const [fieldName, setFieldName] = useState("Ładowanie...");
+  const [farmName, setFarmName] = useState("Ładowanie...");
+  const [cropTypeName, setCropTypeName] = useState(cropTypeMapping[crop.type] || "Nieznany typ");
+  const [fertilizations, setFertilizations] = useState([]);
+  const [plantProtections, setPlantProtections] = useState([]);
+  const [cultivationOperations, setCultivationOperations] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-    const { fetchFertilizationById, deleteFertilization } = useFertilizationContext();
-    const { fetchPlantProtectionById, deletePlantProtection } = usePlantProtectionContext();
-    const { fetchCultivationOperationById, deleteCultivationOperation } = useCultivationOperationContext();
+  const fetchData = async () => {
+    try {
+      const storedFields = await AsyncStorage.getItem('fields');
+      const storedFarms = await AsyncStorage.getItem('farms');
+      const storedFertilizations = await AsyncStorage.getItem('fertilizations');
+      const storedPlantProtections = await AsyncStorage.getItem('plantProtections');
+      const storedCultivationOperations = await AsyncStorage.getItem('cultivationOperations');
 
-    useEffect(() => {
-        const fetchCropTypes = async () => {
-            try {
-                const response = await axios.get(`${API_BASE_URL}/Crops/cropType`, {
-                    headers: {
-                        Authorization: `Bearer ${token}`, 
-                        'Content-Type': 'application/json'
-                    }
-                });
-                setCropTypes(response.data);
-            } catch (error) {
-                console.error("Error fetching crop types:", error);
-            } finally {
-                setLoadingCropTypes(false);
-            }
-        };
+      const fields = storedFields ? JSON.parse(storedFields) : [];
+      const farms = storedFarms ? JSON.parse(storedFarms) : [];
+      const fertilizationsData = storedFertilizations ? JSON.parse(storedFertilizations) : [];
+      const plantProtectionsData = storedPlantProtections ? JSON.parse(storedPlantProtections) : [];
+      const cultivationOperationsData = storedCultivationOperations ? JSON.parse(storedCultivationOperations) : [];
 
-        const fetchFertilizationTypes = async () => {
-            try {
-                const response = await axios.get(`${API_BASE_URL}/Fertilizations/fertilizationType`, { 
-                    headers: {
-                        Authorization: `Bearer ${token}`, 
-                        'Content-Type': 'application/json'
-                    }
-                });
-                setFertilizationTypes(response.data);
-            } catch (error) {
-                console.error("Error fetching fertilization types:", error);
-            }
-        };
+      const field = fields.find(f => f.id === crop.fieldId);
+      setFieldName(field ? field.name : "Nieznane pole");
 
-        const fetchPlantProtectionTypes = async () => {
-            try {
-                const response = await axios.get(`${API_BASE_URL}/PlantProtections/plantProtectionType`, { 
-                    headers: {
-                        Authorization: `Bearer ${token}`, 
-                        'Content-Type': 'application/json'
-                    }
-                });
-                setPlantProtectionTypes(response.data);
-            } catch (error) {
-                console.error("Error fetching plant protection types:", error);
-            }
-        };
+      if (field) {
+        const farm = farms.find(f => f.id === field.farmId);
+        setFarmName(farm ? farm.name : "Nieznane gospodarstwo");
+      } else {
+        setFarmName("Nieznane gospodarstwo");
+      }
 
-        fetchCropTypes();
-        fetchFertilizationTypes();
-        fetchPlantProtectionTypes();
-    }, [token]);
-
-    useEffect(() => {
-        if (cropTypes.length > 0) {
-            const type = cropTypes.find((type) => type.id === crop.type);
-            setCropTypeName(type ? type.name : 'Unknown Type');
-        }
-    }, [cropTypes, crop.type]);
-
-    const getFertilizationTypeName = (typeId) => {
-        const type = fertilizationTypes.find((type) => type.id === typeId);
-        return type ? type.name : 'Unknown Type';
-    };
-
-    const getPlantProtectionTypeName = (typeId) => {
-        const type = plantProtectionTypes.find((type) => type.id === typeId);
-        return type ? type.name : 'Unknown Type';
-    };
-
-    const handleFertilizationClick = async (id) => {
-        const fertilization = await fetchFertilizationById(id);
-
-        const details = {
-            Date: formatDate(fertilization.date),
-            Time: formatTime(fertilization.date),
-            Type: getFertilizationTypeName(fertilization.type),
-            Quantity: `${fertilization.quantity} kg`,
-            Intervention: fertilization.agrotechnicalIntervention,
-            Description: fertilization.description
-        };
-        
-        setSelectedDetails(details);
-        setModalTitle('Fertilization Details');
-        setModalVisible(true);
-    };
-
-    const handleCultivateOperationClick = async (id) => {
-        const operation = await fetchCultivationOperationById(id);
-
-        const details = {
-            Name: operation.name,
-            Date: formatDate(operation.date),
-            Time: formatTime(operation.date),
-            Intervention: operation.agrotechnicalIntervention,
-            Description: operation.description,
-        }
-
-        setSelectedDetails(details);
-        setModalTitle('Cultivation Operation Details');
-        setModalVisible(true);
-    };
-
-    const handlePlantProtectionClick = async (id) => {
-        const plantProtection = await fetchPlantProtectionById(id);
-
-        const details = {
-            Date: formatDate(plantProtection.date),
-            Time: formatTime(plantProtection.date),
-            Type: getPlantProtectionTypeName(plantProtection.type),
-            Quantity: `${plantProtection.quantity} kg`,
-            Intervention: plantProtection.agrotechnicalIntervention,
-            Description: plantProtection.description
-        };
-        
-        setSelectedDetails(details);
-        setModalTitle('Plant Protection Details');
-        setModalVisible(true);
-    };
-
-    const handleDeleteFertilization = (id) => {
-        Alert.alert(
-            "Delete Fertilization",
-            "Are you sure you want to delete this Fertilization?",
-            [
-                { text: "Cancel", style: "cancel" },
-                { text: "Delete", onPress: async () =>  {
-                    try {
-                        await deleteFertilization(id);
-                        setFertilizations(fertilizations.filter(f => f.id !== id));
-                    } catch (error) {
-                        console.error("Error deleting fertilization:", error);
-                    }
-                }},
-            ],
-            { cancelable: false }
-        );
-    };
-
-    const handleCultivationOperationDelete = async (id) => {
-        Alert.alert(
-            "Delete Fertilization",
-            "Are you sure you want to delete this Cultivation Operation?",
-            [
-                { text: "Cancel", style: "cancel" },
-                { text: "Delete", onPress: async () =>  {
-                    try {
-                        await deleteCultivationOperation(id);
-                        setCultivationOperations(cultivationOperations.filter(co => co.id !== id));
-                    } catch (error) {
-                        console.error("Error deleting fertilization:", error);
-                    }
-                }},
-            ],
-            { cancelable: false }
-        );
-    };
-
-    const handleDeletePlantProtection = (id) => {
-        Alert.alert(
-            "Delete Plant Protection",
-            "Are you sure you want to delete this Plant Protection?",
-            [
-                { text: "Cancel", style: "cancel" },
-                { text: "Delete", onPress: async () =>  {
-                    try {
-                        await deletePlantProtection(id);
-                        setPlantProtections(plantProtections.filter(p => p.id !== id));
-                    } catch (error) {
-                        console.error("Error deleting plant protection:", error);
-                    }
-                }},
-            ],
-            { cancelable: false }
-        );
-    };
-
-    if (loadingCropTypes) {
-        return <ActivityIndicator size="large" color="#00ff00" />;
+      setFertilizations(fertilizationsData.filter(f => f.cropId === crop.id));
+      setPlantProtections(plantProtectionsData.filter(p => p.cropId === crop.id));
+      setCultivationOperations(cultivationOperationsData.filter(c => c.cropId === crop.id));
+    } catch (error) {
+      console.error("Błąd podczas pobierania danych:", error);
+    } finally {
+      setLoading(false);
     }
+  };
 
-    return (
-        <View style={styles.container}>
-            <ExpandableComponent title={crop.name}>
-                <View style={styles.infoRowContainer}>
-                    <Text style={styles.text}>Field:</Text>
-                    <Text style={styles.text}>{crop.field.name}</Text>
-                </View>
-                <View style={styles.line} />
-                <View style={styles.infoRowContainer}>
-                    <Text style={styles.text}>Crop Type:</Text>
-                    <Text style={styles.text}>{cropTypeName}</Text>
-                </View>
-                <View style={styles.line} />
-                <View style={styles.infoRowContainer}>
-                    <Text style={styles.text}>Is Active</Text>
-                    <View>
-                        {crop.isActive ? (
-                            <Icon name="check" size={22} color="#22734D" style={{ marginRight: '10%', textShadowColor: '#22734D', textShadowOffset: { width: -1, height: 1 }, textShadowRadius: 1 }} />
-                        ) : (
-                            <Icon name="close" size={22} color="#FC7F7F" style={{ marginRight: '10%', textShadowColor: '#22734D', textShadowOffset: { width: -1, height: 1 }, textShadowRadius: 1 }} />
-                        )}
-                    </View>
-                </View>
-                <View style={styles.line} />
+  // Listener, który odświeża dane przy każdym wejściu na ekran
+  useEffect(() => {
+    fetchData();
+    const unsubscribe = navigation.addListener('focus', () => {
+      fetchData();
+    });
+    return unsubscribe;
+  }, [navigation]);
 
-                <ExpandableComponent title="Cultivation Operation" isExpanded={false} backgroundColor="#BAF1BA" style={{ width: '100%' }}>
-                    {cultivationOperations && cultivationOperations.length > 0 ? (
-                        cultivationOperations.map((operation, index) => (
-                            <React.Fragment key={index}>
-                                <View style={styles.infoRowContainer}>
-                                    <TouchableOpacity 
-                                        style={{ width: '70%' }} 
-                                        onPress={() => handleCultivateOperationClick(operation.id)}
-                                    >
-                                        <View style={styles.rowContainer}>
-                                            <Icon name="search" size={22} color="#A9A9A9" style={{ marginRight: '3%' }} />
-                                            <Text style={styles.text}>{operation.name}</Text>
-                                        </View>
-                                    </TouchableOpacity>
-                                    <TouchableOpacity onPress={() => navigation.navigate('Edit Cultivation Operation', { cropId: crop.id, operationId: operation.id })}>
-                                        <Icon name="edit" size={22} color="#00BFFF" />
-                                    </TouchableOpacity>
-                                    <TouchableOpacity onPress={() => handleCultivationOperationDelete(operation.id)}>
-                                        <Icon name="delete" size={22} color="#FC7F7F" />
-                                    </TouchableOpacity>
-                                </View>
-                                <View style={[styles.line, { borderColor: '#22734D', marginBottom: '5%', marginTop: '5%' }]} />
-                            </React.Fragment>
-                        ))
-                    ) : (
-                        <Text style={[styles.text, { textAlign: 'center' }]}>No cultivation operation history available</Text>
-                    )}
-                    <View style={[styles.rowContainer, { justifyContent: 'space-around', marginVertical: '5%' }]}>
-                        <TouchableOpacity 
-                            style={[styles.button, { backgroundColor: '#00E000', width: '80%' }]} 
-                            onPress={() => navigation.navigate('Add Cultivation Operation', { cropId: crop.id })}
-                        >
-                            <Text style={{ textAlign: 'center', fontWeight: 'bold', fontSize: 16, color: '#fff' }}>Add Cultivation Operation</Text>
-                        </TouchableOpacity>
-                    </View>
-                </ExpandableComponent>
+  // Funkcje obsługujące Zabiegi Uprawowe
+  const handleCultivationOperationClick = (operation) => {
+    setSelectedDetails({
+      "Nazwa": operation.name,
+      "Data": formatDate(operation.date),
+      "Godzina": formatTime(operation.date),
+      "Interwencja": operation.agrotechnicalIntervention,
+      "Opis": operation.description || "Brak opisu",
+    });
+    setModalTitle("Szczegóły zabiegu uprawowego");
+    setModalVisible(true);
+  };
 
-                
-                <ExpandableComponent title="Fertilization" isExpanded={false} backgroundColor="#BAF1BA" style={{ width: '100%' }}>
-                    {fertilizations && fertilizations.length > 0 ? (
-                        fertilizations.map((fertilization, index) => (
-                            <React.Fragment key={index}>
-                                <View style={styles.infoRowContainer}>
-                                    <TouchableOpacity 
-                                        style={{ width: '70%' }} 
-                                        onPress={() => handleFertilizationClick(fertilization.id)}
-                                    >
-                                        <View style={styles.rowContainer}>
-                                            <Icon name="search" size={22} color="#A9A9A9" style={{ marginRight: '3%' }} />
-                                            <Text style={styles.text}>{fertilization.name}</Text>
-                                        </View>
-                                    </TouchableOpacity>
-                                    <TouchableOpacity onPress={() => navigation.navigate('Edit Fertilization', { cropId: crop.id, fertilizationId: fertilization.id })}>
-                                        <Icon name="edit" size={22} color="#00BFFF" />
-                                    </TouchableOpacity>
-                                    <TouchableOpacity onPress={() => handleDeleteFertilization(fertilization.id)}>
-                                        <Icon name="delete" size={22} color="#FC7F7F" />
-                                    </TouchableOpacity>
-                                </View>
-                                <View style={[styles.line, { borderColor: '#22734D', marginBottom: '5%', marginTop: '5%' }]} />
-                            </React.Fragment>
-                        ))
-                    ) : (
-                        <Text style={[styles.text, { textAlign: 'center' }]}>No fertilization history available</Text>
-                    )}
-                    <View style={[styles.rowContainer, { justifyContent: 'space-around', marginVertical: '5%' }]}>
-                        <TouchableOpacity 
-                            style={[styles.button, { backgroundColor: '#00E000', width: '80%' }]} 
-                            onPress={() => navigation.navigate('Add Fertilization', { cropId: crop.id })}
-                        >
-                            <Text style={{ textAlign: 'center', fontWeight: 'bold', fontSize: 16, color: '#fff' }}>Add Fertilization</Text>
-                        </TouchableOpacity>
-                    </View>
-                </ExpandableComponent>
+  const handleDeleteOperation = async (id) => {
+    Alert.alert("Usuń zabieg uprawowy", "Czy na pewno chcesz usunąć ten zabieg?", [
+      { text: "Anuluj", style: "cancel" },
+      {
+        text: "Usuń",
+        onPress: async () => {
+          try {
+            const storedOperations = await AsyncStorage.getItem('cultivationOperations');
+            const parsedOperations = storedOperations ? JSON.parse(storedOperations) : [];
+            const updatedOperations = parsedOperations.filter(op => op.id !== id);
+            await AsyncStorage.setItem('cultivationOperations', JSON.stringify(updatedOperations));
+            // Odśwież dane po usunięciu
+            fetchData();
+          } catch (error) {
+            console.error("Błąd podczas usuwania zabiegu uprawowego:", error);
+          }
+        }
+      }
+    ]);
+  };
 
-                <ExpandableComponent title="Pest and Disease" isExpanded={false} backgroundColor="#BAF1BA" style={{ width: '100%' }}>
-                {plantProtections && plantProtections.length > 0 ? (
-                    plantProtections.map((plantProtection, index) => (
-                        <React.Fragment key={index}>
-                            <View style={styles.infoRowContainer}>
-                                <TouchableOpacity 
-                                    style={{ width: '70%' }} 
-                                    onPress={() => handlePlantProtectionClick(plantProtection.id)}
-                                >
-                                    <View style={styles.rowContainer}>
-                                        <Icon name="search" size={22} color="#A9A9A9" style={{ marginRight: '3%' }} />
-                                        <Text style={styles.text}>{plantProtection.name}</Text>
-                                    </View>
-                                </TouchableOpacity>
-                                <TouchableOpacity onPress={() => navigation.navigate('Edit Plant Protection', { cropId: crop.id, plantProtectionId: plantProtection.id})}>
-                                    <Icon name="edit" size={22} color="#00BFFF" />
-                                </TouchableOpacity>
-                                <TouchableOpacity onPress={() => handleDeletePlantProtection(plantProtection.id)}>
-                                    <Icon name="delete" size={22} color="#FC7F7F" />
-                                </TouchableOpacity>
-                            </View>
-                            <View style={[styles.line, { borderColor: '#22734D', marginBottom: '5%', marginTop: '5%' }]} />
-                        </React.Fragment>
-                    ))
-                ) : (
-                    <Text style={[styles.text, { textAlign: 'center' }]}>No plant protection history available</Text>
-                )}
-                <View style={[styles.rowContainer, { justifyContent: 'space-around', marginVertical: '5%' }]}>
-                    <TouchableOpacity 
-                        style={[styles.button, { backgroundColor: '#00E000', width: '80%' }]} 
-                        onPress={() => navigation.navigate('Add Plant Protection', { cropId: crop.id })}
-                    >
-                        <Text style={{ textAlign: 'center', fontWeight: 'bold', fontSize: 16, color: '#fff' }}>Add Plant Protection</Text>
-                    </TouchableOpacity>
-                </View>
-            </ExpandableComponent>
+  const handleFertilizationClick = (fertilization) => {
+    setSelectedDetails({
+      "Data": formatDate(fertilization.date),
+      "Godzina": formatTime(fertilization.date),
+      "Ilość": fertilization.quantity + " kg/ha",
+      "Interwencja": fertilization.agrotechnicalIntervention,
+      "Opis": fertilization.description || "Brak opisu",
+    });
+    setModalTitle("Szczegóły nawożenia");
+    setModalVisible(true);
+  };
 
-                <View style={[styles.rowContainer, { justifyContent: 'space-around', marginTop: '3%' }]}>
-                    <TouchableOpacity 
-                        style={[styles.button, { backgroundColor: '#00BFFF', width: '40%' }]} 
-                        onPress={() => navigation.navigate('Edit Crop', { id: crop.id})}
-                    >
-                        <Text style={{ textAlign: 'center', fontWeight: 'bold', fontSize: 16, color: '#fff', marginHorizontal: 10 }}>Edit Crop</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity 
-                        style={[styles.button, { backgroundColor: '#FC7F7F', width: '40%' }]} 
-                        onPress={() => handleDeleteCrop(crop.id)}
-                    >
-                        <Text style={{ textAlign: 'center', fontWeight: 'bold', fontSize: 16, color: '#fff', marginHorizontal: 10 }}>Delete Crop</Text>
-                    </TouchableOpacity>
-                </View>
+  const handleDeleteFertilization = async (id) => {
+    Alert.alert("Usuń nawożenie", "Czy na pewno chcesz usunąć to nawożenie?", [
+      { text: "Anuluj", style: "cancel" },
+      {
+        text: "Usuń",
+        onPress: async () => {
+          try {
+            const storedFertilizations = await AsyncStorage.getItem('fertilizations');
+            const parsedFertilizations = storedFertilizations ? JSON.parse(storedFertilizations) : [];
+            const updatedFertilizations = parsedFertilizations.filter(f => f.id !== id);
+            await AsyncStorage.setItem('fertilizations', JSON.stringify(updatedFertilizations));
+            // Odśwież dane po usunięciu
+            fetchData();
+          } catch (error) {
+            console.error("Błąd podczas usuwania nawożenia:", error);
+          }
+        }
+      }
+    ]);
+  };
 
-                <DetailsModal
-                    visible={modalVisible}
-                    onClose={() => setModalVisible(false)}
-                    title={modalTitle}
-                    details={selectedDetails}
-                />
-            </ExpandableComponent>
+  const handlePlantProtectionClick = (protection) => {
+    setSelectedDetails({
+      "Data": formatDate(protection.date),
+      "Godzina": formatTime(protection.date),
+      "Ilość": protection.quantity + " kg/ha",
+      "Interwencja": protection.agrotechnicalIntervention,
+      "Opis": protection.description || "Brak opisu",
+    });
+    setModalTitle("Szczegóły ochrony roślin");
+    setModalVisible(true);
+  };
+
+  const handleDeletePlantProtection = async (id) => {
+    Alert.alert("Usuń ochronę roślin", "Czy na pewno chcesz usunąć tę ochronę roślin?", [
+      { text: "Anuluj", style: "cancel" },
+      {
+        text: "Usuń",
+        onPress: async () => {
+          try {
+            const storedPlantProtections = await AsyncStorage.getItem('plantProtections');
+            const parsedPlantProtections = storedPlantProtections ? JSON.parse(storedPlantProtections) : [];
+            const updatedPlantProtections = parsedPlantProtections.filter(p => p.id !== id);
+            await AsyncStorage.setItem('plantProtections', JSON.stringify(updatedPlantProtections));
+            // Odśwież dane po usunięciu
+            fetchData();
+          } catch (error) {
+            console.error("Błąd podczas usuwania ochrony roślin:", error);
+          }
+        }
+      }
+    ]);
+  };
+
+  if (loading) {
+    return <ActivityIndicator size="large" color="#00ff00" />;
+  }
+
+  return (
+    <View style={styles.container}>
+      <ExpandableComponent title={crop.name}>
+        <View style={styles.infoRowContainer}>
+          <Text style={styles.text}>Pole:</Text>
+          <Text style={styles.text}>{fieldName}</Text>
         </View>
-    );
+        <View style={styles.line} />
+        <View style={styles.infoRowContainer}>
+          <Text style={styles.text}>Gospodarstwo:</Text>
+          <Text style={styles.text}>{farmName}</Text>
+        </View>
+        <View style={styles.line} />
+        <View style={styles.infoRowContainer}>
+          <Text style={styles.text}>Typ uprawy:</Text>
+          <Text style={styles.text}>{cropTypeName}</Text>
+        </View>
+        <View style={styles.line} />
+        <View style={styles.infoRowContainer}>
+          <Text style={styles.text}>Aktywna:</Text>
+          <Icon name={crop.isActive ? "check" : "close"} size={22} color={crop.isActive ? "#22734D" : "#FC7F7F"} />
+        </View>
+        <View style={styles.line} />
+
+        <ExpandableComponent title="Zabiegi uprawowe" isExpanded={true} backgroundColor="#BAF1BA">
+          {cultivationOperations.length > 0 ? (
+            cultivationOperations.map(operation => (
+              <View key={operation.id} style={styles.infoRowContainer}>
+                <TouchableOpacity 
+                  style={{ width: '70%' }}
+                  onPress={() => handleCultivationOperationClick(operation)}
+                >
+                  <View style={styles.rowContainer}>
+                    <Icon name="search" size={22} color="#A9A9A9" style={{ marginRight: '3%' }} />
+                    <Text style={styles.text}>{operation.name}</Text>
+                  </View>
+                </TouchableOpacity>
+                <TouchableOpacity onPress={() => navigation.navigate("Edytuj Zabieg Uprawowy", { cropId: crop.id, operationId: operation.id })}>
+                  <Icon name="edit" size={22} color="#00BFFF" />
+                </TouchableOpacity>
+                <TouchableOpacity onPress={() => handleDeleteOperation(operation.id)}>
+                  <Icon name="delete" size={22} color="#FC7F7F" />
+                </TouchableOpacity> 
+              </View>
+            ))
+          ) : (
+            <Text style={[styles.text, { textAlign: 'center' }]}>Brak zabiegów dla tego pola</Text>
+          )}
+          <View style={[styles.rowContainer, { justifyContent: 'space-around', marginTop: '5%' }]}>
+            <TouchableOpacity 
+              style={[styles.button, { backgroundColor: '#00E000', width: '80%' }]} 
+              onPress={() => navigation.navigate('Dodaj Zabieg Uprawowy', { cropId: crop.id })}
+            >
+              <Text style={{ textAlign: 'center', fontWeight: 'bold', fontSize: 16, color: '#fff' }}>Dodaj Zabieg Uprawowy</Text>
+            </TouchableOpacity>
+          </View>
+        </ExpandableComponent>
+
+        <ExpandableComponent title="Nawożenie" isExpanded={false} backgroundColor="#BAF1BA">
+          {fertilizations.length > 0 ? (
+            fertilizations.map(fertilization => (
+              <View key={fertilization.id} style={styles.infoRowContainer}>
+                <TouchableOpacity 
+                  style={{ width: '70%' }}
+                  onPress={() => handleFertilizationClick(fertilization)}
+                >
+                  <View style={styles.rowContainer}>
+                    <Icon name="search" size={22} color="#A9A9A9" style={{ marginRight: '3%' }} />
+                    <Text style={styles.text}>{fertilization.name || formatDate(fertilization.date)}</Text>
+                  </View>
+                </TouchableOpacity>
+                <TouchableOpacity onPress={() => navigation.navigate("Edytuj Nawożenie", { cropId: crop.id, fertilizationId: fertilization.id })}>
+                  <Icon name="edit" size={22} color="#00BFFF" />
+                </TouchableOpacity>
+                <TouchableOpacity onPress={() => handleDeleteFertilization(fertilization.id)}>
+                  <Icon name="delete" size={22} color="#FC7F7F" />
+                </TouchableOpacity>
+              </View>
+            ))
+          ) : (
+            <Text style={[styles.text, { textAlign: 'center' }]}>Brak historii nawożenia</Text>
+          )}
+          <View style={[styles.rowContainer, { justifyContent: 'space-around', marginTop: '5%' }]}>
+            <TouchableOpacity 
+              style={[styles.button, { backgroundColor: '#00E000', width: '80%' }]} 
+              onPress={() => navigation.navigate('Dodaj Nawożenie', { cropId: crop.id })}
+            >
+              <Text style={{ textAlign: 'center', fontWeight: 'bold', fontSize: 16, color: '#fff' }}>Dodaj Nawożenie</Text>
+            </TouchableOpacity>
+          </View>
+        </ExpandableComponent>
+
+        <ExpandableComponent title="Ochrona roślin" isExpanded={false} backgroundColor="#BAF1BA">
+          {plantProtections.length > 0 ? (
+            plantProtections.map(protection => (
+              <View key={protection.id} style={styles.infoRowContainer}>
+                <TouchableOpacity 
+                  style={{ width: '70%' }}
+                  onPress={() => handlePlantProtectionClick(protection)}
+                >
+                  <View style={styles.rowContainer}>
+                    <Icon name="search" size={22} color="#A9A9A9" style={{ marginRight: '3%' }} />
+                    <Text style={styles.text}>{protection.name || formatDate(protection.date)}</Text>
+                  </View>
+                </TouchableOpacity>
+                <TouchableOpacity onPress={() => navigation.navigate("Edytuj Ochronę Roślin", { cropId: crop.id, plantProtectionId: protection.id })}>
+                  <Icon name="edit" size={22} color="#00BFFF" />
+                </TouchableOpacity>
+                <TouchableOpacity onPress={() => handleDeletePlantProtection(protection.id)}>
+                  <Icon name="delete" size={22} color="#FC7F7F" />
+                </TouchableOpacity>
+              </View>
+            ))
+          ) : (
+            <Text style={[styles.text, { textAlign: 'center' }]}>Brak historii ochrony roślin</Text>
+          )}
+          <View style={[styles.rowContainer, { justifyContent: 'space-around', marginTop: '5%' }]}>
+            <TouchableOpacity 
+              style={[styles.button, { backgroundColor: '#00E000', width: '80%' }]} 
+              onPress={() => navigation.navigate('Dodaj Ochronę Roślin', { cropId: crop.id })}
+            >
+              <Text style={{ textAlign: 'center', fontWeight: 'bold', fontSize: 16, color: '#fff' }}>Dodaj Ochronę Roślin</Text>
+            </TouchableOpacity>
+          </View>
+        </ExpandableComponent>
+
+        <View style={[styles.rowContainer, { justifyContent: 'space-around', marginTop: '3%' }]}>
+          <TouchableOpacity 
+            style={[styles.button, { backgroundColor: '#00BFFF', width: '40%' }]} 
+            onPress={() => navigation.navigate('Edytuj Uprawę', { id: crop.id })}
+          >
+            <Text style={{ textAlign: 'center', fontWeight: 'bold', fontSize: 16, color: '#fff' }}>Edytuj</Text>
+          </TouchableOpacity>
+          <TouchableOpacity 
+            style={[styles.button, { backgroundColor: '#FC7F7F', width: '40%' }]} 
+            onPress={() => handleDeleteCrop(crop.id)}
+          >
+            <Text style={{ textAlign: 'center', fontWeight: 'bold', fontSize: 16, color: '#fff' }}>Usuń</Text>
+          </TouchableOpacity>
+        </View>
+      </ExpandableComponent>
+      <DetailsModal
+        visible={modalVisible}
+        onClose={() => setModalVisible(false)}
+        title={modalTitle}
+        details={selectedDetails}
+      />
+    </View>
+  );
 };
 
 export default CropDetails;

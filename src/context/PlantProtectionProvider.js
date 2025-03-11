@@ -1,33 +1,50 @@
-import axios from 'axios';
 import React, { createContext, useContext, useEffect, useState } from 'react';
-import { useAuth } from './AuthContext';
-import API_BASE_URL from '../config/apiConfig';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const PlantProtectionContext = createContext();
 
 export const usePlantProtectionContext = () => useContext(PlantProtectionContext);
 
 export const PlantProtectionProvider = ({ children }) => {
-    const { token } = useAuth();
     const [plantProtections, setPlantProtections] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
+    const loadPlantProtectionsFromStorage = async () => {
+        try {
+            const storedPlantProtections = await AsyncStorage.getItem('plantProtections');
+            if (storedPlantProtections) {
+                setPlantProtections(JSON.parse(storedPlantProtections));
+            }
+        } catch (err) {
+            console.error('Error loading plant protections from storage:', err.message);
+        }
+    };
+
+    const savePlantProtectionsToStorage = async (updatedPlantProtections) => {
+        try {
+            await AsyncStorage.setItem('plantProtections', JSON.stringify(updatedPlantProtections));
+        } catch (err) {
+            console.error('Error saving plant protections to storage:', err.message);
+        }
+    };
+
     const fetchPlantProtectionById = async (id) => {
         setLoading(true);
         try {
-            if (!token) {
-                throw new Error('No token found');
-            }
-
-            const response = await axios.get(`${API_BASE_URL}/PlantProtections/${id}`, {
-                headers: {
-                    Authorization: `Bearer ${token}`
+            const storedPlantProtections = await AsyncStorage.getItem('plantProtections');
+            if (storedPlantProtections) {
+                const parsedPlantProtections = JSON.parse(storedPlantProtections);
+                const plantProtection = parsedPlantProtections.find(pp => pp.id === id);
+                if (plantProtection) {
+                    setError(null);
+                    return plantProtection;
                 }
-            });
-            return response.data;
+            }
+            throw new Error('Plant protection not found.');
         } catch (err) {
             console.error('Error fetching plant protection:', err.message);
+            setError('Failed to load plant protection.');
             throw err;
         } finally {
             setLoading(false);
@@ -37,20 +54,15 @@ export const PlantProtectionProvider = ({ children }) => {
     const fetchPlantProtections = async (cropId) => {
         setLoading(true);
         try {
-            if (!token) {
-                throw new Error('No token found');
+            const storedPlantProtections = await AsyncStorage.getItem('plantProtections');
+            if (storedPlantProtections) {
+                const parsedPlantProtections = JSON.parse(storedPlantProtections);
+                setPlantProtections(parsedPlantProtections.filter(pp => pp.cropId === cropId));
             }
-
-            const response = await axios.get(`${API_BASE_URL}/PlantProtections/crops/${cropId}`, {
-                headers: {
-                    Authorization: `Bearer ${token}`
-                }
-            });
-            setPlantProtections(response.data);
             setError(null);
         } catch (err) {
             console.error('Error fetching plant protections:', err.message);
-            setError('Failed to load plant protections. Please try again later');
+            setError('Failed to load plant protections.');
         } finally {
             setLoading(false);
         }
@@ -59,20 +71,13 @@ export const PlantProtectionProvider = ({ children }) => {
     const addPlantProtection = async (newPlantProtection) => {
         setLoading(true);
         try {
-            if (!token) {
-                throw new Error('No token found');
-            }
-
-            const response = await axios.post(`${API_BASE_URL}/PlantProtections`, newPlantProtection, {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                    'Content-Type': 'application/json'
-                }
-            });
-            setPlantProtections(prevPlantProtections => [...prevPlantProtections, response.data]);
+            const updatedPlantProtections = [...plantProtections, newPlantProtection];
+            setPlantProtections(updatedPlantProtections);
+            await savePlantProtectionsToStorage(updatedPlantProtections);
+            setError(null);
         } catch (err) {
             console.error('Error adding plant protection:', err.message);
-            setError('Failed to add plant protection. Please try again later.');
+            setError('Failed to add plant protection.');
         } finally {
             setLoading(false);
         }
@@ -81,24 +86,15 @@ export const PlantProtectionProvider = ({ children }) => {
     const editPlantProtection = async (plantProtectionId, updatedPlantProtection) => {
         setLoading(true);
         try {
-            if (!token) {
-                throw new Error('No token found');
-            }
-
-            await axios.put(`${API_BASE_URL}/PlantProtections/${plantProtectionId}`, updatedPlantProtection, {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                    'Content-Type': 'application/json'
-                }
-            });
-
-            setPlantProtections(prevPlantProtections =>
-                prevPlantProtections.map(plantProtection => plantProtection.id === plantProtectionId ? { ...plantProtection, ...updatedPlantProtection } : plantProtection)
+            const updatedPlantProtections = plantProtections.map(pp =>
+                pp.id === plantProtectionId ? { ...pp, ...updatedPlantProtection } : pp
             );
+            setPlantProtections(updatedPlantProtections);
+            await savePlantProtectionsToStorage(updatedPlantProtections);
             setError(null);
         } catch (err) {
             console.error('Error updating plant protection:', err.message);
-            setError('Failed to update plant protection. Please try again later.');
+            setError('Failed to update plant protection.');
         } finally {
             setLoading(false);
         }
@@ -107,28 +103,33 @@ export const PlantProtectionProvider = ({ children }) => {
     const deletePlantProtection = async (id) => {
         setLoading(true);
         try {
-            if (!token) {
-                throw new Error('No token found');
-            }
-
-            await axios.delete(`${API_BASE_URL}/PlantProtections/${id}`, {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                }
-            });
-
-            setPlantProtections(prevPlantProtections => prevPlantProtections.filter(plantProtection => plantProtection.id !== id));
+            const updatedPlantProtections = plantProtections.filter(pp => pp.id !== id);
+            setPlantProtections(updatedPlantProtections);
+            await savePlantProtectionsToStorage(updatedPlantProtections);
             setError(null);
         } catch (err) {
             console.error('Error deleting plant protection:', err.message);
-            setError('Failed to delete plant protection. Please try again later.');
+            setError('Failed to delete plant protection.');
         } finally {
             setLoading(false);
         }
     };
 
+    useEffect(() => {
+        loadPlantProtectionsFromStorage();
+    }, []);
+
     return (
-        <PlantProtectionContext.Provider value={{ plantProtections, loading, error, addPlantProtection, editPlantProtection, deletePlantProtection, fetchPlantProtections, fetchPlantProtectionById }}>
+        <PlantProtectionContext.Provider value={{
+            plantProtections,
+            loading,
+            error,
+            addPlantProtection,
+            editPlantProtection,
+            deletePlantProtection,
+            fetchPlantProtections,
+            fetchPlantProtectionById
+        }}>
             {children}
         </PlantProtectionContext.Provider>
     );

@@ -1,60 +1,62 @@
-import axios from 'axios';
 import React, { createContext, useContext, useEffect, useState } from 'react';
-import { useAuth } from './AuthContext';
-import API_BASE_URL from '../config/apiConfig';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const CropContext = createContext();
 export const useCropContext = () => useContext(CropContext);
 
 export const CropProvider = ({ children }) => {
-    const { token } = useAuth();
     const [crops, setCrops] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
+    const loadCropsFromStorage = async () => {
+        try {
+            const storedCrops = await AsyncStorage.getItem('crops');
+            if (storedCrops) {
+                setCrops(JSON.parse(storedCrops));
+            }
+        } catch (err) {
+            console.error('Error loading crops from storage:', err.message);
+        }
+    };
+
+    const saveCropsToStorage = async (updatedCrops) => {
+        try {
+            await AsyncStorage.setItem('crops', JSON.stringify(updatedCrops));
+        } catch (err) {
+            console.error('Error saving crops to storage:', err.message);
+        }
+    };
+
     const fetchActiveCrops = async () => {
         setLoading(true);
         try {
-            if (!token) {
-                throw new Error('No token found');
-            }
-    
-            const response = await axios.get(`${API_BASE_URL}/Crops/user/active`, {
-                headers: {
-                    Authorization: `Bearer ${token}`
-                }
-            });
-            setCrops(response.data);
+            await loadCropsFromStorage();
             setError(null);
         } catch (err) {
             console.error('Error fetching crops:', err.message);
-            setError('Failed to load crops. Please try again later');
+            setError('Failed to load crops.');
         } finally {
             setLoading(false);
         }
     };
-    
-    useEffect(() => {
-        fetchActiveCrops();
-    }, [token]);
 
     const fetchCropById = async (cropId) => {
         setLoading(true);
         try {
-            if (!token) {
-                throw new Error('No token found');
-            }
-
-            const response = await axios.get(`${API_BASE_URL}/Crops/${cropId}`, {
-                headers: {
-                    Authorization: `Bearer ${token}`
+            const storedCrops = await AsyncStorage.getItem('crops');
+            if (storedCrops) {
+                const parsedCrops = JSON.parse(storedCrops);
+                const crop = parsedCrops.find(crop => crop.id === cropId);
+                if (crop) {
+                    setError(null);
+                    return crop;
                 }
-            });
-            setError(null);
-            return response.data;
+            }
+            throw new Error('Crop not found.');
         } catch (err) {
             console.error('Error fetching crop:', err.message);
-            setError('Failed to load crop details. Please try again later.');
+            setError('Failed to load crop details.');
             throw err;
         } finally {
             setLoading(false);
@@ -64,20 +66,13 @@ export const CropProvider = ({ children }) => {
     const addCrop = async (newCrop) => {
         setLoading(true);
         try {
-            if (!token) {
-                throw new Error('No token found');
-            }
-
-            const response = await axios.post(`${API_BASE_URL}/Crops`, newCrop, {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                    'Content-Type': 'application/json'
-                }
-            });
-            setCrops(prevCrops => [...prevCrops, response.data]);
+            const updatedCrops = [...crops, newCrop];
+            setCrops(updatedCrops);
+            await saveCropsToStorage(updatedCrops);
+            setError(null);
         } catch (err) {
             console.error('Error adding crop:', err.message);
-            setError('Failed to add crop. Please try again later.');
+            setError('Failed to add crop.');
         } finally {
             setLoading(false);
         }
@@ -86,24 +81,13 @@ export const CropProvider = ({ children }) => {
     const editCrop = async (cropId, updatedCrop) => {
         setLoading(true);
         try {
-            if (!token) {
-                throw new Error('No token found');
-            }
-
-            await axios.put(`${API_BASE_URL}/Crops/${cropId}`, updatedCrop, {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                    'Content-Type': 'application/json'
-                }
-            });
-
-            setCrops(prevCrops =>
-                prevCrops.map(crop => crop.id === cropId ? { ...crop, ...updatedCrop } : crop)
-            );
+            const updatedCrops = crops.map(crop => (crop.id === cropId ? { ...crop, ...updatedCrop } : crop));
+            setCrops(updatedCrops);
+            await saveCropsToStorage(updatedCrops);
             setError(null);
         } catch (err) {
             console.error('Error updating crop:', err.message);
-            setError('Failed to update crop. Please try again later.');
+            setError('Failed to update crop.');
         } finally {
             setLoading(false);
         }
@@ -112,25 +96,21 @@ export const CropProvider = ({ children }) => {
     const handleDeleteCrop = async (id) => {
         setLoading(true);
         try {
-            if (!token) {
-                throw new Error('No token found');
-            }
-
-            await axios.delete(`${API_BASE_URL}/Crops/${id}`, {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                }
-            });
-
-            setCrops(prevCrops => prevCrops.filter(crop => crop.id !== id));
+            const updatedCrops = crops.filter(crop => crop.id !== id);
+            setCrops(updatedCrops);
+            await saveCropsToStorage(updatedCrops);
             setError(null);
         } catch (err) {
             console.error('Error deleting crop:', err.message);
-            setError('Failed to delete crop. Please try again later.');
+            setError('Failed to delete crop.');
         } finally {
             setLoading(false);
         }
     };
+
+    useEffect(() => {
+        loadCropsFromStorage();
+    }, []);
 
     return (
         <CropContext.Provider value={{ crops, loading, error, addCrop, editCrop, handleDeleteCrop, fetchActiveCrops, fetchCropById }}>

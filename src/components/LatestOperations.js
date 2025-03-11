@@ -21,18 +21,25 @@ const LatestOperations = ({ data }) => {
     if (isDataEmpty()) {
         return (
             <View style={styles.bottomContainer}>
-                <Text style={styles.warningText}>No recent operations available.</Text>
+                <Text style={styles.warningText}>Brak ostatnich operacji.</Text>
             </View>
         );
     }
 
     const formatDate = (dateString) => {
+        if (isEmptyDate(dateString)) return "Brak daty";
         const date = new Date(dateString);
-        return isEmptyDate(dateString) ? "No Date" : date.toLocaleDateString();
+        return `${String(date.getDate()).padStart(2, '0')}.${String(date.getMonth() + 1).padStart(2, '0')}.${date.getFullYear()}`;
+    };
+
+    const formatTime = (dateString) => {
+        if (isEmptyDate(dateString)) return "Brak godziny";
+        const date = new Date(dateString);
+        return `${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}`;
     };
 
     const renderRow = (label, value) => {
-        if (!value || value === "No Value") return null;
+        if (!value || value === "Brak wartości") return null;
         return (
             <View style={styles.infoRowContainer}>
                 <Text style={styles.text}>{label}</Text>
@@ -44,45 +51,50 @@ const LatestOperations = ({ data }) => {
     return (
         <View style={styles.bottomContainer}>
             <View style={styles.content}>
+
                 <View style={styles.innerContainer}>
                     <View style={styles.rowContainer}>
-                        <FontAwesome6 name="seedling" size={24} color="#22532A" />
-                        <Text style={[styles.subtitle, { marginHorizontal: '3%' }]}>Cultivation Operation</Text>
-                        <FontAwesome6 name="seedling" size={24} color="#22532A" />
+                        <FontAwesome6 name="seedling" size={24} color="#4CAF50" />
+                        <Text style={[styles.subtitle, { marginHorizontal: '3%' }]}>Zabieg uprawowy</Text>
+                        <FontAwesome6 name="seedling" size={24} color="#4CAF50" />
                     </View>
-                    {renderRow("Name:", data.cultivationOperationName)}
-                    {renderRow("Date:", formatDate(data.cultivationOperationDate))}
-                    {renderRow("Description:", data.cultivationOperationDescription)}
-                    {renderRow("Crop:", data.cultivationOperationCrop?.name)}
+                    {renderRow("Nazwa:", data.cultivationOperationName)}
+                    {renderRow("Data:", formatDate(data.cultivationOperationDate))}
+                    {renderRow("Godzina:", formatTime(data.cultivationOperationDate))}
+                    {renderRow("Opis:", data.cultivationOperationDescription)}
+                    {renderRow("Uprawa:", data.cultivationOperationCrop?.name)}
                 </View>
 
                 <View style={styles.line} />
 
                 <View style={styles.innerContainer}>
                     <View style={styles.rowContainer}>
-                        <MaterialCommunityIcons name="shield-check" size={24} color="#22532A" />
-                        <Text style={[styles.subtitle, { marginHorizontal: '3%' }]}>Plant Protection</Text>
-                        <MaterialCommunityIcons name="shield-check" size={24} color="#22532A" />
+                        <MaterialCommunityIcons name="shield-check" size={24} color="#1976D2" />
+                        <Text style={[styles.subtitle, { marginHorizontal: '3%' }]}>Ochrona roślin</Text>
+                        <MaterialCommunityIcons name="shield-check" size={24} color="#1976D2" />
                     </View>
-                    {renderRow("Name:", data.plantProtectionName)}
-                    {renderRow("Date:", formatDate(data.plantProtectionDate))}
-                    {renderRow("Description:", data.plantProtectionDescription)}
-                    {renderRow("Crop:", data.plantProtectionCrop?.name)}
+                    {renderRow("Nazwa:", data.plantProtectionName)}
+                    {renderRow("Data:", formatDate(data.plantProtectionDate))}
+                    {renderRow("Godzina:", formatTime(data.plantProtectionDate))}
+                    {renderRow("Opis:", data.plantProtectionDescription)}
+                    {renderRow("Uprawa:", data.plantProtectionCrop?.name)}
                 </View>
 
                 <View style={styles.line} />
 
                 <View style={styles.innerContainer}>
                     <View style={styles.rowContainer}>
-                        <Entypo name="drop" size={24} color="#22532A" />
-                        <Text style={[styles.subtitle, { marginHorizontal: '3%' }]}>Fertilization</Text>
-                        <Entypo name="drop" size={24} color="#22532A" />
+                        <Entypo name="drop" size={24} color="#FF9800" />
+                        <Text style={[styles.subtitle, { marginHorizontal: '3%' }]}>Nawożenie</Text>
+                        <Entypo name="drop" size={24} color="#FF9800" />
                     </View>
-                    {renderRow("Name:", data.fertilizationName)}
-                    {renderRow("Date:", formatDate(data.fertilizationDate))}
-                    {renderRow("Description:", data.fertilizationDescription)}
-                    {renderRow("Crop:", data.fertilizationCrop?.name)}
+                    {renderRow("Nazwa:", data.fertilizationName)}
+                    {renderRow("Data:", formatDate(data.fertilizationDate))}
+                    {renderRow("Godzina:", formatTime(data.fertilizationDate))}
+                    {renderRow("Opis:", data.fertilizationDescription)}
+                    {renderRow("Uprawa:", data.fertilizationCrop?.name)}
                 </View>
+
             </View>
         </View>
     );

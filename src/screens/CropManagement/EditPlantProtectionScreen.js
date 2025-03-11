@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TextInput, TouchableOpacity, Alert, Keyboard, ActivityIndicator } from 'react-native';
-import { ScrollView, TouchableWithoutFeedback } from 'react-native-gesture-handler';
+import { View, Text, TextInput, TouchableOpacity, Alert, ActivityIndicator } from 'react-native';
+import { ScrollView } from 'react-native-gesture-handler';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import moment from 'moment-timezone';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { styles } from '../../styles/AppStyles';
-import { usePlantProtectionContext } from '../../context/PlantProtectionProvider';
 import PlantProtectionTypePicker from '../../components/PlantProtectionTypePicker';
 import AgrotechnicalInterventionList from '../../components/AgrotechnicalInterventionList';
 import { formatDecimalInput } from '../../utils/TextUtils';
@@ -14,7 +14,6 @@ const EditPlantProtectionScreen = () => {
     const navigation = useNavigation();
     const route = useRoute();
     const { cropId, plantProtectionId } = route.params;
-    const { fetchPlantProtectionById, editPlantProtection } = usePlantProtectionContext(); 
 
     const [date, setDate] = useState(new Date());
     const [type, setType] = useState('');
@@ -27,7 +26,10 @@ const EditPlantProtectionScreen = () => {
     useEffect(() => {
         const fetchPlantProtection = async () => {
             try {
-                const plantProtection = await fetchPlantProtectionById(plantProtectionId);
+                const storedPlantProtections = await AsyncStorage.getItem('plantProtections');
+                const plantProtections = storedPlantProtections ? JSON.parse(storedPlantProtections) : [];
+
+                const plantProtection = plantProtections.find(p => p.id === plantProtectionId);
                 if (plantProtection) {
                     const localDate = moment.utc(plantProtection.date).tz(moment.tz.guess()).toDate();
                     setDate(localDate);
@@ -36,12 +38,12 @@ const EditPlantProtectionScreen = () => {
                     setAgrotechnicalIntervention(plantProtection.agrotechnicalIntervention);
                     setDescription(plantProtection.description);
                 } else {
-                    Alert.alert("Error", "Plant protection record not found.");
+                    Alert.alert("Błąd", "Nie znaleziono rekordu ochrony roślin.");
                     navigation.goBack();
                 }
             } catch (error) {
-                console.error('Error fetching plant protection:', error);
-                Alert.alert("Error", "Failed to load plant protection details.");
+                console.error('Błąd podczas pobierania ochrony roślin:', error);
+                Alert.alert("Błąd", "Nie udało się załadować danych ochrony roślin.");
                 navigation.goBack();
             } finally {
                 setInitialLoading(false);
@@ -53,33 +55,30 @@ const EditPlantProtectionScreen = () => {
 
     const handleSave = async () => {
         if (!type || !quantity || !agrotechnicalIntervention) {
-            Alert.alert('Validation Error', 'All fields must be filled in.');
+            Alert.alert('Błąd walidacji', 'Wszystkie pola muszą być wypełnione.');
             return;
         }
 
         setLoading(true);
 
-        const updatedPlantProtection = {
-            cropId,
-            date,
-            type: parseInt(type, 10),
-            quantity: formatDecimalInput(quantity),
-            agrotechnicalIntervention,
-            description,
-        };
-
         try {
-            await editPlantProtection(plantProtectionId, updatedPlantProtection);
-            Alert.alert(
-                "Success",
-                "Plant protection updated successfully!",
-                [
-                    { text: "OK", onPress: () => navigation.goBack() }
-                ]
+            const storedPlantProtections = await AsyncStorage.getItem('plantProtections');
+            let plantProtections = storedPlantProtections ? JSON.parse(storedPlantProtections) : [];
+
+            const updatedPlantProtections = plantProtections.map(p =>
+                p.id === plantProtectionId
+                    ? { ...p, date, type: parseInt(type, 10), quantity: formatDecimalInput(quantity), agrotechnicalIntervention, description }
+                    : p
             );
+
+            await AsyncStorage.setItem('plantProtections', JSON.stringify(updatedPlantProtections));
+
+            Alert.alert("Sukces", "Dane ochrony roślin zostały zaktualizowane!", [
+                { text: "OK", onPress: () => navigation.goBack() }
+            ]);
         } catch (error) {
-            console.error('Error updating plant protection:', error);
-            Alert.alert('Error', 'Failed to update the plant protection. Please try again later.');
+            console.error('Błąd podczas aktualizacji ochrony roślin:', error);
+            Alert.alert('Błąd', 'Nie udało się zaktualizować danych ochrony roślin.');
         } finally {
             setLoading(false);
         }
@@ -87,17 +86,21 @@ const EditPlantProtectionScreen = () => {
 
     const onChangeDate = (event, selectedDate) => {
         if (selectedDate) {
-            const currentDate = new Date(date);
-            currentDate.setFullYear(selectedDate.getFullYear(), selectedDate.getMonth(), selectedDate.getDate());
-            setDate(currentDate);
+            setDate(prevDate => {
+                const newDate = new Date(prevDate);
+                newDate.setFullYear(selectedDate.getFullYear(), selectedDate.getMonth(), selectedDate.getDate());
+                return newDate;
+            });
         }
     };
 
     const onChangeTime = (event, selectedTime) => {
         if (selectedTime) {
-            const currentDate = new Date(date);
-            currentDate.setHours(selectedTime.getHours(), selectedTime.getMinutes());
-            setDate(currentDate);
+            setDate(prevDate => {
+                const newDate = new Date(prevDate);
+                newDate.setHours(selectedTime.getHours(), selectedTime.getMinutes());
+                return newDate;
+            });
         }
     };
 
@@ -110,63 +113,63 @@ const EditPlantProtectionScreen = () => {
     }
 
     return (
-            <ScrollView style={styles.mainCantainer}>
-                <Text style={[styles.largeText, { textAlign: 'center' }]}>Plant Protection Date</Text>
-                <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center' }}>
-                    <DateTimePicker
-                        value={date}
-                        mode="date"
-                        display="default"
-                        onChange={onChangeDate}
-                        style={{ alignSelf: 'center', marginVertical: '2%' }}
-                    />
-                    <DateTimePicker
-                        value={date}
-                        mode="time"
-                        display="default"
-                        onChange={onChangeTime}
-                        style={{ alignSelf: 'center', marginVertical: '2%' }}
-                    />
-                </View>
-                <View style={styles.containerWithBorder}>
-                    <Text style={[styles.largeText, { textAlign: 'center' }]}>Type</Text>
-                    <PlantProtectionTypePicker
-                        setSelectedPlantProtectionType={setType}
-                        selectedPlantProtectionType={type}
-                    />
-                </View>
-                <Text style={[styles.largeText, { textAlign: 'center' }]}>Quantity</Text>
-                <TextInput 
-                    style={styles.input}
-                    placeholder="Quantity"
-                    value={quantity}
-                    onChangeText={setQuantity}
-                    keyboardType="numeric"
+        <ScrollView style={styles.mainCantainer}>
+            <Text style={[styles.largeText, { textAlign: 'center' }]}>Data ochrony roślin</Text>
+            <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center' }}>
+                <DateTimePicker
+                    value={date}
+                    mode="date"
+                    display="default"
+                    onChange={onChangeDate}
+                    style={{ alignSelf: 'center', marginVertical: '2%' }}
                 />
-                <Text style={[styles.largeText, { textAlign: 'center' }]}>Agrotechnical Intervention</Text>
-                <AgrotechnicalInterventionList 
-                    selectedOption={agrotechnicalIntervention} 
-                    setSelectedOption={setAgrotechnicalIntervention} 
+                <DateTimePicker
+                    value={date}
+                    mode="time"
+                    display="default"
+                    onChange={onChangeTime}
+                    style={{ alignSelf: 'center', marginVertical: '2%' }}
                 />
-                <Text style={[styles.largeText, { textAlign: 'center' }]}>Description</Text>
-                <TextInput
-                    style={styles.input}
-                    placeholder="Description"
-                    value={description}
-                    onChangeText={setDescription}
+            </View>
+            <View style={styles.containerWithBorder}>
+                <Text style={[styles.largeText, { textAlign: 'center' }]}>Typ</Text>
+                <PlantProtectionTypePicker
+                    setSelectedPlantProtectionType={setType}
+                    selectedPlantProtectionType={type}
                 />
-                <TouchableOpacity 
-                    style={[styles.button, { margin: '5%', marginTop: '5%', width: '80%', backgroundColor: '#62C962', alignSelf: 'center' }]} 
-                    onPress={handleSave}
-                    disabled={loading}
-                >
-                    {loading ? (
-                        <ActivityIndicator size="large" color="#fff" />
-                    ) : (
-                        <Text style={{ textAlign: 'center', fontWeight: 'bold', fontSize: 22, color: '#fff' }}>Save Changes</Text>
-                    )}
-                </TouchableOpacity>
-            </ScrollView>
+            </View>
+            <Text style={[styles.largeText, { textAlign: 'center' }]}>Ilość (kg/ha)</Text>
+            <TextInput 
+                style={styles.input}
+                placeholder="Ilość"
+                value={quantity}
+                onChangeText={setQuantity}
+                keyboardType="numeric"
+            />
+            <Text style={[styles.largeText, { textAlign: 'center' }]}>Interwencja agrotechniczna</Text>
+            <AgrotechnicalInterventionList 
+                selectedOption={agrotechnicalIntervention} 
+                setSelectedOption={setAgrotechnicalIntervention} 
+            />
+            <Text style={[styles.largeText, { textAlign: 'center' }]}>Opis</Text>
+            <TextInput
+                style={styles.input}
+                placeholder="Opis"
+                value={description}
+                onChangeText={setDescription}
+            />
+            <TouchableOpacity 
+                style={[styles.button, { margin: '5%', marginTop: '5%', width: '80%', backgroundColor: '#62C962', alignSelf: 'center' }]} 
+                onPress={handleSave}
+                disabled={loading}
+            >
+                {loading ? (
+                    <ActivityIndicator size="large" color="#fff" />
+                ) : (
+                    <Text style={{ textAlign: 'center', fontWeight: 'bold', fontSize: 22, color: '#fff' }}>Zapisz zmiany</Text>
+                )}
+            </TouchableOpacity>
+        </ScrollView>
     );
 };
 

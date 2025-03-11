@@ -1,49 +1,25 @@
-import { useState, useEffect } from "react";
-import { useAuth } from "../context/AuthContext";
-import axios from "axios";
-import API_BASE_URL from "../config/apiConfig";
-import LoadingView from "./LoadingView";
-import ErrorView from "./ErrorView";
+import React, { useEffect, useState } from "react";
 import { Text, View, TouchableOpacity, ScrollView, StyleSheet } from "react-native";
 
+const agrotechnicalInterventionsList = [
+    { value: "None", name: "Brak wybranej wartości", description: "" },
+    { value: "PRSK1420", name: "Działanie rolno-środowiskowo-klimatyczne PROW 2014-2020", description: "" },
+    { value: "RE1420", name: "Rolnictwo ekologiczne PROW 2014-2020", description: "" },
+    { value: "ZRSK2327", name: "Płatności rolno-środowiskowo-klimatyczne WPR PS", description: "" },
+    { value: "RE2327", name: "Rolnictwo ekologiczne WPR PS", description: "" },
+    { value: "E_MPW", name: "Międzyplony ozime lub wsiewki śródplonowe", description: "" },
+    { value: "E_OPN", name: "Opracowanie i przestrzeganie planu nawożenia: wariant podstawowy lub wariant z wapnowaniem", description: "" },
+    { value: "E_USU", name: "Uproszczone systemy uprawy", description: "" },
+    { value: "E_WSG", name: "Wymieszanie słomy z glebą", description: "" },
+    { value: "E_BOU", name: "Biologiczna ochrona upraw", description: "" }
+];
+
 const AgrotechnicalInterventionList = ({ selectedOption, setSelectedOption }) => {
-    const { token } = useAuth();
     const [agrotechnicalInterventions, setAgrotechnicalInterventions] = useState([]);
-    const [error, setError] = useState(null);
-    const [loading, setLoading] = useState(false);
 
     useEffect(() => {
-        fetchAgrotechnicalInterventionInfo();
+        setAgrotechnicalInterventions(agrotechnicalInterventionsList);
     }, []);
-
-    const fetchAgrotechnicalInterventionInfo = async () => {
-        setLoading(true);
-        try {
-            if (!token) {
-                throw new Error('No token found');
-            }
-            const response = await axios.get(`${API_BASE_URL}/AgrotechnicalInterventions`, {
-                headers: {
-                    Authorization: `Bearer ${token}`
-                }
-            });
-            setAgrotechnicalInterventions(response.data);
-            setError(null);
-        } catch (err) {
-            console.log('Error fetching agrotechnical interventions: ', err.message);
-            setError("Failed to load Agrotechnical Interventions. Please try again later.");
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    if (loading) {
-        return <LoadingView title="Loading data..." />;
-    }
-
-    if (error) {
-        return <ErrorView message={error} />;
-    }
 
     const renderOption = (item) => (
         <TouchableOpacity
@@ -55,13 +31,13 @@ const AgrotechnicalInterventionList = ({ selectedOption, setSelectedOption }) =>
             onPress={() => setSelectedOption(item.value)}
         >
             <Text style={styles.optionName}>{item.name}</Text>
-            <Text style={styles.optionDescription}>{item.description}</Text>
+            {item.description ? <Text style={styles.optionDescription}>{item.description}</Text> : null}
         </TouchableOpacity>
     );
 
     return (
         <View style={styles.cardContainer}>
-            <Text style={styles.title}>Selection of agrotechnical intervention</Text>
+            <Text style={styles.title}>Wybór interwencji agrotechnicznej</Text>
             <ScrollView contentContainerStyle={styles.listContainer}>
                 {agrotechnicalInterventions.map(renderOption)}
             </ScrollView>
@@ -71,14 +47,14 @@ const AgrotechnicalInterventionList = ({ selectedOption, setSelectedOption }) =>
 
 const styles = StyleSheet.create({
     cardContainer: {
-        width: '90%',
-        alignSelf: 'center',
-        padding: '3%',
-        backgroundColor: '#fff',
+        width: "90%",
+        alignSelf: "center",
+        padding: "3%",
+        backgroundColor: "#fff",
         borderRadius: 15,
         borderWidth: 1,
-        borderColor: '#ddd',
-        shadowColor: '#000',
+        borderColor: "#ddd",
+        shadowColor: "#000",
         shadowOffset: { width: 0, height: 2 },
         shadowOpacity: 0.3,
         shadowRadius: 4,
@@ -87,35 +63,35 @@ const styles = StyleSheet.create({
     },
     title: {
         fontSize: 18,
-        fontWeight: 'bold',
-        color: '#333',
-        marginBottom: '3%',
-        textAlign: 'center',
+        fontWeight: "bold",
+        color: "#333",
+        marginBottom: "3%",
+        textAlign: "center",
     },
     listContainer: {
-        paddingBottom: '5%',
+        paddingBottom: "5%",
     },
     optionContainer: {
-        padding: '3%',
-        marginVertical: '3%',
+        padding: "3%",
+        marginVertical: "3%",
         borderRadius: 8,
         borderWidth: 1,
-        borderColor: '#ddd',
-        backgroundColor: '#f9f9f9',
+        borderColor: "#ddd",
+        backgroundColor: "#f9f9f9",
     },
     selectedOption: {
-        backgroundColor: '#e0f7fa',
-        borderColor: '#00796b',
+        backgroundColor: "#e0f7fa",
+        borderColor: "#00796b",
     },
     optionName: {
         fontSize: 16,
-        fontWeight: 'bold',
-        color: '#333',
+        fontWeight: "bold",
+        color: "#333",
     },
     optionDescription: {
         fontSize: 14,
-        color: '#666',
-        marginTop: '3%',
+        color: "#666",
+        marginTop: "3%",
     },
 });
 

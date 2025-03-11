@@ -1,45 +1,31 @@
 import React, { useEffect, useState } from 'react';
-import { View, ActivityIndicator, Text } from 'react-native';
+import { View } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
-import { useAuth } from '../context/AuthContext';
-import axios from 'axios';
-import API_BASE_URL from '../config/apiConfig';
+
+const cropTypeList = [
+    { id: 0, name: "Nie wybrano" },
+    { id: 1, name: "Zboże" },
+    { id: 2, name: "Warzywo" },
+    { id: 3, name: "Owoc" },
+    { id: 4, name: "Roślina strączkowa" },
+    { id: 5, name: "Roślina oleista" },
+    { id: 6, name: "Roślina korzeniowa" },
+    { id: 7, name: "Roślina bulwiasta" },
+    { id: 8, name: "Roślina pastewna" },
+    { id: 9, name: "Roślina włóknista" },
+    { id: 10, name: "Przyprawa" },
+    { id: 11, name: "Roślina lecznicza" },
+    { id: 12, name: "Roślina ozdobna" },
+    { id: 13, name: "Inne" }
+];
 
 const CropTypePicker = ({ selectedCropType, setSelectedCropType }) => {
     const [cropTypes, setCropTypes] = useState([]);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(null);
-    const { token } = useAuth();
 
     useEffect(() => {
-        fetchCropTypes();
+        setCropTypes(cropTypeList);
+        setSelectedCropType(cropTypeList[0].id);
     }, []);
-
-    const fetchCropTypes = async () => {
-        try {
-            const response = await axios.get(`${API_BASE_URL}/Crops/cropType`, {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                    'Content-Type': 'application/json'
-                }
-            });
-            setCropTypes(response.data);
-            setSelectedCropType(response.data[0]?.id);
-        } catch (error) {
-            console.error("Error fetching crop types:", error);
-            setError("Failed to load crop types. Please try again later.");
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    if (loading) {
-        return <ActivityIndicator size="large" color="#0000ff" />;
-    }
-
-    if (error) {
-        return <Text style={{ color: 'red', textAlign: 'center' }}>{error}</Text>;
-    }
 
     return (
         <View>

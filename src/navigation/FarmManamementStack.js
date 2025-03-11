@@ -28,10 +28,10 @@ const FarmManagementStack = () => {
                     }}
                 >
                     <Stack.Screen name="FarmManagementMain" component={FarmManagementScreen} options={{ headerShown: false }} />
-                    <Stack.Screen name="Add Farm" component={AddFarmScreen} />
-                    <Stack.Screen name="Edit Farm" component={FarmEditScreen} />
-                    <Stack.Screen name="Add Field" component={AddFieldScreen} />
-                    <Stack.Screen name="Edit Field" component={EditFieldScreen} />
+                    <Stack.Screen name="Dodaj Gospodarstwo" component={AddFarmScreen} />
+                    <Stack.Screen name="Edytuj Gospodarstwo" component={FarmEditScreen} />
+                    <Stack.Screen name="Dodaj Pole" component={AddFieldScreen} />
+                    <Stack.Screen name="Edytuj Pole" component={EditFieldScreen} />
                 </Stack.Navigator>
             </FieldProvider>
         </FarmProvider>

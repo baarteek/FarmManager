@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TextInput, TouchableOpacity, Alert, Keyboard, ActivityIndicator } from 'react-native';
-import { ScrollView, TouchableWithoutFeedback } from 'react-native-gesture-handler';
+import { View, Text, TextInput, TouchableOpacity, Alert, ActivityIndicator } from 'react-native';
+import { ScrollView } from 'react-native-gesture-handler';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import DateTimePicker from '@react-native-community/datetimepicker';
-import moment from 'moment-timezone'; 
+import moment from 'moment-timezone';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { styles } from '../../styles/AppStyles';
-import { useFertilizationContext } from '../../context/FertilizationProvider';
 import FertilizationTypePicker from '../../components/FertilizationTypePicker';
 import AgrotechnicalInterventionList from '../../components/AgrotechnicalInterventionList';
 import { formatDecimalInput } from '../../utils/TextUtils';
@@ -14,7 +14,6 @@ const EditFertilizationScreen = () => {
     const navigation = useNavigation();
     const route = useRoute();
     const { cropId, fertilizationId } = route.params;
-    const { fetchFertilizationById, editFertilization } = useFertilizationContext();
 
     const [date, setDate] = useState(new Date());
     const [type, setType] = useState('');
@@ -27,7 +26,10 @@ const EditFertilizationScreen = () => {
     useEffect(() => {
         const fetchFertilization = async () => {
             try {
-                const fertilization = await fetchFertilizationById(fertilizationId);
+                const storedFertilizations = await AsyncStorage.getItem('fertilizations');
+                const fertilizations = storedFertilizations ? JSON.parse(storedFertilizations) : [];
+
+                const fertilization = fertilizations.find(f => f.id === fertilizationId);
                 if (fertilization) {
                     const localDate = moment.utc(fertilization.date).tz(moment.tz.guess()).toDate();
                     setDate(localDate);
@@ -36,12 +38,12 @@ const EditFertilizationScreen = () => {
                     setAgrotechnicalIntervention(fertilization.agrotechnicalIntervention);
                     setDescription(fertilization.description);
                 } else {
-                    Alert.alert("Error", "Fertilization record not found.");
+                    Alert.alert("Błąd", "Nie znaleziono nawożenia.");
                     navigation.goBack();
                 }
             } catch (error) {
-                console.error('Error fetching fertilization:', error);
-                Alert.alert("Error", "Failed to load fertilization details.");
+                console.error('Błąd podczas pobierania nawożenia:', error);
+                Alert.alert("Błąd", "Nie udało się załadować danych nawożenia.");
                 navigation.goBack();
             } finally {
                 setInitialLoading(false);
@@ -53,33 +55,30 @@ const EditFertilizationScreen = () => {
 
     const handleSave = async () => {
         if (!type || !quantity || !agrotechnicalIntervention) {
-            Alert.alert('Validation Error', 'All fields must be filled in.');
+            Alert.alert('Błąd walidacji', 'Wszystkie pola muszą być wypełnione.');
             return;
         }
 
         setLoading(true);
 
-        const updatedFertilization = {
-            cropId,
-            date,
-            type: parseInt(type, 10),
-            quantity: formatDecimalInput(quantity),
-            agrotechnicalIntervention,
-            description,
-        };
-
         try {
-            await editFertilization(fertilizationId, updatedFertilization);
-            Alert.alert(
-                "Success",
-                "Fertilization updated successfully!",
-                [
-                    { text: "OK", onPress: () => navigation.goBack() }
-                ]
+            const storedFertilizations = await AsyncStorage.getItem('fertilizations');
+            let fertilizations = storedFertilizations ? JSON.parse(storedFertilizations) : [];
+
+            const updatedFertilizations = fertilizations.map(f =>
+                f.id === fertilizationId
+                    ? { ...f, date, type: parseInt(type, 10), quantity: formatDecimalInput(quantity), agrotechnicalIntervention, description }
+                    : f
             );
+
+            await AsyncStorage.setItem('fertilizations', JSON.stringify(updatedFertilizations));
+
+            Alert.alert("Sukces", "Dane nawożenia zostały zaktualizowane!", [
+                { text: "OK", onPress: () => navigation.goBack() }
+            ]);
         } catch (error) {
-            console.error('Error updating fertilization:', error);
-            Alert.alert('Error', 'Failed to update the fertilization. Please try again later.');
+            console.error('Błąd podczas aktualizacji nawożenia:', error);
+            Alert.alert('Błąd', 'Nie udało się zaktualizować danych nawożenia.');
         } finally {
             setLoading(false);
         }
@@ -87,17 +86,21 @@ const EditFertilizationScreen = () => {
 
     const onChangeDate = (event, selectedDate) => {
         if (selectedDate) {
-            const currentDate = new Date(date);
-            currentDate.setFullYear(selectedDate.getFullYear(), selectedDate.getMonth(), selectedDate.getDate());
-            setDate(currentDate);
+            setDate(prevDate => {
+                const newDate = new Date(prevDate);
+                newDate.setFullYear(selectedDate.getFullYear(), selectedDate.getMonth(), selectedDate.getDate());
+                return newDate;
+            });
         }
     };
 
     const onChangeTime = (event, selectedTime) => {
         if (selectedTime) {
-            const currentDate = new Date(date);
-            currentDate.setHours(selectedTime.getHours(), selectedTime.getMinutes());
-            setDate(currentDate);
+            setDate(prevDate => {
+                const newDate = new Date(prevDate);
+                newDate.setHours(selectedTime.getHours(), selectedTime.getMinutes());
+                return newDate;
+            });
         }
     };
 
@@ -110,63 +113,63 @@ const EditFertilizationScreen = () => {
     }
 
     return (
-            <ScrollView style={styles.mainCantainer}>
-                <Text style={[styles.largeText, { textAlign: 'center' }]}>Fertilization Date</Text>
-                <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center' }}>
-                    <DateTimePicker
-                        value={date}
-                        mode="date"
-                        display="default"
-                        onChange={onChangeDate}
-                        style={{ alignSelf: 'center', marginVertical: '2%' }}
-                    />
-                    <DateTimePicker
-                        value={date}
-                        mode="time"
-                        display="default"
-                        onChange={onChangeTime}
-                        style={{ alignSelf: 'center', marginVertical: '2%' }}
-                    />
-                </View>
-                <View style={styles.containerWithBorder}>
-                    <Text style={[styles.largeText, { textAlign: 'center' }]}>Type</Text>
-                    <FertilizationTypePicker
-                        setSelectedFertilizationType={setType}
-                        selectedFertilizationType={type}
-                    />
-                </View>
-                <Text style={[styles.largeText, { textAlign: 'center' }]}>Quantity</Text>
-                <TextInput 
-                    style={styles.input}
-                    placeholder="Quantity"
-                    value={quantity}
-                    onChangeText={setQuantity}
-                    keyboardType="numeric"
+        <ScrollView style={styles.mainCantainer}>
+            <Text style={[styles.largeText, { textAlign: 'center' }]}>Data nawożenia</Text>
+            <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center' }}>
+                <DateTimePicker
+                    value={date}
+                    mode="date"
+                    display="default"
+                    onChange={onChangeDate}
+                    style={{ alignSelf: 'center', marginVertical: '2%' }}
                 />
-                <Text style={[styles.largeText, { textAlign: 'center' }]}>Agrotechnical Intervention</Text>
-                <AgrotechnicalInterventionList 
-                    selectedOption={agrotechnicalIntervention} 
-                    setSelectedOption={setAgrotechnicalIntervention} 
+                <DateTimePicker
+                    value={date}
+                    mode="time"
+                    display="default"
+                    onChange={onChangeTime}
+                    style={{ alignSelf: 'center', marginVertical: '2%' }}
                 />
-                <Text style={[styles.largeText, { textAlign: 'center' }]}>Description</Text>
-                <TextInput
-                    style={styles.input}
-                    placeholder="Description"
-                    value={description}
-                    onChangeText={setDescription}
+            </View>
+            <View style={styles.containerWithBorder}>
+                <Text style={[styles.largeText, { textAlign: 'center' }]}>Typ</Text>
+                <FertilizationTypePicker
+                    setSelectedFertilizationType={setType}
+                    selectedFertilizationType={type}
                 />
-                <TouchableOpacity 
-                    style={[styles.button, { margin: '5%', marginTop: '5%', width: '80%', backgroundColor: '#62C962', alignSelf: 'center' }]} 
-                    onPress={handleSave}
-                    disabled={loading}
-                >
-                    {loading ? (
-                        <ActivityIndicator size="large" color="#fff" />
-                    ) : (
-                        <Text style={{ textAlign: 'center', fontWeight: 'bold', fontSize: 22, color: '#fff' }}>Save Changes</Text>
-                    )}
-                </TouchableOpacity>
-            </ScrollView>
+            </View>
+            <Text style={[styles.largeText, { textAlign: 'center' }]}>Ilość (kg/ha)</Text>
+            <TextInput 
+                style={styles.input}
+                placeholder="Ilość"
+                value={quantity}
+                onChangeText={setQuantity}
+                keyboardType="numeric"
+            />
+            <Text style={[styles.largeText, { textAlign: 'center' }]}>Interwencja agrotechniczna</Text>
+            <AgrotechnicalInterventionList 
+                selectedOption={agrotechnicalIntervention} 
+                setSelectedOption={setAgrotechnicalIntervention} 
+            />
+            <Text style={[styles.largeText, { textAlign: 'center' }]}>Opis</Text>
+            <TextInput
+                style={styles.input}
+                placeholder="Opis"
+                value={description}
+                onChangeText={setDescription}
+            />
+            <TouchableOpacity 
+                style={[styles.button, { margin: '5%', marginTop: '5%', width: '80%', backgroundColor: '#62C962', alignSelf: 'center' }]} 
+                onPress={handleSave}
+                disabled={loading}
+            >
+                {loading ? (
+                    <ActivityIndicator size="large" color="#fff" />
+                ) : (
+                    <Text style={{ textAlign: 'center', fontWeight: 'bold', fontSize: 22, color: '#fff' }}>Zapisz zmiany</Text>
+                )}
+            </TouchableOpacity>
+        </ScrollView>
     );
 };
 

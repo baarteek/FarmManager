@@ -1,48 +1,58 @@
 import React, { createContext, useState, useContext, useEffect } from 'react';
-import { useAuth } from './AuthContext';
-import axios from 'axios';
-import API_BASE_URL from '../config/apiConfig';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const FieldContext = createContext();
 
 export const FieldProvider = ({ children }) => {
-    const { token } = useAuth();
     const [fields, setFields] = useState([]);
     const [fieldList, setFieldList] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
-    const fetchFields = async (farmId) => {
+    const loadFieldsFromStorage = async () => {
+        try {
+            const storedFields = await AsyncStorage.getItem('fields');
+            if (storedFields) {
+                setFields(JSON.parse(storedFields));
+            }
+        } catch (err) {
+            console.error('Error loading fields from storage:', err.message);
+        }
+    };
+
+    const saveFieldsToStorage = async (updatedFields) => {
+        try {
+            await AsyncStorage.setItem('fields', JSON.stringify(updatedFields));
+        } catch (err) {
+            console.error('Error saving fields to storage:', err.message);
+        }
+    };
+
+    const fetchFields = async () => {
         setLoading(true);
         try {
-            const response = await axios.get(`${API_BASE_URL}/Fields/farm/${farmId}`, {
-                headers: {
-                    Authorization: `Bearer ${token}`
-                }
-            });
-            setFields(response.data);
+            await loadFieldsFromStorage();
             setError(null);
         } catch (err) {
             console.error('Error fetching fields:', err.message);
-            setError('Failed to load fields. Please try again later.');
+            setError('Failed to load fields.');
         } finally {
             setLoading(false);
         }
     };
 
-    const fetchFieldsNamesAndId = async (farmId) => {
+    const fetchFieldsNamesAndId = async () => {
         setLoading(true);
         try {
-            const response = await axios.get(`${API_BASE_URL}/Fields/farm/list/${farmId}`, {
-                headers: {
-                    Authorization: `Bearer ${token}`
-                }
-            });
-            setFieldList(response.data);
+            const storedFields = await AsyncStorage.getItem('fields');
+            if (storedFields) {
+                const parsedFields = JSON.parse(storedFields);
+                setFieldList(parsedFields.map(field => ({ id: field.id, name: field.name })));
+            }
             setError(null);
         } catch (err) {
             console.error('Error fetching field names and ids:', err.message);
-            setError('Failed to load field names and ids. Please try again later.');
+            setError('Failed to load field names and ids.');
         } finally {
             setLoading(false);
         }
@@ -51,16 +61,19 @@ export const FieldProvider = ({ children }) => {
     const fetchFieldById = async (fieldId) => {
         setLoading(true);
         try {
-            const response = await axios.get(`${API_BASE_URL}/Fields/${fieldId}`, {
-                headers: {
-                    Authorization: `Bearer ${token}`
+            const storedFields = await AsyncStorage.getItem('fields');
+            if (storedFields) {
+                const parsedFields = JSON.parse(storedFields);
+                const field = parsedFields.find(field => field.id === fieldId);
+                if (field) {
+                    setError(null);
+                    return field;
                 }
-            });
-            setError(null);
-            return response.data;
+            }
+            throw new Error('Field not found.');
         } catch (err) {
             console.error('Error fetching field by ID:', err.message);
-            setError('Failed to load field details. Please try again later.');
+            setError('Failed to load field details.');
             throw err;
         } finally {
             setLoading(false);
@@ -70,25 +83,13 @@ export const FieldProvider = ({ children }) => {
     const addField = async (newField) => {
         setLoading(true);
         try {
-            const response = await axios.post(`${API_BASE_URL}/Fields`, newField, {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                    'Content-Type': 'application/json'
-                }
-            });
-
-            const addedField = {
-                ...response.data,
-                referenceParcels: response.data.referenceParcels || [], 
-                soilMeasurements: response.data.soilMeasurements || [], 
-                crops: response.data.crops || []
-            };
-
-            setFields(prevFields => [...prevFields, addedField]);
+            const updatedFields = [...fields, newField];
+            setFields(updatedFields);
+            await saveFieldsToStorage(updatedFields);
             setError(null);
-        } catch(err) {
+        } catch (err) {
             console.error('Error adding field:', err.message);
-            setError('Failed to add the field. Please try again later.');
+            setError('Failed to add the field.');
         } finally {
             setLoading(false);
         }
@@ -97,27 +98,13 @@ export const FieldProvider = ({ children }) => {
     const editField = async (fieldId, updatedField) => {
         setLoading(true);
         try {
-            const response = await axios.put(`${API_BASE_URL}/Fields/${fieldId}`, updatedField, {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                    'Content-Type': 'application/json'
-                }
-            });
-
-            const editedField = {
-                ...response.data,
-                referenceParcels: response.data.referenceParcels || [],
-                soilMeasurements: response.data.soilMeasurements || [],
-                crops: response.data.crops || []
-            };
-
-            setFields(prevFields =>
-                prevFields.map(field => (field.id === fieldId ? editedField : field))
-            );
+            const updatedFields = fields.map(field => (field.id === fieldId ? updatedField : field));
+            setFields(updatedFields);
+            await saveFieldsToStorage(updatedFields);
             setError(null);
         } catch (err) {
             console.error('Error editing field:', err.message);
-            setError('Failed to edit the field. Please try again later.');
+            setError('Failed to edit the field.');
         } finally {
             setLoading(false);
         }
@@ -126,20 +113,21 @@ export const FieldProvider = ({ children }) => {
     const handleDelete = async (fieldId) => {
         setLoading(true);
         try {
-            await axios.delete(`${API_BASE_URL}/Fields/${fieldId}`, {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                }
-            });
-            setFields(prevFields => prevFields.filter(field => field.id !== fieldId));
+            const updatedFields = fields.filter(field => field.id !== fieldId);
+            setFields(updatedFields);
+            await saveFieldsToStorage(updatedFields);
             setError(null);
         } catch (err) {
             console.error('Error deleting field:', err.message);
-            setError('Failed to delete the field. Please try again later.');
+            setError('Failed to delete the field.');
         } finally {
             setLoading(false);
         }
     };
+
+    useEffect(() => {
+        loadFieldsFromStorage();
+    }, []);
 
     return (
         <FieldContext.Provider value={{

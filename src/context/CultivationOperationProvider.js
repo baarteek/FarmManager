@@ -1,50 +1,68 @@
-import { createContext, useContext, useState } from "react";
-import { useAuth } from "./AuthContext";
-import API_BASE_URL from "../config/apiConfig";
-import axios from "axios";
+import { createContext, useContext, useState, useEffect } from "react";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const CultivationOperationContext = createContext();
 
 export const useCultivationOperationContext = () => useContext(CultivationOperationContext);
 
 export const CultivationOperationProvider = ({ children }) => {
-    const { token } = useAuth();
     const [operations, setOperations] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
-    const fetchCultivationOperationById = async (id) => {
+    const loadOperationsFromStorage = async () => {
         try {
-            const response = await axios.get(`${API_BASE_URL}/CultivationOperation/${id}`, {
-                headers: {
-                    Authorization: `Bearer ${token}`
-                }
-            });
-            return response.data;
+            const storedOperations = await AsyncStorage.getItem("operations");
+            if (storedOperations) {
+                setOperations(JSON.parse(storedOperations));
+            }
         } catch (err) {
-            console.error('Error fetching cultivation operation:', err.message);
-            setError(err);
-            throw err;
+            console.error("Error loading operations from storage:", err.message);
         }
-    }
+    };
+
+    const saveOperationsToStorage = async (updatedOperations) => {
+        try {
+            await AsyncStorage.setItem("operations", JSON.stringify(updatedOperations));
+        } catch (err) {
+            console.error("Error saving operations to storage:", err.message);
+        }
+    };
+
+    const fetchCultivationOperationById = async (id) => {
+        setLoading(true);
+        try {
+            const storedOperations = await AsyncStorage.getItem("operations");
+            if (storedOperations) {
+                const parsedOperations = JSON.parse(storedOperations);
+                const operation = parsedOperations.find(operation => operation.id === id);
+                if (operation) {
+                    setError(null);
+                    return operation;
+                }
+            }
+            throw new Error("Operation not found.");
+        } catch (err) {
+            console.error("Error fetching cultivation operation:", err.message);
+            setError("Failed to load cultivation operation.");
+            throw err;
+        } finally {
+            setLoading(false);
+        }
+    };
 
     const fetchCultivationOperationsByCropId = async (cropId) => {
+        setLoading(true);
         try {
-            if (!token) {
-                throw new Error('No token found');
+            const storedOperations = await AsyncStorage.getItem("operations");
+            if (storedOperations) {
+                const parsedOperations = JSON.parse(storedOperations);
+                setOperations(parsedOperations.filter(operation => operation.cropId === cropId));
             }
-
-            const response = await axios.get(`${API_URL_BASE}/CultivationOperation/crop/${cropId}`, {
-                headers: {
-                    Authorization: `Bearer ${token}`
-                }
-            });
-
-            setOperations(response.data);
             setError(null);
         } catch (err) {
-            console.error('Error fetching cultivation operation:', err.message);
-            throw err;
+            console.error("Error fetching cultivation operations:", err.message);
+            setError("Failed to load cultivation operations.");
         } finally {
             setLoading(false);
         }
@@ -53,21 +71,13 @@ export const CultivationOperationProvider = ({ children }) => {
     const addCultivationOperation = async (newOperation) => {
         setLoading(true);
         try {
-            if (!token) {
-                throw new Error('No token found');
-            }
-
-            const response = await axios.post(`${API_BASE_URL}/CultivationOperation`, newOperation, {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                    'Content-Type': 'application/json'
-                }
-            });
-            setOperations(prevOperation => [...prevOperation, response.data]);
+            const updatedOperations = [...operations, newOperation];
+            setOperations(updatedOperations);
+            await saveOperationsToStorage(updatedOperations);
             setError(null);
         } catch (err) {
-            console.error('Error adding plant protection:', err.message);
-            setError('Failed to add cultivation operation. Please try again later.');
+            console.error("Error adding cultivation operation:", err.message);
+            setError("Failed to add cultivation operation.");
         } finally {
             setLoading(false);
         }
@@ -76,24 +86,15 @@ export const CultivationOperationProvider = ({ children }) => {
     const editCultivationOperation = async (operationId, updatedOperation) => {
         setLoading(true);
         try {
-            if (!token) {
-                throw new Error('No token found');
-            }
-
-            await axios.put(`${API_BASE_URL}/CultivationOperation/${operationId}`, updatedOperation, {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                    'Content-Type': 'application/json'
-                }
-            });
-
-            setOperations(prevOperation =>
-                prevOperation.map(operation => operation.id === operationId ? { ...operation, ...updatedOperation } : operation)
+            const updatedOperations = operations.map(operation =>
+                operation.id === operationId ? { ...operation, ...updatedOperation } : operation
             );
+            setOperations(updatedOperations);
+            await saveOperationsToStorage(updatedOperations);
             setError(null);
         } catch (err) {
-            console.error('Error updating plant protection:', err.message);
-            setError('Failed to update plant protection. Please try again later.');
+            console.error("Error updating cultivation operation:", err.message);
+            setError("Failed to update cultivation operation.");
         } finally {
             setLoading(false);
         }
@@ -102,28 +103,33 @@ export const CultivationOperationProvider = ({ children }) => {
     const deleteCultivationOperation = async (id) => {
         setLoading(true);
         try {
-            if (!token) {
-                throw new Error('No token found');
-            }
-
-            await axios.delete(`${API_BASE_URL}/CultivationOperation/${id}`, {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                }
-            });
-
-            setOperations(prevOperation => prevOperation.filter(operation => operation.id !== id));
+            const updatedOperations = operations.filter(operation => operation.id !== id);
+            setOperations(updatedOperations);
+            await saveOperationsToStorage(updatedOperations);
             setError(null);
         } catch (err) {
-            console.error('Error deleting plant protection:', err.message);
-            setError('Failed to delete plant protection. Please try again later.');
+            console.error("Error deleting cultivation operation:", err.message);
+            setError("Failed to delete cultivation operation.");
         } finally {
             setLoading(false);
         }
     };
 
+    useEffect(() => {
+        loadOperationsFromStorage();
+    }, []);
+
     return (
-        <CultivationOperationContext.Provider value={{ operations, loading, error, fetchCultivationOperationById, fetchCultivationOperationsByCropId, addCultivationOperation, editCultivationOperation, deleteCultivationOperation  }} >
+        <CultivationOperationContext.Provider value={{
+            operations,
+            loading,
+            error,
+            fetchCultivationOperationById,
+            fetchCultivationOperationsByCropId,
+            addCultivationOperation,
+            editCultivationOperation,
+            deleteCultivationOperation
+        }}>
             {children}
         </CultivationOperationContext.Provider>
     );

@@ -13,7 +13,6 @@ import AddPlotNumberScreen from '../screens/FieldManagement/AddPlotNumberScreen'
 import EditPlotNumberScreen from '../screens/FieldManagement/EditPlotNumberScreen';
 import GMLUploaderScreen from '../screens/FieldManagement/GMLUploaderScreen';
 
-
 const Stack = createStackNavigator();
 
 const FieldmanagementStack = () => {
@@ -37,14 +36,14 @@ const FieldmanagementStack = () => {
                             }}
                         >
                             <Stack.Screen name="FieldManagementMain" component={FieldManagementScreen} options={{ headerShown: false }} />
-                            <Stack.Screen name="Add Field" component={AddFieldScreen} options={{ headerShown: true, title: 'Add Field' }} />
-                            <Stack.Screen name="Show Crops" component={ShowCropsScreen} />
-                            <Stack.Screen name="Edit Field" component={EditFieldScreen} options={{ headerShown: true, title: 'Edit Field' }} />
-                            <Stack.Screen name='Add Soil Measurement' component={AddSoilMeasurementScreen} options={{headerShown: true, title: 'Add Soil Measurement'}} />
-                            <Stack.Screen name='Edit Soil Measurement' component={EditSoilMeasurementScreen} options={{headerShown: true, title: 'Edit Soil Measurement'}} />
-                            <Stack.Screen name='Add Plot Number' component={AddPlotNumberScreen} options={{headerShown: true, title: 'Add Plot Number'}} />
-                            <Stack.Screen name='Edit Plot Number' component={EditPlotNumberScreen} options={{headerShown: true, title: 'Edit Plot Number'}} />
-                            <Stack.Screen name='Add Fields From File' component={GMLUploaderScreen} options={{headerShown: true, title: 'Add Fields From File'}} />
+                            <Stack.Screen name="Dodaj Pole" component={AddFieldScreen} options={{ headerShown: true, title: 'Dodaj Pole' }} />
+                            <Stack.Screen name="Uprawy" component={ShowCropsScreen} />
+                            <Stack.Screen name="Edytuj Pole" component={EditFieldScreen} options={{ headerShown: true, title: 'Edytuj Pole' }} />
+                            <Stack.Screen name='Dodaj Pomiar Gleby' component={AddSoilMeasurementScreen} options={{headerShown: true, title: 'Dodaj Pomiary Gleby'}} />
+                            <Stack.Screen name='Edytuj Pomiar Gleby' component={EditSoilMeasurementScreen} options={{headerShown: true, title: 'Edytuj Pomiary Gleby'}} />
+                            <Stack.Screen name='Dodaj Numer Działki' component={AddPlotNumberScreen} options={{headerShown: true, title: 'Dodaj Numer Działki'}} />
+                            <Stack.Screen name='Edytuj Numer Działki' component={EditPlotNumberScreen} options={{headerShown: true, title: 'Edytuj Numer Działki'}} />
+                            <Stack.Screen name='Dodaj Pola z Pliku' component={GMLUploaderScreen} options={{headerShown: true, title: 'Dodaj Pola z Pliku'}} />
                         </Stack.Navigator>
                     </PlotNumberProvider>
                 </SoilMeasurementProvider>

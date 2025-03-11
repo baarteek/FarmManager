@@ -1,45 +1,31 @@
 import React, { useEffect, useState } from 'react';
 import { View, ActivityIndicator, Text } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
-import { useAuth } from '../context/AuthContext';
-import axios from 'axios';
-import API_BASE_URL from '../config/apiConfig';
+
+const plantProtectionTypeList = [
+    { id: 0, name: "Nie wybrano" },
+    { id: 1, name: "Herbicyd" },
+    { id: 2, name: "Insektycyd" },
+    { id: 3, name: "Fungicyd" },
+    { id: 4, name: "Rodentycyd" },
+    { id: 5, name: "Nematicyd" },
+    { id: 6, name: "Molluskocyd" },
+    { id: 7, name: "Bakteriocyd" },
+    { id: 8, name: "Wirusocyd" },
+    { id: 9, name: "Akarcyd" },
+    { id: 10, name: "Regulator wzrostu" },
+    { id: 11, name: "Repelent" },
+    { id: 12, name: "Desykant" },
+    { id: 13, name: "Inne" }
+];
 
 const PlantProtectionTypePicker = ({ selectedPlantProtectionType, setSelectedPlantProtectionType }) => {
     const [plantProtectionTypes, setPlantProtectionTypes] = useState([]);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(null);
-    const { token } = useAuth();
 
     useEffect(() => {
-        fetchPlantProtectionTypes();
+        setPlantProtectionTypes(plantProtectionTypeList);
+        setSelectedPlantProtectionType(plantProtectionTypeList[0].id);
     }, []);
-
-    const fetchPlantProtectionTypes = async () => {
-        try {
-            const response = await axios.get(`${API_BASE_URL}/PlantProtections/plantProtectionType`, {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                    'Content-Type': 'application/json'
-                }
-            });
-            setPlantProtectionTypes(response.data);
-            setSelectedPlantProtectionType(response.data[0]?.id);
-        } catch (error) {
-            console.error("Error fetching plant protection types:", error);
-            setError("Failed to load plant protection types. Please try again later.");
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    if (loading) {
-        return <ActivityIndicator size="large" color="#0000ff" />;
-    }
-
-    if (error) {
-        return <Text style={{ color: 'red', textAlign: 'center' }}>{error}</Text>;
-    }
 
     return (
         <View>

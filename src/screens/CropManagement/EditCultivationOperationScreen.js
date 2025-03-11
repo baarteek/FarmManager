@@ -1,18 +1,17 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TextInput, TouchableOpacity, Alert, Keyboard, ActivityIndicator } from 'react-native';
-import { ScrollView, TouchableWithoutFeedback } from 'react-native-gesture-handler';
+import { View, Text, TextInput, TouchableOpacity, Alert, ActivityIndicator } from 'react-native';
+import { ScrollView } from 'react-native-gesture-handler';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import DateTimePicker from '@react-native-community/datetimepicker';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import moment from 'moment-timezone';
 import { styles } from '../../styles/AppStyles';
-import { useCultivationOperationContext } from '../../context/CultivationOperationProvider';
 import AgrotechnicalInterventionList from '../../components/AgrotechnicalInterventionList';
 
 const EditCultivationOperationScreen = () => {
     const navigation = useNavigation();
     const route = useRoute();
     const { cropId, operationId } = route.params;
-    const { fetchCultivationOperationById, editCultivationOperation } = useCultivationOperationContext(); 
 
     const [date, setDate] = useState(new Date());
     const [name, setName] = useState('');
@@ -24,7 +23,11 @@ const EditCultivationOperationScreen = () => {
     useEffect(() => {
         const fetchOperation = async () => {
             try {
-                const operation = await fetchCultivationOperationById(operationId);
+                const storedOperations = await AsyncStorage.getItem('cultivationOperations');
+                const operations = storedOperations ? JSON.parse(storedOperations) : [];
+
+                const operation = operations.find(op => op.id === operationId);
+
                 if (operation) {
                     const localDate = moment.utc(operation.date).tz(moment.tz.guess()).toDate();
                     setDate(localDate);
@@ -32,12 +35,12 @@ const EditCultivationOperationScreen = () => {
                     setDescription(operation.description);
                     setAgrotechnicalIntervention(operation.agrotechnicalIntervention);
                 } else {
-                    Alert.alert("Error", "Cultivation operation not found.");
+                    Alert.alert("Błąd", "Nie znaleziono zabiegu uprawowego.");
                     navigation.goBack();
                 }
             } catch (error) {
-                console.error('Error fetching cultivation operation:', error);
-                Alert.alert("Error", "Failed to load cultivation operation details.");
+                console.error('Błąd podczas pobierania zabiegu uprawowego:', error);
+                Alert.alert("Błąd", "Nie udało się załadować szczegółów.");
                 navigation.goBack();
             } finally {
                 setInitialLoading(false);
@@ -49,32 +52,32 @@ const EditCultivationOperationScreen = () => {
 
     const handleSave = async () => {
         if (!name) {
-            Alert.alert('Validation Error', 'Name must be filled in.');
+            Alert.alert('Błąd walidacji', 'Nazwa zabiegu musi być wypełniona.');
             return;
         }
 
         setLoading(true);
 
-        const updatedOperation = {
-            cropId,
-            date,
-            name,
-            description,
-            agrotechnicalIntervention,
-        };
-
         try {
-            await editCultivationOperation(operationId, updatedOperation);
+            const storedOperations = await AsyncStorage.getItem('cultivationOperations');
+            let operations = storedOperations ? JSON.parse(storedOperations) : [];
+
+            const updatedOperations = operations.map(op => 
+                op.id === operationId 
+                ? { ...op, date, name, description, agrotechnicalIntervention } 
+                : op
+            );
+
+            await AsyncStorage.setItem('cultivationOperations', JSON.stringify(updatedOperations));
+
             Alert.alert(
-                "Success",
-                "Cultivation operation updated successfully!",
-                [
-                    { text: "OK", onPress: () => navigation.goBack() }
-                ]
+                "Sukces",
+                "Zabieg uprawowy został pomyślnie zaktualizowany!",
+                [{ text: "OK", onPress: () => navigation.goBack() }]
             );
         } catch (error) {
-            console.error('Error updating cultivation operation:', error);
-            Alert.alert('Error', 'Failed to update the cultivation operation. Please try again later.');
+            console.error('Błąd podczas aktualizacji:', error);
+            Alert.alert('Błąd', 'Nie udało się zaktualizować zabiegu uprawowego.');
         } finally {
             setLoading(false);
         }
@@ -82,17 +85,25 @@ const EditCultivationOperationScreen = () => {
 
     const onChangeDate = (event, selectedDate) => {
         if (selectedDate) {
-            const currentDate = new Date(date);
-            currentDate.setFullYear(selectedDate.getFullYear(), selectedDate.getMonth(), selectedDate.getDate());
-            setDate(currentDate);
+            setDate(prevDate => new Date(
+                selectedDate.getFullYear(),
+                selectedDate.getMonth(),
+                selectedDate.getDate(),
+                prevDate.getHours(),
+                prevDate.getMinutes()
+            ));
         }
     };
 
     const onChangeTime = (event, selectedTime) => {
         if (selectedTime) {
-            const currentDate = new Date(date);
-            currentDate.setHours(selectedTime.getHours(), selectedTime.getMinutes());
-            setDate(currentDate);
+            setDate(prevDate => new Date(
+                prevDate.getFullYear(),
+                prevDate.getMonth(),
+                prevDate.getDate(),
+                selectedTime.getHours(),
+                selectedTime.getMinutes()
+            ));
         }
     };
 
@@ -105,54 +116,54 @@ const EditCultivationOperationScreen = () => {
     }
 
     return (
-            <ScrollView style={styles.mainCantainer}>
-                <Text style={[styles.largeText, { textAlign: 'center' }]}>Cultivation Operation Date</Text>
-                <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center' }}>
-                    <DateTimePicker
-                        value={date}
-                        mode="date"
-                        display="default"
-                        onChange={onChangeDate}
-                        style={{ alignSelf: 'center', marginVertical: '2%' }}
-                    />
-                    <DateTimePicker
-                        value={date}
-                        mode="time"
-                        display="default"
-                        onChange={onChangeTime}
-                        style={{ alignSelf: 'center', marginVertical: '2%' }}
-                    />
-                </View>
-                <Text style={[styles.largeText, { textAlign: 'center' }]}>Name</Text>
-                <TextInput 
-                    style={styles.input}
-                    placeholder="Name"
-                    value={name}
-                    onChangeText={setName}
+        <ScrollView style={styles.mainCantainer}>
+            <Text style={[styles.largeText, { textAlign: 'center' }]}>Data zabiegu uprawowego</Text>
+            <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center' }}>
+                <DateTimePicker
+                    value={date}
+                    mode="date"
+                    display="default"
+                    onChange={onChangeDate}
+                    style={{ alignSelf: 'center', marginVertical: '2%' }}
                 />
-                <Text style={[styles.largeText, { textAlign: 'center' }]}>Description</Text>
-                <TextInput
-                    style={styles.input}
-                    placeholder="Description"
-                    value={description}
-                    onChangeText={setDescription}
+                <DateTimePicker
+                    value={date}
+                    mode="time"
+                    display="default"
+                    onChange={onChangeTime}
+                    style={{ alignSelf: 'center', marginVertical: '2%' }}
                 />
-                <AgrotechnicalInterventionList 
-                    selectedOption={agrotechnicalIntervention} 
-                    setSelectedOption={setAgrotechnicalIntervention} 
-                />
-                <TouchableOpacity 
-                    style={[styles.button, { margin: '5%', marginTop: '5%', width: '80%', backgroundColor: '#62C962', alignSelf: 'center' }]} 
-                    onPress={handleSave}
-                    disabled={loading}
-                >
-                    {loading ? (
-                        <ActivityIndicator size="large" color="#fff" />
-                    ) : (
-                        <Text style={{ textAlign: 'center', fontWeight: 'bold', fontSize: 22, color: '#fff' }}>Save Changes</Text>
-                    )}
-                </TouchableOpacity>
-            </ScrollView>
+            </View>
+            <Text style={[styles.largeText, { textAlign: 'center' }]}>Nazwa</Text>
+            <TextInput 
+                style={styles.input}
+                placeholder="Wpisz nazwę"
+                value={name}
+                onChangeText={setName}
+            />
+            <Text style={[styles.largeText, { textAlign: 'center' }]}>Opis</Text>
+            <TextInput
+                style={styles.input}
+                placeholder="Wpisz opis"
+                value={description}
+                onChangeText={setDescription}
+            />
+            <AgrotechnicalInterventionList 
+                selectedOption={agrotechnicalIntervention} 
+                setSelectedOption={setAgrotechnicalIntervention} 
+            />
+            <TouchableOpacity 
+                style={[styles.button, { margin: '5%', marginTop: '5%', width: '80%', backgroundColor: '#62C962', alignSelf: 'center' }]} 
+                onPress={handleSave}
+                disabled={loading}
+            >
+                {loading ? (
+                    <ActivityIndicator size="large" color="#fff" />
+                ) : (
+                    <Text style={{ textAlign: 'center', fontWeight: 'bold', fontSize: 22, color: '#fff' }}>Zapisz zmiany</Text>
+                )}
+            </TouchableOpacity>
+        </ScrollView>
     );
 };
 

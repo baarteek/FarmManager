@@ -1,45 +1,30 @@
 import React, { useEffect, useState } from 'react';
-import { View, ActivityIndicator, Text } from 'react-native';
+import { View, ActivityIndicator } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
-import { useAuth } from '../context/AuthContext'; 
-import axios from 'axios';
-import API_BASE_URL from '../config/apiConfig';
+
+const soilTypeList = [
+    { id: 0, name: "Nie wybrano" },
+    { id: 1, name: "Gleba brunatna" },
+    { id: 2, name: "Czarnoziem" },
+    { id: 3, name: "Gleba bielicowa" },
+    { id: 4, name: "Gleba płowa" },
+    { id: 5, name: "Torf" },
+    { id: 6, name: "Histosol" },
+    { id: 7, name: "Mady rzeczne" },
+    { id: 8, name: "Rędzina" },
+    { id: 9, name: "Less" },
+    { id: 10, name: "Gleba gliniasta" },
+    { id: 11, name: "Gleba piaszczysta" },
+    { id: 12, name: "Inne" }
+];
 
 const SoilTypePicker = ({ selectedSoilType, setSelectedSoilType }) => {
     const [soilTypes, setSoilTypes] = useState([]);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(null);
-    const { token } = useAuth();
 
     useEffect(() => {
-        fetchSoilTypes();
+        setSoilTypes(soilTypeList);
+        setSelectedSoilType(soilTypeList[0].id);
     }, []);
-
-    const fetchSoilTypes = async () => {
-        try {
-            const response = await axios.get(`${API_BASE_URL}/Fields/soil-type`, {
-                headers: {
-                    Authorization: `Bearer ${token}`, 
-                    'Content-Type': 'application/json'
-                }
-            });
-            setSoilTypes(response.data);
-            setSelectedSoilType(response.data[0]?.id);
-        } catch (error) {
-            console.error("Error fetching soil types:", error);
-            setError("Failed to load soil types. Please try again later.");
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    if (loading) {
-        return <ActivityIndicator size="large" color="#0000ff" />;
-    }
-
-    if (error) {
-        return <Text style={{ color: 'red', textAlign: 'center' }}>{error}</Text>;
-    }
 
     return (
         <View>

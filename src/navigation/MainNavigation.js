@@ -3,7 +3,6 @@ import { createDrawerNavigator } from "@react-navigation/drawer";
 import HomeScreen from '../screens/Home/HomeScreen';
 import WeatherScreen from '../screens/Weather/WeatherScreen';
 import FieldmanagementStack from './FieldManagementStack';
-import SettingsScreen from '../screens/Settings/SettingsScreen';
 import FarmManagementStack from './FarmManamementStack';
 import CropManagementStack from './CropManagementStack';
 import CalculatorsStack from './CalculatorsStack';
@@ -38,7 +37,7 @@ const MainNavigation = () => {
         >
             <Drawer.Screen 
                 name="Home"
-                component={HomeScreenWithProvider}  // ZAMIANA na komponent z providerem
+                component={HomeScreenWithProvider} 
             />
             <Drawer.Screen 
                 name="Weather"
@@ -67,10 +66,6 @@ const MainNavigation = () => {
             <Drawer.Screen
                 name='Calculators'
                 component={CalculatorsStack}
-            />
-            <Drawer.Screen 
-                name='Settings'
-                component={SettingsScreen}
             />
         </Drawer.Navigator>
     );

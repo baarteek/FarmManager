@@ -1,140 +1,132 @@
-import axios from 'axios';
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { useAuth } from './AuthContext';
-import API_BASE_URL from '../config/apiConfig';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const FarmContext = createContext();
 
 export const useFarmContext = () => useContext(FarmContext);
 
 export const FarmProvider = ({ children }) => {
-    const { token } = useAuth();
     const [farms, setFarms] = useState([]);
     const [farmList, setFarmList] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
+
+    const loadFarmsFromStorage = async () => {
+        try {
+            const storedFarms = await AsyncStorage.getItem('farms');
+            if (storedFarms) {
+                setFarms(JSON.parse(storedFarms));
+            }
+        } catch (err) {
+            console.error('Error loading farms from storage:', err.message);
+        }
+    };
+
+    const saveFarmsToStorage = async (updatedFarms) => {
+        try {
+            await AsyncStorage.setItem('farms', JSON.stringify(updatedFarms));
+        } catch (err) {
+            console.error('Error saving farms to storage:', err.message);
+        }
+    };
+
+    // Pobieranie farm (z lokalnej pamięci zamiast API)
     const fetchFarms = async () => {
         setLoading(true);
         try {
-            if (!token) {
-                throw new Error('No token found');
-            }
-    
-            const response = await axios.get(`${API_BASE_URL}/Farms/user`, {
-                headers: {
-                    Authorization: `Bearer ${token}`
-                }
-            });
-            setFarms(response.data);
+            await loadFarmsFromStorage();
             setError(null);
         } catch (err) {
             console.error('Error fetching farms:', err.message);
-            setError('Failed to load farms. Please try again later');
+            setError('Failed to load farms.');
         } finally {
             setLoading(false);
         }
     };
 
+    // Pobieranie listy farm (nazwy + ID)
     const fetchFarmsNamesAndId = async () => {
         setLoading(true);
         try {
-            if (!token) {
-                throw new Error('No token found');
+            const storedFarms = await AsyncStorage.getItem('farms');
+            if (storedFarms) {
+                const parsedFarms = JSON.parse(storedFarms);
+                setFarmList(parsedFarms.map(farm => ({ id: farm.id, name: farm.name })));
             }
-    
-            const response = await axios.get(`${API_BASE_URL}/Farms/user/list`, {
-                headers: {
-                    Authorization: `Bearer ${token}`
-                }
-            });
-            setFarmList(response.data);
             setError(null);
         } catch (err) {
             console.error('Error fetching farm names and ids:', err.message);
-            setError('Failed to load farm names and ids. Please try again later');
+            setError('Failed to load farm names and ids.');
         } finally {
             setLoading(false);
         }
     };
-    
-    useEffect(() => {
-        fetchFarms();
-    }, [token]);
 
     const addFarm = async (newFarm) => {
         setLoading(true);
         try {
-            if(!token) {
-                throw new Error('No token found');
-            }
-
-            const response = await axios.post(`${API_BASE_URL}/Farms`, newFarm, {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                    'Content-Type': 'application/json'
-                }
-            });
-            setFarms(prevFarms => [...prevFarms, response.data]);
-        } catch(err) {
+            const updatedFarms = [...farms, newFarm];
+            setFarms(updatedFarms);
+            await saveFarmsToStorage(updatedFarms);
+            setError(null);
+        } catch (err) {
             console.error('Error adding farm:', err.message);
-            setError('Failed to add farm. Please try again later.');
+            setError('Failed to add farm.');
         } finally {
             setLoading(false);
         }
     };
 
+    // Edytowanie istniejącej farmy
     const editFarm = async (updatedFarm) => {
         setLoading(true);
         try {
-            if(!token) {
-                throw new Error('No token found');
-            }
-
-            await axios.put(`${API_BASE_URL}/Farms/${updatedFarm.id}`, updatedFarm, {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                    'Content-Type': 'application/json'
-                }
-            });
-
-            setFarms(prevFarms =>
-                prevFarms.map(farm => farm.id === updatedFarm.id ? updatedFarm : farm)
-            );
+            const updatedFarms = farms.map(farm => farm.id === updatedFarm.id ? updatedFarm : farm);
+            setFarms(updatedFarms);
+            await saveFarmsToStorage(updatedFarms);
             setError(null);
         } catch (err) {
             console.error('Error updating farm:', err.message);
-            setError('Failed to update farm. Please try again later.');
+            setError('Failed to update farm.');
         } finally {
             setLoading(false);
         }
     };
 
+    // Usuwanie farmy
     const handleDeleteFarm = async (id) => {
         setLoading(true);
         try {
-            if(!token) {
-                throw new Error('No token found');
-            }
-
-            await axios.delete(`${API_BASE_URL}/Farms/${id}`, {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                }
-            });
-
-            setFarms(prevFarm => prevFarm.filter(farm => farm.id !== id));
+            const updatedFarms = farms.filter(farm => farm.id !== id);
+            setFarms(updatedFarms);
+            await saveFarmsToStorage(updatedFarms);
             setError(null);
-        } catch(err) {
+        } catch (err) {
             console.error('Error deleting farm:', err.message);
-            setError('Failed to delete farm. Please try again later.');
+            setError('Failed to delete farm.');
         } finally {
             setLoading(false);
         }
     };
 
+    useEffect(() => {
+        loadFarmsFromStorage();
+    }, []);
+
     return (
-        <FarmContext.Provider value={{ farms, farmList, loading, error, setError, addFarm, editFarm, handleDeleteFarm, fetchFarms, fetchFarmsNamesAndId }}>
+        <FarmContext.Provider value={{ 
+            farms, 
+            farmList, 
+            loading, 
+            error, 
+            setError, 
+            addFarm, 
+            editFarm, 
+            handleDeleteFarm, 
+            fetchFarms, 
+            fetchFarmsNamesAndId 
+        }}>
             {children}
         </FarmContext.Provider>
     );

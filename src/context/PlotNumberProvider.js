@@ -1,49 +1,68 @@
-import axios from 'axios';
-import React, { createContext, useContext, useState } from 'react';
-import { useAuth } from './AuthContext';
-import API_BASE_URL from '../config/apiConfig';
+import React, { createContext, useContext, useEffect, useState } from 'react';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const PlotNumberContext = createContext();
 
 export const usePlotNumberContext = () => useContext(PlotNumberContext);
 
 export const PlotNumberProvider = ({ children }) => {
-    const { token } = useAuth();
     const [plotNumbers, setPlotNumbers] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
-    const fetchPlotNumberById = async (id) => {
+    const loadPlotNumbersFromStorage = async () => {
         try {
-            const response = await axios.get(`${API_BASE_URL}/ReferenceParcels/${id}`, {
-                headers: {
-                    Authorization: `Bearer ${token}`
+            const storedPlotNumbers = await AsyncStorage.getItem('plotNumbers');
+            if (storedPlotNumbers) {
+                setPlotNumbers(JSON.parse(storedPlotNumbers));
+            }
+        } catch (err) {
+            console.error('Error loading plot numbers from storage:', err.message);
+        }
+    };
+
+    const savePlotNumbersToStorage = async (updatedPlotNumbers) => {
+        try {
+            await AsyncStorage.setItem('plotNumbers', JSON.stringify(updatedPlotNumbers));
+        } catch (err) {
+            console.error('Error saving plot numbers to storage:', err.message);
+        }
+    };
+
+    const fetchPlotNumberById = async (id) => {
+        setLoading(true);
+        try {
+            const storedPlotNumbers = await AsyncStorage.getItem('plotNumbers');
+            if (storedPlotNumbers) {
+                const parsedPlotNumbers = JSON.parse(storedPlotNumbers);
+                const plotNumber = parsedPlotNumbers.find(pn => pn.id === id);
+                if (plotNumber) {
+                    setError(null);
+                    return plotNumber;
                 }
-            });
-            return response.data;
+            }
+            throw new Error('Plot number not found.');
         } catch (err) {
             console.error('Error fetching plot number:', err.message);
+            setError('Failed to load plot number.');
             throw err;
+        } finally {
+            setLoading(false);
         }
     };
 
     const fetchPlotNumbers = async (fieldId) => {
         setLoading(true);
         try {
-            if (!token) {
-                throw new Error('No token found');
+            const storedPlotNumbers = await AsyncStorage.getItem('plotNumbers');
+            if (storedPlotNumbers) {
+                const parsedPlotNumbers = JSON.parse(storedPlotNumbers);
+                setPlotNumbers(parsedPlotNumbers.filter(pn => pn.fieldId === fieldId));
             }
-    
-            const response = await axios.get(`${API_BASE_URL}/ReferenceParcels/field/${fieldId}`, {
-                headers: {
-                    Authorization: `Bearer ${token}`
-                }
-            });
-            setPlotNumbers(response.data);
             setError(null);
         } catch (err) {
             console.error('Error fetching plot numbers:', err.message);
-            setError('Failed to load plot numbers. Please try again later.');
+            setError('Failed to load plot numbers.');
         } finally {
             setLoading(false);
         }
@@ -52,20 +71,13 @@ export const PlotNumberProvider = ({ children }) => {
     const addPlotNumber = async (newPlotNumber) => {
         setLoading(true);
         try {
-            if (!token) {
-                throw new Error('No token found');
-            }
-
-            const response = await axios.post(`${API_BASE_URL}/ReferenceParcels`, newPlotNumber, {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                    'Content-Type': 'application/json'
-                }
-            });
-            setPlotNumbers(prevPlotNumbers => [...prevPlotNumbers, response.data]);
+            const updatedPlotNumbers = [...plotNumbers, newPlotNumber];
+            setPlotNumbers(updatedPlotNumbers);
+            await savePlotNumbersToStorage(updatedPlotNumbers);
+            setError(null);
         } catch (err) {
             console.error('Error adding plot number:', err.message);
-            setError('Failed to add plot number. Please try again later.');
+            setError('Failed to add plot number.');
         } finally {
             setLoading(false);
         }
@@ -74,24 +86,15 @@ export const PlotNumberProvider = ({ children }) => {
     const editPlotNumber = async (updatedPlotNumber) => {
         setLoading(true);
         try {
-            if (!token) {
-                throw new Error('No token found');
-            }
-
-            await axios.put(`${API_BASE_URL}/ReferenceParcels/${updatedPlotNumber.id}`, updatedPlotNumber, {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                    'Content-Type': 'application/json'
-                }
-            });
-
-            setPlotNumbers(prevPlotNumbers =>
-                prevPlotNumbers.map(plotNumber => plotNumber.id === updatedPlotNumber.id ? updatedPlotNumber : plotNumber)
+            const updatedPlotNumbers = plotNumbers.map(pn =>
+                pn.id === updatedPlotNumber.id ? updatedPlotNumber : pn
             );
+            setPlotNumbers(updatedPlotNumbers);
+            await savePlotNumbersToStorage(updatedPlotNumbers);
             setError(null);
         } catch (err) {
             console.error('Error updating plot number:', err.message);
-            setError('Failed to update plot number. Please try again later.');
+            setError('Failed to update plot number.');
         } finally {
             setLoading(false);
         }
@@ -100,29 +103,32 @@ export const PlotNumberProvider = ({ children }) => {
     const deletePlotNumber = async (id) => {
         setLoading(true);
         try {
-            if (!token) {
-                throw new Error('No token found');
-            }
-
-            await axios.delete(`${API_BASE_URL}/ReferenceParcels/${id}`, {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                }
-            });
-
-            setPlotNumbers(prevPlotNumbers => prevPlotNumbers.filter(plotNumber => plotNumber.id !== id));
+            const updatedPlotNumbers = plotNumbers.filter(pn => pn.id !== id);
+            setPlotNumbers(updatedPlotNumbers);
+            await savePlotNumbersToStorage(updatedPlotNumbers);
             setError(null);
         } catch (err) {
             console.error('Error deleting plot number:', err.message);
-            setError('Failed to delete plot number. Please try again later.');
+            setError('Failed to delete plot number.');
         } finally {
             setLoading(false);
         }
     };
 
+    useEffect(() => {
+        loadPlotNumbersFromStorage();
+    }, []);
+
     return (
         <PlotNumberContext.Provider value={{
-            plotNumbers, loading, error, addPlotNumber, editPlotNumber, deletePlotNumber, fetchPlotNumbers, fetchPlotNumberById
+            plotNumbers,
+            loading,
+            error,
+            addPlotNumber,
+            editPlotNumber,
+            deletePlotNumber,
+            fetchPlotNumbers,
+            fetchPlotNumberById
         }}>
             {children}
         </PlotNumberContext.Provider>

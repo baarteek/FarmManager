@@ -1,5 +1,4 @@
 import { createContext, useContext, useState } from "react";
-import { useAuth } from "./AuthContext";
 import axios from "axios";
 import API_BASE_URL from "../config/apiConfig";
 
@@ -8,7 +7,6 @@ const MapContext = createContext();
 export const useMapContext = () => useContext(MapContext);
 
 export const MapProvider = ({ children }) => {
-    const { token } = useAuth();
     const [mapData, setMapData] = useState('');
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
