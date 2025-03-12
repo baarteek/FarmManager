@@ -18,62 +18,83 @@ const EditPlotNumberScreen = () => {
         const loadPlotNumber = async () => {
             try {
                 setLoading(true);
-                const storedPlotNumbers = await AsyncStorage.getItem('plotNumbers');
-                const parsedPlotNumbers = storedPlotNumbers ? JSON.parse(storedPlotNumbers) : [];
-                const plotNumber = parsedPlotNumbers.find((plot) => plot.id === plotNumberId);
-                if (plotNumber) {
-                    setParcelNumber(plotNumber.parcelNumber);
-                    setArea(plotNumber.area.toString());
-                } else {
-                    Alert.alert('Błąd', 'Numer działki nie został znaleziony.');
-                }
+                const storedFarms = await AsyncStorage.getItem('farms');
+                if (!storedFarms) throw new Error('Nie znaleziono gospodarstw.');
+
+                let parsedFarms = JSON.parse(storedFarms);
+                const farm = parsedFarms.find(f => f.fields && f.fields.some(field => field.id === fieldId));
+                if (!farm) throw new Error('Nie znaleziono gospodarstwa.');
+
+                const field = farm.fields?.find(f => f.id === fieldId);
+                if (!field) throw new Error('Nie znaleziono pola.');
+
+                // Sprawdzamy, czy działki referencyjne (`plotNumbers`) istnieją
+                field.plotNumbers = field.plotNumbers || [];
+
+                const plotNumber = field.plotNumbers.find(p => p.id === plotNumberId);
+                if (!plotNumber) throw new Error('Nie znaleziono działki referencyjnej.');
+
+                setParcelNumber(plotNumber.parcelNumber);
+                setArea(plotNumber.area.toString());
             } catch (error) {
-                Alert.alert('Błąd', 'Nie udało się załadować danych działki.');
+                Alert.alert('Błąd', error.message || 'Nie udało się załadować danych działki.');
             } finally {
                 setLoading(false);
             }
         };
 
         loadPlotNumber();
-    }, [plotNumberId]);
+    }, [plotNumberId, fieldId]);
 
     const handleEditPlotNumber = async () => {
-        if (!parcelNumber || !area) {
+        if (!parcelNumber.trim() || !area.trim()) {
             Alert.alert('Błąd walidacji', 'Wszystkie pola muszą być wypełnione.');
             return;
         }
 
-        const updatedPlotNumber = {
-            id: plotNumberId,
-            fieldId,
-            parcelNumber,
-            area: formatDecimalInput(area),
-        };
-
         try {
             setLoading(true);
-            const storedPlotNumbers = await AsyncStorage.getItem('plotNumbers');
-            const parsedPlotNumbers = storedPlotNumbers ? JSON.parse(storedPlotNumbers) : [];
-            const updatedPlotNumbers = parsedPlotNumbers.map((plot) =>
-                plot.id === plotNumberId ? updatedPlotNumber : plot
-            );
+            const storedFarms = await AsyncStorage.getItem('farms');
+            if (!storedFarms) throw new Error('Nie znaleziono gospodarstw.');
 
-            await AsyncStorage.setItem('plotNumbers', JSON.stringify(updatedPlotNumbers));
+            let parsedFarms = JSON.parse(storedFarms);
+            const farmIndex = parsedFarms.findIndex(f => f.fields && f.fields.some(field => field.id === fieldId));
+            if (farmIndex === -1) throw new Error('Nie znaleziono gospodarstwa.');
+
+            const fieldIndex = parsedFarms[farmIndex].fields.findIndex(f => f.id === fieldId);
+            if (fieldIndex === -1) throw new Error('Nie znaleziono pola.');
+
+            let field = parsedFarms[farmIndex].fields[fieldIndex];
+
+            // Sprawdzamy, czy `plotNumbers` istnieje
+            field.plotNumbers = field.plotNumbers || [];
+
+            // Znalezienie i aktualizacja konkretnej działki referencyjnej
+            const plotIndex = field.plotNumbers.findIndex(p => p.id === plotNumberId);
+            if (plotIndex === -1) throw new Error('Nie znaleziono działki referencyjnej.');
+
+            field.plotNumbers[plotIndex] = {
+                id: plotNumberId,
+                parcelNumber: parcelNumber.trim(),
+                area: formatDecimalInput(area),
+            };
+
+            await AsyncStorage.setItem('farms', JSON.stringify(parsedFarms));
 
             Alert.alert(
-                "Numer działki zaktualizowany",
-                "Numer działki został pomyślnie zaktualizowany.",
+                "Zaktualizowano",
+                "Działka referencyjna została pomyślnie zaktualizowana.",
                 [{ text: "OK", onPress: () => navigation.goBack() }]
             );
         } catch (error) {
-            Alert.alert('Błąd', 'Nie udało się zaktualizować numeru działki. Spróbuj ponownie później.');
+            Alert.alert('Błąd', error.message || 'Nie udało się zaktualizować działki.');
         } finally {
             setLoading(false);
         }
     };
 
     return (
-        <ScrollView style={styles.mainCantainer}>
+        <ScrollView style={styles.mainContainer}>
             <Text style={[styles.largeText, { textAlign: 'center' }]}>Numer działki</Text>
             <TextInput
                 style={styles.input}
@@ -98,7 +119,7 @@ const EditPlotNumberScreen = () => {
                     <ActivityIndicator size="small" color="#fff" />
                 ) : (
                     <Text style={{ textAlign: 'center', fontWeight: 'bold', fontSize: 22, color: '#fff', marginLeft: '10%', marginRight: '10%' }}>
-                        Zaktualizuj numer działki
+                        Zaktualizuj działkę
                     </Text>
                 )}
             </TouchableOpacity>

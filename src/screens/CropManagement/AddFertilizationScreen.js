@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, Alert, ActivityIndicator } from 'react-native';
-import { ScrollView } from 'react-native-gesture-handler';
+import { View, Text, TextInput, TouchableOpacity, Alert, ActivityIndicator, ScrollView } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { styles } from '../../styles/AppStyles';
@@ -29,20 +28,40 @@ const AddFertilizationScreen = () => {
 
     const newFertilization = {
       id: Date.now().toString(),
-      cropId,
-      date,
+      date: date.toISOString(),
       type: parseInt(type, 10),
       quantity: formatDecimalInput(quantity),
       agrotechnicalIntervention, 
-      description,
+      description: description.trim(),
     };
 
     setLoading(true);
     try {
-      const storedFertilizations = await AsyncStorage.getItem('fertilizations');
-      const fertilizations = storedFertilizations ? JSON.parse(storedFertilizations) : [];
-      const updatedFertilizations = [...fertilizations, newFertilization];
-      await AsyncStorage.setItem('fertilizations', JSON.stringify(updatedFertilizations));
+      const storedFarms = await AsyncStorage.getItem('farms');
+      if (!storedFarms) throw new Error("Nie znaleziono danych o gospodarstwach.");
+
+      let parsedFarms = JSON.parse(storedFarms);
+
+      let found = false;
+
+      for (const farm of parsedFarms) {
+        for (const field of farm.fields) {
+          const cropIndex = field.crops.findIndex(crop => crop.id === cropId);
+          if (cropIndex !== -1) {
+            if (!field.crops[cropIndex].fertilizations) {
+              field.crops[cropIndex].fertilizations = [];
+            }
+            field.crops[cropIndex].fertilizations.push(newFertilization);
+            found = true;
+            break;
+          }
+        }
+        if (found) break;
+      }
+
+      if (!found) throw new Error("Nie znaleziono uprawy.");
+
+      await AsyncStorage.setItem('farms', JSON.stringify(parsedFarms));
 
       Alert.alert(
         "Sukces",
@@ -51,20 +70,16 @@ const AddFertilizationScreen = () => {
       );
     } catch (err) {
       console.error('Błąd podczas dodawania nawożenia:', err.message);
-      Alert.alert("Błąd", "Nie udało się dodać nawożenia. Spróbuj ponownie później.");
+      Alert.alert("Błąd", err.message || "Nie udało się dodać nawożenia. Spróbuj ponownie później.");
     } finally {
       setLoading(false);
     }
   };
 
   const onChangeDate = (event, selectedDate) => {
-    const currentDate = selectedDate || date;
-    setDate(currentDate);
-  };
-
-  const onChangeTime = (event, selectedTime) => {
-    const currentDate = selectedTime || date;
-    setDate(currentDate);
+    if (selectedDate) {
+      setDate(selectedDate);
+    }
   };
 
   return (
@@ -76,13 +91,6 @@ const AddFertilizationScreen = () => {
           mode="date"
           display="default"
           onChange={onChangeDate}
-          style={{ alignSelf: 'center', marginVertical: '2%' }}
-        />
-        <DateTimePicker
-          value={date}
-          mode="time"
-          display="default"
-          onChange={onChangeTime}
           style={{ alignSelf: 'center', marginVertical: '2%' }}
         />
       </View>

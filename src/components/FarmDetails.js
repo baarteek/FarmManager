@@ -9,35 +9,27 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const FarmDetails = ({ farmData, onDelete, onEdit, loading }) => {
     const navigation = useNavigation();
-    const [localFields, setLocalFields] = useState([]);
-
+    const [localFields, setLocalFields] = useState(farmData.fields || []);
     const [modalVisible, setModalVisible] = useState(false);
     const [selectedFieldDetails, setSelectedFieldDetails] = useState(null);
 
-    const loadFields = async () => {
+    const updateFarmData = async (updatedFields) => {
         try {
-            const storedFields = await AsyncStorage.getItem('fields');
-            if (storedFields) {
-                const parsedFields = JSON.parse(storedFields);
-                const farmFields = parsedFields.filter(field => field.farmId === farmData.id);
-                setLocalFields(farmFields);
-            } else {
-                setLocalFields([]);
+            const storedFarms = await AsyncStorage.getItem('farms');
+            if (storedFarms) {
+                let parsedFarms = JSON.parse(storedFarms);
+                const farmIndex = parsedFarms.findIndex(f => f.id === farmData.id);
+
+                if (farmIndex !== -1) {
+                    parsedFarms[farmIndex].fields = updatedFields;
+                    await AsyncStorage.setItem('farms', JSON.stringify(parsedFarms));
+                    setLocalFields(updatedFields);
+                }
             }
         } catch (error) {
-            console.error("Błąd podczas ładowania pól:", error);
+            console.error("Błąd podczas aktualizacji gospodarstwa:", error);
         }
     };
-
-    useEffect(() => {
-        loadFields();
-    }, []);
-
-    useFocusEffect(
-        React.useCallback(() => {
-            loadFields();
-        }, [])
-    );
 
     const handleDeleteField = async (fieldId) => {
         Alert.alert(
@@ -49,14 +41,8 @@ const FarmDetails = ({ farmData, onDelete, onEdit, loading }) => {
                     text: "Usuń",
                     onPress: async () => {
                         try {
-                            const storedFields = await AsyncStorage.getItem('fields');
-                            if (storedFields) {
-                                let parsedFields = JSON.parse(storedFields);
-                                parsedFields = parsedFields.filter(field => field.id !== fieldId);
-                                await AsyncStorage.setItem('fields', JSON.stringify(parsedFields));
-
-                                setLocalFields(parsedFields.filter(field => field.farmId === farmData.id));
-                            }
+                            const updatedFields = localFields.filter(field => field.id !== fieldId);
+                            await updateFarmData(updatedFields);
                         } catch (error) {
                             console.error("Błąd podczas usuwania pola:", error);
                         }
@@ -107,7 +93,7 @@ const FarmDetails = ({ farmData, onDelete, onEdit, loading }) => {
                 </View>
                 <View style={styles.line} />
 
-                <ExpandableComponent title="Pola" isExpanded={true} backgroundColor="#BAF1BA">
+                <ExpandableComponent title="Pola" isExpanded={false} backgroundColor="#BAF1BA">
                     {localFields.length > 0 ? (
                         localFields.map((field) => (
                             <View key={field.id} style={styles.infoRowContainer}>
@@ -120,7 +106,7 @@ const FarmDetails = ({ farmData, onDelete, onEdit, loading }) => {
                                         <Text style={styles.text}>{field.name}</Text>
                                     </View>
                                 </TouchableOpacity>
-                                <TouchableOpacity onPress={() => navigation.navigate("Edytuj Pole", { field })}>
+                                <TouchableOpacity onPress={() => navigation.navigate("Edytuj Pole", { farmId: farmData.id, field })}>
                                     <Icon name="edit" size={22} color="#00BFFF" />
                                 </TouchableOpacity>
                                 <TouchableOpacity onPress={() => handleDeleteField(field.id)}>

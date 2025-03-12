@@ -20,20 +20,27 @@ const AddFieldScreen = () => {
             return;
         }
 
-        const newField = {
-            id: Date.now().toString(),
-            farmId,
-            name,
-            area: formatDecimalInput(area),
-            soilType: parseInt(soilType),
-        };
-
         try {
-            const storedFields = await AsyncStorage.getItem('fields');
-            const fields = storedFields ? JSON.parse(storedFields) : [];
-            const updatedFields = [...fields, newField];
+            const storedFarms = await AsyncStorage.getItem('farms');
+            let farms = storedFarms ? JSON.parse(storedFarms) : [];
 
-            await AsyncStorage.setItem('fields', JSON.stringify(updatedFields));
+            const farmIndex = farms.findIndex(f => f.id === farmId);
+            if (farmIndex === -1) {
+                Alert.alert("Błąd", "Nie znaleziono gospodarstwa.");
+                return;
+            }
+
+            const newField = {
+                id: Date.now().toString(),
+                name,
+                area: formatDecimalInput(area),
+                soilType: parseInt(soilType),
+            };
+
+            farms[farmIndex].fields = farms[farmIndex].fields || [];
+            farms[farmIndex].fields.push(newField);
+
+            await AsyncStorage.setItem('farms', JSON.stringify(farms));
 
             Alert.alert("Dodano pole", "Nowe pole zostało pomyślnie dodane.", [
                 { text: "OK", onPress: () => navigation.goBack() }

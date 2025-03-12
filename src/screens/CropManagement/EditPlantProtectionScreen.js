@@ -26,17 +26,30 @@ const EditPlantProtectionScreen = () => {
     useEffect(() => {
         const fetchPlantProtection = async () => {
             try {
-                const storedPlantProtections = await AsyncStorage.getItem('plantProtections');
-                const plantProtections = storedPlantProtections ? JSON.parse(storedPlantProtections) : [];
+                const storedFarms = await AsyncStorage.getItem('farms');
+                if (!storedFarms) throw new Error("Nie znaleziono gospodarstw.");
 
-                const plantProtection = plantProtections.find(p => p.id === plantProtectionId);
-                if (plantProtection) {
-                    const localDate = moment.utc(plantProtection.date).tz(moment.tz.guess()).toDate();
+                let farms = JSON.parse(storedFarms);
+                let foundPlantProtection = null;
+
+                for (const farm of farms) {
+                    for (const field of farm.fields) {
+                        for (const crop of field.crops) {
+                            if (crop.id === cropId && crop.plantProtections) {
+                                foundPlantProtection = crop.plantProtections.find(p => p.id === plantProtectionId);
+                                if (foundPlantProtection) break;
+                            }
+                        }
+                    }
+                }
+
+                if (foundPlantProtection) {
+                    const localDate = moment.utc(foundPlantProtection.date).tz(moment.tz.guess()).toDate();
                     setDate(localDate);
-                    setType(plantProtection.type.toString());
-                    setQuantity(plantProtection.quantity.toString());
-                    setAgrotechnicalIntervention(plantProtection.agrotechnicalIntervention);
-                    setDescription(plantProtection.description);
+                    setType(foundPlantProtection.type.toString());
+                    setQuantity(foundPlantProtection.quantity.toString());
+                    setAgrotechnicalIntervention(foundPlantProtection.agrotechnicalIntervention);
+                    setDescription(foundPlantProtection.description);
                 } else {
                     Alert.alert("Błąd", "Nie znaleziono rekordu ochrony roślin.");
                     navigation.goBack();
@@ -51,7 +64,7 @@ const EditPlantProtectionScreen = () => {
         };
 
         fetchPlantProtection();
-    }, [plantProtectionId, navigation]);
+    }, [cropId, plantProtectionId, navigation]);
 
     const handleSave = async () => {
         if (!type || !quantity || !agrotechnicalIntervention) {
@@ -62,23 +75,46 @@ const EditPlantProtectionScreen = () => {
         setLoading(true);
 
         try {
-            const storedPlantProtections = await AsyncStorage.getItem('plantProtections');
-            let plantProtections = storedPlantProtections ? JSON.parse(storedPlantProtections) : [];
+            const storedFarms = await AsyncStorage.getItem('farms');
+            if (!storedFarms) throw new Error("Nie znaleziono gospodarstw.");
 
-            const updatedPlantProtections = plantProtections.map(p =>
-                p.id === plantProtectionId
-                    ? { ...p, date, type: parseInt(type, 10), quantity: formatDecimalInput(quantity), agrotechnicalIntervention, description }
-                    : p
-            );
+            let farms = JSON.parse(storedFarms);
+            let updated = false;
 
-            await AsyncStorage.setItem('plantProtections', JSON.stringify(updatedPlantProtections));
+            for (const farm of farms) {
+                for (const field of farm.fields) {
+                    for (const crop of field.crops) {
+                        if (crop.id === cropId && crop.plantProtections) {
+                            const protectionIndex = crop.plantProtections.findIndex(p => p.id === plantProtectionId);
+                            if (protectionIndex !== -1) {
+                                crop.plantProtections[protectionIndex] = {
+                                    ...crop.plantProtections[protectionIndex],
+                                    date,
+                                    type: parseInt(type, 10),
+                                    quantity: formatDecimalInput(quantity),
+                                    agrotechnicalIntervention,
+                                    description
+                                };
+                                updated = true;
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+
+            if (!updated) {
+                throw new Error("Nie znaleziono ochrony roślin do edycji.");
+            }
+
+            await AsyncStorage.setItem('farms', JSON.stringify(farms));
 
             Alert.alert("Sukces", "Dane ochrony roślin zostały zaktualizowane!", [
                 { text: "OK", onPress: () => navigation.goBack() }
             ]);
         } catch (error) {
             console.error('Błąd podczas aktualizacji ochrony roślin:', error);
-            Alert.alert('Błąd', 'Nie udało się zaktualizować danych ochrony roślin.');
+            Alert.alert('Błąd', error.message || 'Nie udało się zaktualizować danych ochrony roślin.');
         } finally {
             setLoading(false);
         }

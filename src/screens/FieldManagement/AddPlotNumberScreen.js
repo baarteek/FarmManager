@@ -22,7 +22,6 @@ const AddPlotNumberScreen = () => {
 
         const newPlotNumber = {
             id: Date.now().toString(),
-            fieldId,
             parcelNumber: parcelNumber.trim(),
             area: formatDecimalInput(area),
         };
@@ -30,17 +29,30 @@ const AddPlotNumberScreen = () => {
         setLoading(true);
 
         try {
-            const storedPlots = await AsyncStorage.getItem('plotNumbers');
-            const existingPlots = storedPlots ? JSON.parse(storedPlots) : [];
+            const storedFarms = await AsyncStorage.getItem('farms');
+            if (!storedFarms) throw new Error("Nie znaleziono gospodarstw w pamięci.");
 
-            const updatedPlots = [...existingPlots, newPlotNumber];
-            await AsyncStorage.setItem('plotNumbers', JSON.stringify(updatedPlots));
+            let parsedFarms = JSON.parse(storedFarms);
+
+            const farmIndex = parsedFarms.findIndex(f => f.fields.some(field => field.id === fieldId));
+            if (farmIndex === -1) throw new Error("Nie znaleziono gospodarstwa dla tego pola.");
+
+            const fieldIndex = parsedFarms[farmIndex].fields.findIndex(f => f.id === fieldId);
+            if (fieldIndex === -1) throw new Error("Nie znaleziono pola.");
+
+            if (!parsedFarms[farmIndex].fields[fieldIndex].plotNumbers) {
+                parsedFarms[farmIndex].fields[fieldIndex].plotNumbers = [];
+            }
+
+            parsedFarms[farmIndex].fields[fieldIndex].plotNumbers.push(newPlotNumber);
+            await AsyncStorage.setItem('farms', JSON.stringify(parsedFarms));
 
             Alert.alert(
                 "Działka dodana",
                 "Nowa działka została pomyślnie dodana.",
                 [{ text: "OK", onPress: () => navigation.goBack() }]
             );
+
         } catch (error) {
             Alert.alert('Błąd', 'Nie udało się dodać działki. Spróbuj ponownie później.');
             console.error("Błąd zapisu działki:", error);

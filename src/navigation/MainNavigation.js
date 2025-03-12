@@ -1,22 +1,13 @@
 import 'react-native-gesture-handler';
 import { createDrawerNavigator } from "@react-navigation/drawer";
-import HomeScreen from '../screens/Home/HomeScreen';
-import WeatherScreen from '../screens/Weather/WeatherScreen';
 import FieldmanagementStack from './FieldManagementStack';
 import FarmManagementStack from './FarmManamementStack';
 import CropManagementStack from './CropManagementStack';
 import CalculatorsStack from './CalculatorsStack';
 import MapStack from './MapStack';
 import ReportsStack from './ReportsStack';
-import { HomePageInfoProvider } from '../context/HomePageInfoProvider'; 
 
 const Drawer = createDrawerNavigator();
-
-const HomeScreenWithProvider = () => (
-    <HomePageInfoProvider>
-        <HomeScreen />
-    </HomePageInfoProvider>
-);
 
 const MainNavigation = () => {
     return (
@@ -35,37 +26,35 @@ const MainNavigation = () => {
                 drawerActiveTintColor: '#22532A'
             }}
         >
-            <Drawer.Screen 
-                name="Home"
-                component={HomeScreenWithProvider} 
-            />
-            <Drawer.Screen 
-                name="Weather"
-                component={WeatherScreen}
-            />
             <Drawer.Screen
-                name='Farm Management'
+                name="Farm Management"
                 component={FarmManagementStack}
+                options={{ title: "Zarządzanie Gospodarstwem" }}
             />
             <Drawer.Screen
                 name="Field Management"
                 component={FieldmanagementStack}
+                options={{ title: "Zarządzanie Polami" }}
             />
             <Drawer.Screen
                 name="Crop Management"
                 component={CropManagementStack}
+                options={{ title: "Zarządzanie Uprawami" }}
             />
             <Drawer.Screen
                 name="Map"
                 component={MapStack}
+                options={{ title: "Mapa" }}
             />
             <Drawer.Screen
                 name="Reports"
                 component={ReportsStack}
+                options={{ title: "Raporty" }}
             />
             <Drawer.Screen
-                name='Calculators'
+                name="Calculators"
                 component={CalculatorsStack}
+                options={{ title: "Kalkulatory" }}
             />
         </Drawer.Navigator>
     );

@@ -34,17 +34,21 @@ const FieldDetails = ({ fieldData, onDelete, onEdit }) => {
 
   const refreshData = async () => {
     try {
-      const storedMeasurements = await AsyncStorage.getItem('soilMeasurements');
-      const storedPlots = await AsyncStorage.getItem('plotNumbers');
-      const measurements = storedMeasurements ? JSON.parse(storedMeasurements) : [];
-      const plots = storedPlots ? JSON.parse(storedPlots) : [];
-      setSoilMeasurements(measurements.filter(m => m.fieldId === fieldData.id));
-      setPlotNumbers(plots.filter(p => p.fieldId === fieldData.id));
+      const storedFarms = await AsyncStorage.getItem('farms');
+      if (!storedFarms) return;
+
+      const parsedFarms = JSON.parse(storedFarms);
+      const farm = parsedFarms.find(farm => farm.fields.some(field => field.id === fieldData.id));
+      if (!farm) return;
+
+      const field = farm.fields.find(f => f.id === fieldData.id);
+      setSoilMeasurements(field?.soilMeasurements || []);
+      setPlotNumbers(field?.plotNumbers || []);
     } catch (error) {
-      console.error("Error loading data:", error);
+      console.error("Błąd podczas wczytywania danych:", error);
     }
   };
-
+  
   useEffect(() => {
     refreshData();
   }, [fieldData.id]);
@@ -89,13 +93,31 @@ const FieldDetails = ({ fieldData, onDelete, onEdit }) => {
       "Czy na pewno chcesz usunąć ten pomiar gleby?",
       [
         { text: "Anuluj", style: "cancel" },
-        { text: "Usuń", onPress: async () => {
+        { 
+          text: "Usuń", 
+          onPress: async () => {
             try {
-              const updatedMeasurements = soilMeasurements.filter(m => m.id !== id);
-              await AsyncStorage.setItem('soilMeasurements', JSON.stringify(updatedMeasurements));
+              const storedFarms = await AsyncStorage.getItem('farms');
+              if (!storedFarms) throw new Error("Nie znaleziono gospodarstw w pamięci.");
+  
+              let parsedFarms = JSON.parse(storedFarms);
+              
+              const farmIndex = parsedFarms.findIndex(f => f.fields.some(field => field.id === fieldData.id));
+              if (farmIndex === -1) throw new Error("Nie znaleziono gospodarstwa dla tego pola.");
+  
+              const fieldIndex = parsedFarms[farmIndex].fields.findIndex(f => f.id === fieldData.id);
+              if (fieldIndex === -1) throw new Error("Nie znaleziono pola.");
+  
+              parsedFarms[farmIndex].fields[fieldIndex].soilMeasurements = 
+                parsedFarms[farmIndex].fields[fieldIndex].soilMeasurements.filter(m => m.id !== id);
+  
+              await AsyncStorage.setItem('farms', JSON.stringify(parsedFarms));
               refreshData();
+  
+              Alert.alert("Sukces", "Pomiar gleby został usunięty.");
             } catch (error) {
-              console.error("Error deleting measurement:", error);
+              console.error("Błąd podczas usuwania pomiaru gleby:", error);
+              Alert.alert("Błąd", "Nie udało się usunąć pomiaru gleby.");
             }
           }
         }

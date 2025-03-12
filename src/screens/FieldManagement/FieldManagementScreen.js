@@ -10,7 +10,6 @@ import { styles } from "../../styles/AppStyles";
 const FieldManagementScreen = () => {
     const navigation = useNavigation();
     const [farms, setFarms] = useState([]);
-    const [fields, setFields] = useState([]);
     const [selectedFarm, setSelectedFarm] = useState(null);
     const [loading, setLoading] = useState(true);
     const [refreshing, setRefreshing] = useState(false);
@@ -36,44 +35,23 @@ const FieldManagementScreen = () => {
         setLoading(false);
     };
 
-    const loadFields = async (farmId) => {
-        try {
-            const storedFields = await AsyncStorage.getItem('fields');
-            if (storedFields) {
-                const parsedFields = JSON.parse(storedFields);
-                const filteredFields = parsedFields.filter(field => field.farmId === farmId);
-                setFields(filteredFields);
-            } else {
-                setFields([]);
-            }
-        } catch (error) {
-            console.error("Błąd podczas ładowania pól:", error);
-            setError("Nie udało się załadować pól.");
-        }
-    };
-
     useEffect(() => {
         loadFarms();
     }, []);
 
     useFocusEffect(
         useCallback(() => {
-            if (selectedFarm) {
-                loadFields(selectedFarm.id);
-            }
-        }, [selectedFarm])
+            loadFarms();
+        }, [])
     );
 
     const onRefresh = async () => {
         setRefreshing(true);
         await loadFarms();
-        if (selectedFarm) {
-            await loadFields(selectedFarm.id);
-        }
         setRefreshing(false);
     };
 
-    const confirmDelete = (id) => {
+    const confirmDelete = (fieldId) => {
         Alert.alert(
             "Potwierdzenie usunięcia",
             "Czy na pewno chcesz usunąć to pole?",
@@ -83,12 +61,16 @@ const FieldManagementScreen = () => {
                     text: 'Usuń',
                     onPress: async () => {
                         try {
-                            const storedFields = await AsyncStorage.getItem('fields');
-                            if (storedFields) {
-                                let parsedFields = JSON.parse(storedFields);
-                                parsedFields = parsedFields.filter(field => field.id !== id);
-                                await AsyncStorage.setItem('fields', JSON.stringify(parsedFields));
-                                loadFields(selectedFarm.id);
+                            const storedFarms = await AsyncStorage.getItem('farms');
+                            if (storedFarms) {
+                                let parsedFarms = JSON.parse(storedFarms);
+
+                                const farmIndex = parsedFarms.findIndex(f => f.id === selectedFarm.id);
+                                if (farmIndex !== -1) {
+                                    parsedFarms[farmIndex].fields = parsedFarms[farmIndex].fields.filter(field => field.id !== fieldId);
+                                    await AsyncStorage.setItem('farms', JSON.stringify(parsedFarms));
+                                    setSelectedFarm(parsedFarms[farmIndex]); // Aktualizuj wybrane gospodarstwo
+                                }
                             }
                         } catch (error) {
                             console.error("Błąd podczas usuwania pola:", error);
@@ -141,13 +123,10 @@ const FieldManagementScreen = () => {
                             paddingHorizontal: '3%',
                             paddingVertical: '3%',
                             backgroundColor: farm.id === selectedFarm?.id ? '#62C962' : '#e6ede9',
-                            marginHorizontal: '3%',
+                            marginHorizontal: '5%',
                             borderRadius: 5,
                         }}
-                        onPress={() => {
-                            setSelectedFarm(farm);
-                            loadFields(farm.id);
-                        }}
+                        onPress={() => setSelectedFarm(farm)}
                     >
                         <Text style={{ color: farm.id === selectedFarm?.id ? '#fff' : '#000', fontWeight: 'bold', fontSize: 16, paddingHorizontal: 10 }}>
                             {farm.name}
@@ -156,7 +135,7 @@ const FieldManagementScreen = () => {
                 ))}
             </ScrollView>
 
-            {fields.length === 0 ? (
+            {selectedFarm?.fields?.length === 0 ? (
                 <ScrollView 
                     style={[styles.mainContainer, { height: '90%' }]} 
                     refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
@@ -168,12 +147,12 @@ const FieldManagementScreen = () => {
                     style={[styles.mainContainer, { height: '90%' }]} 
                     refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
                 >
-                    {fields.map((field) => (
+                    {selectedFarm?.fields?.map((field) => (
                         <FieldDetails 
                             fieldData={field} 
                             key={field.id} 
                             onDelete={() => confirmDelete(field.id)}
-                            onEdit={() => navigation.navigate('Edytuj Pole', { field })} 
+                            onEdit={() => navigation.navigate('Edytuj Pole', { farmId: selectedFarm.id, field })} 
                         />
                     ))}
                 </ScrollView> 

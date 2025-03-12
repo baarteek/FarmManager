@@ -9,8 +9,7 @@ import { formatDecimalInput } from '../../utils/TextUtils';
 const AddSoilMeasurementScreen = () => {
   const navigation = useNavigation();
   const route = useRoute();
-  const { fieldId } = route.params;
-
+  const { fieldId } = route.params; // Pobiera tylko fieldId
   const [loading, setLoading] = useState(false);
   const [date, setDate] = useState(new Date());
   const [pH, setPH] = useState('');
@@ -25,8 +24,7 @@ const AddSoilMeasurementScreen = () => {
     }
 
     const newMeasurement = {
-      id: Date.now().toString(), 
-      fieldId,
+      id: Date.now().toString(),
       date: date.toISOString(),
       pH: formatDecimalInput(pH),
       nitrogen: formatDecimalInput(nitrogen),
@@ -37,12 +35,35 @@ const AddSoilMeasurementScreen = () => {
     setLoading(true);
 
     try {
-      const storedMeasurements = await AsyncStorage.getItem('soilMeasurements');
-      const parsedMeasurements = storedMeasurements ? JSON.parse(storedMeasurements) : [];
+      const storedFarms = await AsyncStorage.getItem('farms');
+      if (!storedFarms) throw new Error('Nie znaleziono gospodarstw.');
 
-      const updatedMeasurements = [...parsedMeasurements, newMeasurement];
+      let parsedFarms = JSON.parse(storedFarms);
+      let farmFound = false;
+      
+      parsedFarms = parsedFarms.map(farm => {
+        const updatedFields = farm.fields.map(field => {
+          if (field.id === fieldId) {
+            farmFound = true;
 
-      await AsyncStorage.setItem('soilMeasurements', JSON.stringify(updatedMeasurements));
+            if (!field.soilMeasurements) {
+              field.soilMeasurements = [];
+            }
+            
+            return { 
+              ...field, 
+              soilMeasurements: [...field.soilMeasurements, newMeasurement] 
+            };
+          }
+          return field;
+        });
+
+        return { ...farm, fields: updatedFields };
+      });
+
+      if (!farmFound) throw new Error('Nie znaleziono pola.');
+
+      await AsyncStorage.setItem('farms', JSON.stringify(parsedFarms));
 
       Alert.alert(
         "Pomiar dodany",

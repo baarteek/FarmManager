@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, Alert, ActivityIndicator } from 'react-native';
-import { ScrollView } from 'react-native-gesture-handler';
+import { View, Text, TextInput, TouchableOpacity, Alert, ActivityIndicator, ScrollView } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { styles } from '../../styles/AppStyles';
@@ -29,20 +28,40 @@ const AddPlantProtectionScreen = () => {
 
     const newPlantProtection = {
       id: Date.now().toString(),
-      cropId,
-      date,
+      date: date.toISOString(),
       type: parseInt(type, 10),
       quantity: formatDecimalInput(quantity),
       agrotechnicalIntervention, 
-      description,
+      description: description.trim(),
     };
 
     setLoading(true);
     try {
-      const storedPlantProtections = await AsyncStorage.getItem('plantProtections');
-      const plantProtections = storedPlantProtections ? JSON.parse(storedPlantProtections) : [];
-      const updatedPlantProtections = [...plantProtections, newPlantProtection];
-      await AsyncStorage.setItem('plantProtections', JSON.stringify(updatedPlantProtections));
+      const storedFarms = await AsyncStorage.getItem('farms');
+      if (!storedFarms) throw new Error("Nie znaleziono danych o gospodarstwach.");
+
+      let parsedFarms = JSON.parse(storedFarms);
+      let found = false;
+
+      // Szukamy cropId w strukturze gospodarstw, pól i upraw
+      for (const farm of parsedFarms) {
+        for (const field of farm.fields) {
+          const cropIndex = field.crops.findIndex(crop => crop.id === cropId);
+          if (cropIndex !== -1) {
+            if (!field.crops[cropIndex].plantProtections) {
+              field.crops[cropIndex].plantProtections = [];
+            }
+            field.crops[cropIndex].plantProtections.push(newPlantProtection);
+            found = true;
+            break;
+          }
+        }
+        if (found) break;
+      }
+
+      if (!found) throw new Error("Nie znaleziono uprawy.");
+
+      await AsyncStorage.setItem('farms', JSON.stringify(parsedFarms));
 
       Alert.alert(
         "Sukces",
@@ -51,20 +70,16 @@ const AddPlantProtectionScreen = () => {
       );
     } catch (err) {
       console.error('Błąd podczas dodawania ochrony roślin:', err.message);
-      Alert.alert("Błąd", "Nie udało się dodać ochrony roślin. Spróbuj ponownie później.");
+      Alert.alert("Błąd", err.message || "Nie udało się dodać ochrony roślin. Spróbuj ponownie później.");
     } finally {
       setLoading(false);
     }
   };
 
   const onChangeDate = (event, selectedDate) => {
-    const currentDate = selectedDate || date;
-    setDate(currentDate);
-  };
-
-  const onChangeTime = (event, selectedTime) => {
-    const currentDate = selectedTime || date;
-    setDate(currentDate);
+    if (selectedDate) {
+      setDate(selectedDate);
+    }
   };
 
   return (
@@ -76,13 +91,6 @@ const AddPlantProtectionScreen = () => {
           mode="date"
           display="default"
           onChange={onChangeDate}
-          style={{ alignSelf: 'center', marginVertical: '2%' }}
-        />
-        <DateTimePicker
-          value={date}
-          mode="time"
-          display="default"
-          onChange={onChangeTime}
           style={{ alignSelf: 'center', marginVertical: '2%' }}
         />
       </View>

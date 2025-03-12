@@ -1,80 +1,109 @@
-import { createStackNavigator } from "@react-navigation/stack";;
-import { MapProvider } from "../context/MapProvider";
+import { createStackNavigator } from "@react-navigation/stack";
 import MapScreen from "../screens/Map/MapScreen";
-import AddSoilMeasurementScreen from '../screens/FieldManagement/AddSoilMeasurementScreen';
-import AddPlantProtectionScreen from '../screens/CropManagement/AddPlantProtectionScreen';
-import AddFertilizationScreen from '../screens/CropManagement/AddFertilizationScreen';
-import { PlantProtectionProvider } from "../context/PlantProtectionProvider";
-import { FertilizationProvider } from "../context/FertilizationProvider";
-import { SoilMeasurementProvider } from "../context/SoilMeasurementProvider";
-import FieldDetailsScreen from "../screens/Map/FieldDetailsScreen";
-import { FieldProvider } from "../context/FieldProvider";
-import { CropProvider } from "../context/CropProvider";
-import { PlotNumberProvider } from "../context/PlotNumberProvider";
-import AddPlotNumberScreen from "../screens/FieldManagement/AddPlotNumberScreen";
-import EditFieldScreen from "../screens/FieldManagement/EditFieldScreen";
-import CropDetailsScreen from "../screens/Map/CropDetailsScreen";
-import EditCropScreen from "../screens/CropManagement/EditCropScreen";
-import EditFertilizationScreen from "../screens/CropManagement/EditFertilizationScreen";
-import EditPlantProtectionScreen from "../screens/CropManagement/EditPlantProtectionScreen";
-import { CultivationOperationProvider } from "../context/CultivationOperationProvider";
-import AddCultivationOperationScreen from "../screens/CropManagement/AddCultivationOperationScreen";
-import { FarmProvider } from "../context/FarmProvider";
-import EditSoilMeasurementScreen from "../screens/FieldManagement/EditSoilMeasurementScreen";
-import EditPlotNumberScreen from "../screens/FieldManagement/EditPlotNumberScreen";
+import DodajPomiaryGlebyScreen from '../screens/FieldManagement/AddSoilMeasurementScreen';
+import DodajOchroneRoslinScreen from '../screens/CropManagement/AddPlantProtectionScreen';
+import DodajNawozenieScreen from '../screens/CropManagement/AddFertilizationScreen';
+import SzczegolyPolaScreen from "../screens/Map/FieldDetailsScreen";
+import DodajNumerDzialkiScreen from "../screens/FieldManagement/AddPlotNumberScreen";
+import EdytujPoleScreen from "../screens/FieldManagement/EditFieldScreen";
+import SzczegolyUprawyScreen from "../screens/Map/CropDetailsScreen";
+import EdytujUpraweScreen from "../screens/CropManagement/EditCropScreen";
+import EdytujNawozenieScreen from "../screens/CropManagement/EditFertilizationScreen";
+import EdytujOchroneRoslinScreen from "../screens/CropManagement/EditPlantProtectionScreen";
+import DodajOperacjeUprawowaScreen from "../screens/CropManagement/AddCultivationOperationScreen";
+import EdytujPomiaryGlebyScreen from "../screens/FieldManagement/EditSoilMeasurementScreen";
+import EdytujNumerDzialkiScreen from "../screens/FieldManagement/EditPlotNumberScreen";
 
 const Stack = createStackNavigator();
 
 const MapStack = () => {
     return (
-        <FarmProvider>
-            <FieldProvider>
-                <CropProvider>
-                    <MapProvider>
-                        <CultivationOperationProvider>
-                            <PlotNumberProvider>
-                                <SoilMeasurementProvider>
-                                    <PlantProtectionProvider>
-                                        <FertilizationProvider>
-                                            <Stack.Navigator
-                                                screenOptions={{
-                                                    headerStyle: {
-                                                        borderBottomWidth: 2,
-                                                    },
-                                                    headerTintColor: '#276e33',
-                                                    headerTitleStyle: {
-                                                        fontWeight: 'bold',
-                                                        fontSize: 18
-                                                    },
-                                                    drawerActiveBackgroundColor: '#276e33',
-                                                    drawerActiveTintColor: '#276e33'
-                                                }}
-                                            >
-                                                <Stack.Screen name="Map Screen" component={MapScreen} options={{ headerShown: false, title:'Map' }} />
-                                                <Stack.Screen name="Add Plant Protection" component={AddPlantProtectionScreen} options={{ headerShown: true, title:'Add Plant Protection' }} />
-                                                <Stack.Screen name="Add Fertilization" component={AddFertilizationScreen} options={{ headerShown: true, title: 'Add Fertilization' }} />
-                                                <Stack.Screen name='Add Soil Measurement' component={AddSoilMeasurementScreen} options={{headerShown: true, title: 'Add Soil Measurement'}} />
-                                                <Stack.Screen name='Edit Soil Measurement' component={EditSoilMeasurementScreen} options={{headerShown: true, title: 'Edit Soil Measurement'}} />
-                                                <Stack.Screen name='Field Details' component={FieldDetailsScreen} options={{headerShown: true, title: 'Field Details'}} />
-                                                <Stack.Screen name="Crop Details" component={CropDetailsScreen} options={{ headerShown: true, title: 'Crop Details' }} />
-                                                <Stack.Screen name='Add Plot Number' component={AddPlotNumberScreen} options={{headerShown: true, title: 'Add Plot Number'}} />
-                                                <Stack.Screen name='Edit Plot Number' component={EditPlotNumberScreen} options={{headerShown: true, title: 'Edit Plot Number'}} />
-                                                <Stack.Screen name="Edit Field" component={EditFieldScreen} options={{ headerShown: true, title: 'Edit Field' }} />
-                                                <Stack.Screen name="Edit Crop" component={EditCropScreen} options={{ headerShown: true, title: 'Edit Crop' }} />
-                                                <Stack.Screen name="Edit Fertilization" component={EditFertilizationScreen} options={{ headerShown: true, title: 'Edit Fertilization' }} />
-                                                <Stack.Screen name="Edit Plant Protection" component={EditPlantProtectionScreen} options={{ headerShown: true, title: 'Edit Plant Protection' }} />
-                                                <Stack.Screen name="Add Cultivation Operation" component={AddCultivationOperationScreen} options={{ headerShown: true, title: 'Add Cultivation Operation' }} />
-                                            </Stack.Navigator>
-                                        </FertilizationProvider>
-                                    </PlantProtectionProvider>
-                                </SoilMeasurementProvider>
-                            </PlotNumberProvider>
-                        </CultivationOperationProvider>
-                    </MapProvider>
-                </CropProvider>
-            </FieldProvider>
-        </FarmProvider>
-    )
+        <Stack.Navigator
+            screenOptions={{
+                headerStyle: {
+                    borderBottomWidth: 2,
+                },
+                headerTintColor: '#276e33',
+                headerTitleStyle: {
+                    fontWeight: 'bold',
+                    fontSize: 18
+                },
+                drawerActiveBackgroundColor: '#276e33',
+                drawerActiveTintColor: '#276e33'
+            }}
+        >
+            <Stack.Screen 
+                name="Mapa" 
+                component={MapScreen} 
+                options={{ headerShown: false, title: 'Mapa' }} 
+            />
+            <Stack.Screen 
+                name="Dodaj Ochronę Roślin" 
+                component={DodajOchroneRoslinScreen} 
+                options={{ headerShown: true, title: 'Dodaj ochronę roślin' }} 
+            />
+            <Stack.Screen 
+                name="Dodaj Nawożenie" 
+                component={DodajNawozenieScreen} 
+                options={{ headerShown: true, title: 'Dodaj nawożenie' }} 
+            />
+            <Stack.Screen 
+                name='Dodaj Pomiary Gleby' 
+                component={DodajPomiaryGlebyScreen} 
+                options={{ headerShown: true, title: 'Dodaj pomiary gleby' }} 
+            />
+            <Stack.Screen 
+                name='Edytuj Pomiary Gleby' 
+                component={EdytujPomiaryGlebyScreen} 
+                options={{ headerShown: true, title: 'Edytuj pomiary gleby' }} 
+            />
+            <Stack.Screen 
+                name='Szczegóły Pola' 
+                component={SzczegolyPolaScreen} 
+                options={{ headerShown: true, title: 'Szczegóły pola' }} 
+            />
+            <Stack.Screen 
+                name="Szczegóły Uprawy" 
+                component={SzczegolyUprawyScreen} 
+                options={{ headerShown: true, title: 'Szczegóły uprawy' }} 
+            />
+            <Stack.Screen 
+                name='Dodaj Numer Działki' 
+                component={DodajNumerDzialkiScreen} 
+                options={{ headerShown: true, title: 'Dodaj numer działki' }} 
+            />
+            <Stack.Screen 
+                name='Edytuj Numer Działki' 
+                component={EdytujNumerDzialkiScreen} 
+                options={{ headerShown: true, title: 'Edytuj numer działki' }} 
+            />
+            <Stack.Screen 
+                name="Edytuj Pole" 
+                component={EdytujPoleScreen} 
+                options={{ headerShown: true, title: 'Edytuj pole' }} 
+            />
+            <Stack.Screen 
+                name="Edytuj Uprawę" 
+                component={EdytujUpraweScreen} 
+                options={{ headerShown: true, title: 'Edytuj uprawę' }} 
+            />
+            <Stack.Screen 
+                name="Edytuj Nawożenie" 
+                component={EdytujNawozenieScreen} 
+                options={{ headerShown: true, title: 'Edytuj nawożenie' }} 
+            />
+            <Stack.Screen 
+                name="Edytuj Ochronę Roślin" 
+                component={EdytujOchroneRoslinScreen} 
+                options={{ headerShown: true, title: 'Edytuj ochronę roślin' }} 
+            />
+            <Stack.Screen 
+                name="Dodaj Operację Uprawową" 
+                component={DodajOperacjeUprawowaScreen} 
+                options={{ headerShown: true, title: 'Dodaj operację uprawową' }} 
+            />
+        </Stack.Navigator>
+    );
 };
 
 export default MapStack;

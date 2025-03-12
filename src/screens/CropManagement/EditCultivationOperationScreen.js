@@ -23,17 +23,29 @@ const EditCultivationOperationScreen = () => {
     useEffect(() => {
         const fetchOperation = async () => {
             try {
-                const storedOperations = await AsyncStorage.getItem('cultivationOperations');
-                const operations = storedOperations ? JSON.parse(storedOperations) : [];
+                const storedFarms = await AsyncStorage.getItem('farms');
+                if (!storedFarms) throw new Error("Nie znaleziono gospodarstw.");
 
-                const operation = operations.find(op => op.id === operationId);
+                let farms = JSON.parse(storedFarms);
+                let foundOperation = null;
 
-                if (operation) {
-                    const localDate = moment.utc(operation.date).tz(moment.tz.guess()).toDate();
+                for (const farm of farms) {
+                    for (const field of farm.fields) {
+                        for (const crop of field.crops) {
+                            if (crop.id === cropId && crop.cultivationOperations) {
+                                foundOperation = crop.cultivationOperations.find(op => op.id === operationId);
+                                if (foundOperation) break;
+                            }
+                        }
+                    }
+                }
+
+                if (foundOperation) {
+                    const localDate = moment.utc(foundOperation.date).tz(moment.tz.guess()).toDate();
                     setDate(localDate);
-                    setName(operation.name);
-                    setDescription(operation.description);
-                    setAgrotechnicalIntervention(operation.agrotechnicalIntervention);
+                    setName(foundOperation.name);
+                    setDescription(foundOperation.description || '');
+                    setAgrotechnicalIntervention(foundOperation.agrotechnicalIntervention);
                 } else {
                     Alert.alert("Błąd", "Nie znaleziono zabiegu uprawowego.");
                     navigation.goBack();
@@ -48,7 +60,7 @@ const EditCultivationOperationScreen = () => {
         };
 
         fetchOperation();
-    }, [operationId, navigation]);
+    }, [cropId, operationId, navigation]);
 
     const handleSave = async () => {
         if (!name) {
@@ -59,16 +71,38 @@ const EditCultivationOperationScreen = () => {
         setLoading(true);
 
         try {
-            const storedOperations = await AsyncStorage.getItem('cultivationOperations');
-            let operations = storedOperations ? JSON.parse(storedOperations) : [];
+            const storedFarms = await AsyncStorage.getItem('farms');
+            if (!storedFarms) throw new Error("Nie znaleziono gospodarstw.");
 
-            const updatedOperations = operations.map(op => 
-                op.id === operationId 
-                ? { ...op, date, name, description, agrotechnicalIntervention } 
-                : op
-            );
+            let farms = JSON.parse(storedFarms);
+            let updated = false;
 
-            await AsyncStorage.setItem('cultivationOperations', JSON.stringify(updatedOperations));
+            for (const farm of farms) {
+                for (const field of farm.fields) {
+                    for (const crop of field.crops) {
+                        if (crop.id === cropId && crop.cultivationOperations) {
+                            const operationIndex = crop.cultivationOperations.findIndex(op => op.id === operationId);
+                            if (operationIndex !== -1) {
+                                crop.cultivationOperations[operationIndex] = {
+                                    ...crop.cultivationOperations[operationIndex],
+                                    date,
+                                    name,
+                                    description,
+                                    agrotechnicalIntervention
+                                };
+                                updated = true;
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+
+            if (!updated) {
+                throw new Error("Nie znaleziono zabiegu uprawowego do edycji.");
+            }
+
+            await AsyncStorage.setItem('farms', JSON.stringify(farms));
 
             Alert.alert(
                 "Sukces",
@@ -77,7 +111,7 @@ const EditCultivationOperationScreen = () => {
             );
         } catch (error) {
             console.error('Błąd podczas aktualizacji:', error);
-            Alert.alert('Błąd', 'Nie udało się zaktualizować zabiegu uprawowego.');
+            Alert.alert('Błąd', error.message || 'Nie udało się zaktualizować zabiegu uprawowego.');
         } finally {
             setLoading(false);
         }

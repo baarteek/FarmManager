@@ -15,7 +15,7 @@ const FertilizationCalculatorScreen = () => {
     const [result, setResult] = useState(null);
     const [unit, setUnit] = useState('kilograms per hectare');
 
-    const handleCalculate = () => {
+    const handleCalculate = () => { 
         const areaSizeNum = formatDecimalInput(areaSize);
         const fertilizerRateNum = formatDecimalInput(fertilizerRate);
 

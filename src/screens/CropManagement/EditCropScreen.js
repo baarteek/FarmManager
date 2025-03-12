@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TextInput, TouchableOpacity, Alert, ActivityIndicator, Switch } from 'react-native';
-import { ScrollView } from 'react-native-gesture-handler';
+import { View, Text, TextInput, TouchableOpacity, Alert, ActivityIndicator, Switch, ScrollView } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { styles } from '../../styles/AppStyles';
 import CropTypePicker from '../../components/CropTypePicker';
@@ -9,7 +8,8 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 const EditCropScreen = () => {
     const navigation = useNavigation();
     const route = useRoute();
-    const { id } = route.params;
+    const { cropId, fieldId, farmId } = route.params;
+    
 
     const [name, setName] = useState('');
     const [type, setType] = useState('');
@@ -19,28 +19,32 @@ const EditCropScreen = () => {
     useEffect(() => {
         const loadCrop = async () => {
             try {
-                const storedCrops = await AsyncStorage.getItem('crops');
-                const crops = storedCrops ? JSON.parse(storedCrops) : [];
-
-                const crop = crops.find(crop => crop.id === id);
-
-                if (crop) {
-                    setName(crop.name);
-                    setType(crop.type.toString());
-                    setIsActive(crop.isActive);
-                } else {
-                    Alert.alert("Błąd", "Nie znaleziono uprawy.");
-                    navigation.goBack();
-                }
+                const storedFarms = await AsyncStorage.getItem('farms');
+                let parsedFarms = storedFarms ? JSON.parse(storedFarms) : [];
+    
+                const farm = parsedFarms.find(f => f.id === farmId);
+                if (!farm) throw new Error("Nie znaleziono gospodarstwa.");
+    
+                const field = farm.fields.find(f => f.id === fieldId);
+                if (!field) throw new Error("Nie znaleziono pola.");
+    
+                const crop = field.crops.find(c => c.id === cropId);
+                if (!crop) throw new Error("Nie znaleziono uprawy.");
+    
+                setName(crop.name);
+                setType(crop.type ? crop.type.toString() : "");
+                setIsActive(crop.isActive);
             } catch (error) {
                 console.error("Błąd podczas pobierania danych uprawy:", error);
+                Alert.alert("Błąd", error.message);
+                navigation.goBack();
             } finally {
                 setLoading(false);
             }
         };
-
+    
         loadCrop();
-    }, [id, navigation]);
+    }, [cropId, fieldId, farmId, navigation]);
 
     const handleSave = async () => {
         if (!name || !type) {
@@ -49,29 +53,34 @@ const EditCropScreen = () => {
         }
 
         try {
-            const storedCrops = await AsyncStorage.getItem('crops');
-            let crops = storedCrops ? JSON.parse(storedCrops) : [];
+            const storedFarms = await AsyncStorage.getItem('farms');
+            let parsedFarms = storedFarms ? JSON.parse(storedFarms) : [];
 
-            const cropIndex = crops.findIndex(crop => crop.id === id);
-            if (cropIndex !== -1) {
-                crops[cropIndex] = {
-                    ...crops[cropIndex],
-                    name,
-                    type: parseInt(type, 10),
-                    isActive
-                };
+            const farmIndex = parsedFarms.findIndex(f => f.id === farmId);
+            if (farmIndex === -1) throw new Error("Nie znaleziono gospodarstwa.");
 
-                await AsyncStorage.setItem('crops', JSON.stringify(crops));
+            const fieldIndex = parsedFarms[farmIndex].fields.findIndex(f => f.id === fieldId);
+            if (fieldIndex === -1) throw new Error("Nie znaleziono pola.");
 
-                Alert.alert("Sukces", "Zapisano zmiany!", [
-                    { text: "OK", onPress: () => navigation.goBack() }
-                ]);
-            } else {
-                Alert.alert("Błąd", "Nie znaleziono uprawy do edycji.");
-            }
+            const cropIndex = parsedFarms[farmIndex].fields[fieldIndex].crops.findIndex(c => c.id === cropId);
+            if (cropIndex === -1) throw new Error("Nie znaleziono uprawy.");
+
+            parsedFarms[farmIndex].fields[fieldIndex].crops[cropIndex] = {
+                ...parsedFarms[farmIndex].fields[fieldIndex].crops[cropIndex],
+                name,
+                type: parseInt(type, 10),
+                isActive
+            };
+
+            // Zapisz zmiany
+            await AsyncStorage.setItem('farms', JSON.stringify(parsedFarms));
+
+            Alert.alert("Sukces", "Zapisano zmiany!", [
+                { text: "OK", onPress: () => navigation.goBack() }
+            ]);
         } catch (error) {
             console.error("Błąd podczas zapisywania uprawy:", error);
-            Alert.alert("Błąd", "Nie udało się zapisać zmian.");
+            Alert.alert("Błąd", error.message);
         }
     };
 

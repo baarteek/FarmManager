@@ -8,34 +8,44 @@ const FieldDetailsModal = ({ isVisible, onClose, field }) => {
 
   if (!field) return null;
 
+  const activeCrop = field.crops?.find(crop => crop.isActive) || null;
+
   const navigateToSoilMeasurements = () => {
     isVisible && onClose();
-    navigation.navigate('Add Soil Measurement', { fieldId: field.fieldId });
+    navigation.navigate('Dodaj Pomiary Gleby', { fieldId: field.id });
   };
 
   const navigateToFertilization = () => {
     isVisible && onClose();
-    navigation.navigate('Add Fertilization', { cropId: field.cropId });
+    if (activeCrop) {
+      navigation.navigate('Dodaj Nawożenie', { cropId: activeCrop.id });
+    }
   };
 
   const navigateToPlantProtections = () => {
     isVisible && onClose();
-    navigation.navigate('Add Plant Protection', { cropId: field.cropId });
+    if (activeCrop) {
+      navigation.navigate('Dodaj Ochronę Roślin', { cropId: activeCrop.id});
+    }
   };
 
   const navigateToCropDetails = () => {
     isVisible && onClose();
-    navigation.navigate('Crop Details', { cropId: field.cropId });
+    if (activeCrop) {
+      navigation.navigate('Szczegóły Uprawy', { cropId: activeCrop.id });
+    }
   };
 
   const navigateToFieldDetails = () => {
     isVisible && onClose();
-    navigation.navigate('Field Details', { fieldId: field.fieldId });
+    navigation.navigate('Szczegóły Pola', { fieldId: field.id });
   };
 
   const navigateToCultivationOperations = () => {
     isVisible && onClose();
-    navigation.navigate('Add Cultivation Operation', { cropId: field.cropId });
+    if (activeCrop) {
+      navigation.navigate('Dodaj Operację Uprawową', { cropId: activeCrop.id });
+    }
   };
 
   return (
@@ -46,56 +56,60 @@ const FieldDetailsModal = ({ isVisible, onClose, field }) => {
     >
       <View style={styles.modalContainer}>
         <View style={styles.modalContent}>
-          <Text style={styles.fieldName}>{field.fieldName}</Text>
+          <Text style={styles.fieldName}>{field.name}</Text>
           
           <View style={styles.infoContainer}>
-            <Text style={styles.infoLabel}>Area:</Text>
+            <Text style={styles.infoLabel}>Powierzchnia:</Text>
             <Text style={styles.infoValue}>{field.area} ha</Text>
           </View>
 
           <View style={styles.infoContainer}>
-            <Text style={styles.infoLabel}>Crop:</Text>
-            <Text style={styles.infoValue}>{field.cropName}</Text>
+            <Text style={styles.infoLabel}>Uprawa:</Text>
+            <Text style={styles.infoValue}>{activeCrop ? activeCrop.name : 'Brak uprawy'}</Text>
           </View>
 
           <View style={styles.separator} />
 
           <TouchableOpacity style={[styles.actionButton, styles.fieldDetailsButton]} onPress={navigateToFieldDetails}>
             <Icon name="map" size={20} color="white" style={styles.icon} />
-            <Text style={styles.actionButtonText}>Field Details</Text>
+            <Text style={styles.actionButtonText}>Szczegóły pola</Text>
           </TouchableOpacity>
 
-          <TouchableOpacity style={[styles.actionButton, styles.cropDetailsButton]} onPress={navigateToCropDetails}>
-            <Icon name="sprout" size={20} color="white" style={styles.icon} />
-            <Text style={styles.actionButtonText}>Crop Details</Text>
-          </TouchableOpacity>
+          {activeCrop && (
+            <>
+              <TouchableOpacity style={[styles.actionButton, styles.cropDetailsButton]} onPress={navigateToCropDetails}>
+                <Icon name="sprout" size={20} color="white" style={styles.icon} />
+                <Text style={styles.actionButtonText}>Szczegóły uprawy</Text>
+              </TouchableOpacity>
 
-          <View style={styles.separator} />
+              <View style={styles.separator} />
 
-          <TouchableOpacity style={[styles.actionButton, styles.soilButton]} onPress={navigateToSoilMeasurements}>
-            <Icon name="flask" size={20} color="white" style={styles.icon} />
-            <Text style={styles.actionButtonText}>Add Soil Measurements</Text>
-          </TouchableOpacity>
+              <TouchableOpacity style={[styles.actionButton, styles.soilButton]} onPress={navigateToSoilMeasurements}>
+                <Icon name="flask" size={20} color="white" style={styles.icon} />
+                <Text style={styles.actionButtonText}>Dodaj pomiary gleby</Text>
+              </TouchableOpacity>
 
-          <TouchableOpacity style={[styles.actionButton, styles.cultivationOperationButton]} onPress={navigateToCultivationOperations}>
-            <Icon name="tractor" size={20} color="white" style={styles.icon} />
-            <Text style={styles.actionButtonText}>Add Cultivation Operation</Text>
-          </TouchableOpacity>
+              <TouchableOpacity style={[styles.actionButton, styles.cultivationOperationButton]} onPress={navigateToCultivationOperations}>
+                <Icon name="tractor" size={20} color="white" style={styles.icon} />
+                <Text style={styles.actionButtonText}>Dodaj operację uprawową</Text>
+              </TouchableOpacity>
 
-          <TouchableOpacity style={[styles.actionButton, styles.fertilizationButton]} onPress={navigateToFertilization}>
-            <Icon name="leaf" size={20} color="white" style={styles.icon} />
-            <Text style={styles.actionButtonText}>Add Fertilization</Text>
-          </TouchableOpacity>
+              <TouchableOpacity style={[styles.actionButton, styles.fertilizationButton]} onPress={navigateToFertilization}>
+                <Icon name="leaf" size={20} color="white" style={styles.icon} />
+                <Text style={styles.actionButtonText}>Dodaj nawożenie</Text>
+              </TouchableOpacity>
 
-          <TouchableOpacity style={[styles.actionButton, styles.plantProtectionButton]} onPress={navigateToPlantProtections}>
-            <Icon name="shield" size={20} color="white" style={styles.icon} />
-            <Text style={styles.actionButtonText}>Add Plant Protections</Text>
-          </TouchableOpacity>
+              <TouchableOpacity style={[styles.actionButton, styles.plantProtectionButton]} onPress={navigateToPlantProtections}>
+                <Icon name="shield" size={20} color="white" style={styles.icon} />
+                <Text style={styles.actionButtonText}>Dodaj ochronę roślin</Text>
+              </TouchableOpacity>
+            </>
+          )}
 
           <View style={styles.separator} />
 
           <TouchableOpacity style={styles.closeButton} onPress={onClose}>
-            <Text style={styles.closeButtonText}>Close</Text>
+            <Text style={styles.closeButtonText}>Zamknij</Text>
           </TouchableOpacity>
         </View>
       </View>

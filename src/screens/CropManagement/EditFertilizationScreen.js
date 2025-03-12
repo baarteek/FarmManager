@@ -26,17 +26,30 @@ const EditFertilizationScreen = () => {
     useEffect(() => {
         const fetchFertilization = async () => {
             try {
-                const storedFertilizations = await AsyncStorage.getItem('fertilizations');
-                const fertilizations = storedFertilizations ? JSON.parse(storedFertilizations) : [];
+                const storedFarms = await AsyncStorage.getItem('farms');
+                if (!storedFarms) throw new Error("Nie znaleziono gospodarstw.");
 
-                const fertilization = fertilizations.find(f => f.id === fertilizationId);
-                if (fertilization) {
-                    const localDate = moment.utc(fertilization.date).tz(moment.tz.guess()).toDate();
+                let farms = JSON.parse(storedFarms);
+                let foundFertilization = null;
+
+                for (const farm of farms) {
+                    for (const field of farm.fields) {
+                        for (const crop of field.crops) {
+                            if (crop.id === cropId && crop.fertilizations) {
+                                foundFertilization = crop.fertilizations.find(f => f.id === fertilizationId);
+                                if (foundFertilization) break;
+                            }
+                        }
+                    }
+                }
+
+                if (foundFertilization) {
+                    const localDate = moment.utc(foundFertilization.date).tz(moment.tz.guess()).toDate();
                     setDate(localDate);
-                    setType(fertilization.type.toString());
-                    setQuantity(fertilization.quantity.toString());
-                    setAgrotechnicalIntervention(fertilization.agrotechnicalIntervention);
-                    setDescription(fertilization.description);
+                    setType(foundFertilization.type.toString());
+                    setQuantity(foundFertilization.quantity.toString());
+                    setAgrotechnicalIntervention(foundFertilization.agrotechnicalIntervention);
+                    setDescription(foundFertilization.description);
                 } else {
                     Alert.alert("Błąd", "Nie znaleziono nawożenia.");
                     navigation.goBack();
@@ -51,7 +64,7 @@ const EditFertilizationScreen = () => {
         };
 
         fetchFertilization();
-    }, [fertilizationId, navigation]);
+    }, [cropId, fertilizationId, navigation]);
 
     const handleSave = async () => {
         if (!type || !quantity || !agrotechnicalIntervention) {
@@ -62,23 +75,46 @@ const EditFertilizationScreen = () => {
         setLoading(true);
 
         try {
-            const storedFertilizations = await AsyncStorage.getItem('fertilizations');
-            let fertilizations = storedFertilizations ? JSON.parse(storedFertilizations) : [];
+            const storedFarms = await AsyncStorage.getItem('farms');
+            if (!storedFarms) throw new Error("Nie znaleziono gospodarstw.");
 
-            const updatedFertilizations = fertilizations.map(f =>
-                f.id === fertilizationId
-                    ? { ...f, date, type: parseInt(type, 10), quantity: formatDecimalInput(quantity), agrotechnicalIntervention, description }
-                    : f
-            );
+            let farms = JSON.parse(storedFarms);
+            let updated = false;
 
-            await AsyncStorage.setItem('fertilizations', JSON.stringify(updatedFertilizations));
+            for (const farm of farms) {
+                for (const field of farm.fields) {
+                    for (const crop of field.crops) {
+                        if (crop.id === cropId && crop.fertilizations) {
+                            const fertilizationIndex = crop.fertilizations.findIndex(f => f.id === fertilizationId);
+                            if (fertilizationIndex !== -1) {
+                                crop.fertilizations[fertilizationIndex] = {
+                                    ...crop.fertilizations[fertilizationIndex],
+                                    date,
+                                    type: parseInt(type, 10),
+                                    quantity: formatDecimalInput(quantity),
+                                    agrotechnicalIntervention,
+                                    description
+                                };
+                                updated = true;
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+
+            if (!updated) {
+                throw new Error("Nie znaleziono nawożenia do edycji.");
+            }
+
+            await AsyncStorage.setItem('farms', JSON.stringify(farms));
 
             Alert.alert("Sukces", "Dane nawożenia zostały zaktualizowane!", [
                 { text: "OK", onPress: () => navigation.goBack() }
             ]);
         } catch (error) {
             console.error('Błąd podczas aktualizacji nawożenia:', error);
-            Alert.alert('Błąd', 'Nie udało się zaktualizować danych nawożenia.');
+            Alert.alert('Błąd', error.message || 'Nie udało się zaktualizować danych nawożenia.');
         } finally {
             setLoading(false);
         }

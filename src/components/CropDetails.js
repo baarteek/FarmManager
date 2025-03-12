@@ -25,7 +25,7 @@ const cropTypeMapping = {
   13: "Inna"
 };
 
-const CropDetails = ({ crop, handleDeleteCrop }) => {
+const CropDetails = ({ crop, handleDeleteCrop, onEdit }) => {
   const navigation = useNavigation();
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedDetails, setSelectedDetails] = useState(null);
@@ -33,46 +33,30 @@ const CropDetails = ({ crop, handleDeleteCrop }) => {
   const [fieldName, setFieldName] = useState("Ładowanie...");
   const [farmName, setFarmName] = useState("Ładowanie...");
   const [cropTypeName, setCropTypeName] = useState(cropTypeMapping[crop.type] || "Nieznany typ");
+  const [cropIdentifier, setCropIdentifier] = useState('');
   const [fertilizations, setFertilizations] = useState([]);
   const [plantProtections, setPlantProtections] = useState([]);
   const [cultivationOperations, setCultivationOperations] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  const fetchData = async () => {
+  const fetchData = () => {
     try {
-      const storedFields = await AsyncStorage.getItem('fields');
-      const storedFarms = await AsyncStorage.getItem('farms');
-      const storedFertilizations = await AsyncStorage.getItem('fertilizations');
-      const storedPlantProtections = await AsyncStorage.getItem('plantProtections');
-      const storedCultivationOperations = await AsyncStorage.getItem('cultivationOperations');
-
-      const fields = storedFields ? JSON.parse(storedFields) : [];
-      const farms = storedFarms ? JSON.parse(storedFarms) : [];
-      const fertilizationsData = storedFertilizations ? JSON.parse(storedFertilizations) : [];
-      const plantProtectionsData = storedPlantProtections ? JSON.parse(storedPlantProtections) : [];
-      const cultivationOperationsData = storedCultivationOperations ? JSON.parse(storedCultivationOperations) : [];
-
-      const field = fields.find(f => f.id === crop.fieldId);
-      setFieldName(field ? field.name : "Nieznane pole");
-
-      if (field) {
-        const farm = farms.find(f => f.id === field.farmId);
-        setFarmName(farm ? farm.name : "Nieznane gospodarstwo");
-      } else {
-        setFarmName("Nieznane gospodarstwo");
-      }
-
-      setFertilizations(fertilizationsData.filter(f => f.cropId === crop.id));
-      setPlantProtections(plantProtectionsData.filter(p => p.cropId === crop.id));
-      setCultivationOperations(cultivationOperationsData.filter(c => c.cropId === crop.id));
+      setFieldName(crop.fieldName || "Nieznane pole");
+      setFarmName(crop.farmName || "Nieznane gospodarstwo");
+      setCropTypeName(cropTypeMapping[crop.type] || "Nieznany typ");
+      setCropIdentifier(crop.identifier || "Brak");
+  
+      setFertilizations(crop.fertilizations ? [...crop.fertilizations] : []);
+      setPlantProtections(crop.plantProtections ? [...crop.plantProtections] : []);
+      setCultivationOperations(crop.cultivationOperations ? [...crop.cultivationOperations] : []);
+  
     } catch (error) {
-      console.error("Błąd podczas pobierania danych:", error);
+      console.error("Błąd podczas pobierania danych uprawy:", error);
     } finally {
       setLoading(false);
     }
   };
 
-  // Listener, który odświeża dane przy każdym wejściu na ekran
   useEffect(() => {
     fetchData();
     const unsubscribe = navigation.addListener('focus', () => {
@@ -81,7 +65,6 @@ const CropDetails = ({ crop, handleDeleteCrop }) => {
     return unsubscribe;
   }, [navigation]);
 
-  // Funkcje obsługujące Zabiegi Uprawowe
   const handleCultivationOperationClick = (operation) => {
     setSelectedDetails({
       "Nazwa": operation.name,
@@ -92,27 +75,6 @@ const CropDetails = ({ crop, handleDeleteCrop }) => {
     });
     setModalTitle("Szczegóły zabiegu uprawowego");
     setModalVisible(true);
-  };
-
-  const handleDeleteOperation = async (id) => {
-    Alert.alert("Usuń zabieg uprawowy", "Czy na pewno chcesz usunąć ten zabieg?", [
-      { text: "Anuluj", style: "cancel" },
-      {
-        text: "Usuń",
-        onPress: async () => {
-          try {
-            const storedOperations = await AsyncStorage.getItem('cultivationOperations');
-            const parsedOperations = storedOperations ? JSON.parse(storedOperations) : [];
-            const updatedOperations = parsedOperations.filter(op => op.id !== id);
-            await AsyncStorage.setItem('cultivationOperations', JSON.stringify(updatedOperations));
-            // Odśwież dane po usunięciu
-            fetchData();
-          } catch (error) {
-            console.error("Błąd podczas usuwania zabiegu uprawowego:", error);
-          }
-        }
-      }
-    ]);
   };
 
   const handleFertilizationClick = (fertilization) => {
@@ -127,27 +89,6 @@ const CropDetails = ({ crop, handleDeleteCrop }) => {
     setModalVisible(true);
   };
 
-  const handleDeleteFertilization = async (id) => {
-    Alert.alert("Usuń nawożenie", "Czy na pewno chcesz usunąć to nawożenie?", [
-      { text: "Anuluj", style: "cancel" },
-      {
-        text: "Usuń",
-        onPress: async () => {
-          try {
-            const storedFertilizations = await AsyncStorage.getItem('fertilizations');
-            const parsedFertilizations = storedFertilizations ? JSON.parse(storedFertilizations) : [];
-            const updatedFertilizations = parsedFertilizations.filter(f => f.id !== id);
-            await AsyncStorage.setItem('fertilizations', JSON.stringify(updatedFertilizations));
-            // Odśwież dane po usunięciu
-            fetchData();
-          } catch (error) {
-            console.error("Błąd podczas usuwania nawożenia:", error);
-          }
-        }
-      }
-    ]);
-  };
-
   const handlePlantProtectionClick = (protection) => {
     setSelectedDetails({
       "Data": formatDate(protection.date),
@@ -160,22 +101,79 @@ const CropDetails = ({ crop, handleDeleteCrop }) => {
     setModalVisible(true);
   };
 
+  const saveUpdatedCrop = async (updatedCrop) => {
+    try {
+      const storedFarms = await AsyncStorage.getItem('farms');
+      if (!storedFarms) throw new Error("Brak zapisanych gospodarstw.");
+
+      let farms = JSON.parse(storedFarms);
+      let updated = false;
+
+      for (const farm of farms) {
+        for (const field of farm.fields) {
+          const cropIndex = field.crops.findIndex(c => c.id === updatedCrop.id);
+          if (cropIndex !== -1) {
+            field.crops[cropIndex] = updatedCrop;
+            updated = true;
+            break;
+          }
+        }
+      }
+
+      if (!updated) throw new Error("Nie znaleziono uprawy do edycji.");
+
+      await AsyncStorage.setItem('farms', JSON.stringify(farms));
+      setCultivationOperations(updatedCrop.cultivationOperations || []);
+      setFertilizations(updatedCrop.fertilizations || []);
+      setPlantProtections(updatedCrop.plantProtections || []);
+    } catch (error) {
+      console.error("Błąd podczas zapisywania zmian w uprawie:", error);
+    }
+  };
+
+  const handleDeleteOperation = async (id) => {
+    Alert.alert("Usuń zabieg uprawowy", "Czy na pewno chcesz usunąć ten zabieg?", [
+      { text: "Anuluj", style: "cancel" },
+      {
+        text: "Usuń",
+        onPress: async () => {
+          const updatedCrop = {
+            ...crop,
+            cultivationOperations: crop.cultivationOperations.filter(op => op.id !== id),
+          };
+          await saveUpdatedCrop(updatedCrop);
+        }
+      }
+    ]);
+  };
+
+  const handleDeleteFertilization = async (id) => {
+    Alert.alert("Usuń nawożenie", "Czy na pewno chcesz usunąć to nawożenie?", [
+      { text: "Anuluj", style: "cancel" },
+      {
+        text: "Usuń",
+        onPress: async () => {
+          const updatedCrop = {
+            ...crop,
+            fertilizations: crop.fertilizations.filter(f => f.id !== id),
+          };
+          await saveUpdatedCrop(updatedCrop);
+        }
+      }
+    ]);
+  };
+
   const handleDeletePlantProtection = async (id) => {
     Alert.alert("Usuń ochronę roślin", "Czy na pewno chcesz usunąć tę ochronę roślin?", [
       { text: "Anuluj", style: "cancel" },
       {
         text: "Usuń",
         onPress: async () => {
-          try {
-            const storedPlantProtections = await AsyncStorage.getItem('plantProtections');
-            const parsedPlantProtections = storedPlantProtections ? JSON.parse(storedPlantProtections) : [];
-            const updatedPlantProtections = parsedPlantProtections.filter(p => p.id !== id);
-            await AsyncStorage.setItem('plantProtections', JSON.stringify(updatedPlantProtections));
-            // Odśwież dane po usunięciu
-            fetchData();
-          } catch (error) {
-            console.error("Błąd podczas usuwania ochrony roślin:", error);
-          }
+          const updatedCrop = {
+            ...crop,
+            plantProtections: crop.plantProtections.filter(p => p.id !== id),
+          };
+          await saveUpdatedCrop(updatedCrop);
         }
       }
     ]);
@@ -201,6 +199,11 @@ const CropDetails = ({ crop, handleDeleteCrop }) => {
         <View style={styles.infoRowContainer}>
           <Text style={styles.text}>Typ uprawy:</Text>
           <Text style={styles.text}>{cropTypeName}</Text>
+        </View>
+        <View style={styles.line} />
+        <View style={styles.infoRowContainer}>
+          <Text style={styles.text}>Oznaczenie:</Text>
+          <Text style={styles.text}>{cropIdentifier}</Text>
         </View>
         <View style={styles.line} />
         <View style={styles.infoRowContainer}>
@@ -314,7 +317,7 @@ const CropDetails = ({ crop, handleDeleteCrop }) => {
         <View style={[styles.rowContainer, { justifyContent: 'space-around', marginTop: '3%' }]}>
           <TouchableOpacity 
             style={[styles.button, { backgroundColor: '#00BFFF', width: '40%' }]} 
-            onPress={() => navigation.navigate('Edytuj Uprawę', { id: crop.id })}
+            onPress={() => onEdit()}
           >
             <Text style={{ textAlign: 'center', fontWeight: 'bold', fontSize: 16, color: '#fff' }}>Edytuj</Text>
           </TouchableOpacity>

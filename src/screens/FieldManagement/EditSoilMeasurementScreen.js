@@ -22,18 +22,28 @@ const EditSoilMeasurementScreen = () => {
     const loadMeasurement = async () => {
       setLoading(true);
       try {
-        const storedMeasurements = await AsyncStorage.getItem('soilMeasurements');
-        const parsedMeasurements = storedMeasurements ? JSON.parse(storedMeasurements) : [];
-        const measurement = parsedMeasurements.find(m => m.id === measurementId);
-        if (measurement) {
-          setDate(new Date(measurement.date));
-          setPH(measurement.pH.toString());
-          setNitrogen(measurement.nitrogen.toString());
-          setPhosphorus(measurement.phosphorus.toString());
-          setPotassium(measurement.potassium.toString());
-        } else {
+        const storedFarms = await AsyncStorage.getItem('farms');
+        if (!storedFarms) throw new Error('Nie znaleziono gospodarstw.');
+
+        const parsedFarms = JSON.parse(storedFarms);
+        const farm = parsedFarms.find(farm => farm.fields.some(field => field.id === fieldId));
+        if (!farm) throw new Error('Nie znaleziono gospodarstwa.');
+
+        const field = farm.fields.find(f => f.id === fieldId);
+        if (!field) throw new Error('Nie znaleziono pola.');
+
+        const measurement = field.soilMeasurements?.find(m => m.id === measurementId);
+        if (!measurement) {
           Alert.alert('Błąd', 'Pomiar nie został znaleziony.');
+          return;
         }
+
+        setDate(new Date(measurement.date));
+        setPH(measurement.pH.toString());
+        setNitrogen(measurement.nitrogen.toString());
+        setPhosphorus(measurement.phosphorus.toString());
+        setPotassium(measurement.potassium.toString());
+
       } catch (error) {
         Alert.alert('Błąd', 'Nie udało się załadować danych pomiaru gleby.');
       } finally {
@@ -42,7 +52,7 @@ const EditSoilMeasurementScreen = () => {
     };
 
     loadMeasurement();
-  }, [measurementId]);
+  }, [measurementId, fieldId]);
 
   const handleEditMeasurement = async () => {
     if (!pH || !nitrogen || !phosphorus || !potassium) {
@@ -52,7 +62,6 @@ const EditSoilMeasurementScreen = () => {
 
     const updatedMeasurement = {
       id: measurementId,
-      fieldId,
       date: date.toISOString(),
       pH: formatDecimalInput(pH),
       nitrogen: formatDecimalInput(nitrogen),
@@ -62,13 +71,22 @@ const EditSoilMeasurementScreen = () => {
 
     setLoading(true);
     try {
-      const storedMeasurements = await AsyncStorage.getItem('soilMeasurements');
-      const parsedMeasurements = storedMeasurements ? JSON.parse(storedMeasurements) : [];
-      const updatedMeasurements = parsedMeasurements.map(m =>
+      const storedFarms = await AsyncStorage.getItem('farms');
+      if (!storedFarms) throw new Error('Nie znaleziono gospodarstw.');
+
+      let parsedFarms = JSON.parse(storedFarms);
+      const farmIndex = parsedFarms.findIndex(f => f.fields.some(field => field.id === fieldId));
+      if (farmIndex === -1) throw new Error('Nie znaleziono gospodarstwa.');
+
+      const fieldIndex = parsedFarms[farmIndex].fields.findIndex(f => f.id === fieldId);
+      if (fieldIndex === -1) throw new Error('Nie znaleziono pola.');
+
+      let measurements = parsedFarms[farmIndex].fields[fieldIndex].soilMeasurements || [];
+      parsedFarms[farmIndex].fields[fieldIndex].soilMeasurements = measurements.map(m =>
         m.id === measurementId ? updatedMeasurement : m
       );
 
-      await AsyncStorage.setItem('soilMeasurements', JSON.stringify(updatedMeasurements));
+      await AsyncStorage.setItem('farms', JSON.stringify(parsedFarms));
 
       Alert.alert(
         "Pomiar zaktualizowany",

@@ -10,10 +10,10 @@ const CalculatorListScreen = () => {
         <View style={styles.mainContainer}>
             <ScrollView style={{ backgroundColor: '#fff' }} showsVerticalScrollIndicator={false}>
                 <View style={calculatorStyles.categoryContainer}>
-                    <Text style={[calculatorStyles.categoryTitle, { color: '#388E3C' }]}>Seeding and Planting</Text>
+                    <Text style={[calculatorStyles.categoryTitle, { color: '#388E3C' }]}>Siew i Sadzenie</Text>
                     <InfoCard 
-                        title="Seeding Rate Calculator"
-                        description="Calculate the optimal seeding rate for your crops."
+                        title="Kalkulator Normy Wysiewu"
+                        description="Oblicz optymalną normę wysiewu dla swoich upraw."
                         iconName="grain"
                         iconBackgroundColor="#8BC34A"
                         borderColor="#388E3C"
@@ -21,8 +21,8 @@ const CalculatorListScreen = () => {
                         onPress={() => navigation.navigate('SeedingRateCalculator')}
                     />
                     <InfoCard 
-                        title="Plant Density Calculator"
-                        description="Determine the optimal plant density for your fields."
+                        title="Kalkulator Gęstości Roślin"
+                        description="Określ optymalną gęstość roślin na polu."
                         iconName="nature"
                         iconBackgroundColor="#8BC34A"
                         borderColor="#388E3C"
@@ -30,8 +30,8 @@ const CalculatorListScreen = () => {
                         onPress={() => navigation.navigate('PlantDensityCalculator')}
                     />
                     <InfoCard 
-                        title="Sowing Density Calculator"
-                        description="Calculate the appropriate sowing density for your crops."
+                        title="Kalkulator Gęstości Siewu"
+                        description="Oblicz odpowiednią gęstość siewu dla swoich upraw."
                         iconName="scatter-plot"
                         iconBackgroundColor="#8BC34A"
                         borderColor="#388E3C"
@@ -43,10 +43,10 @@ const CalculatorListScreen = () => {
                 <View style={calculatorStyles.separator} />
 
                 <View style={calculatorStyles.categoryContainer}>
-                    <Text style={[calculatorStyles.categoryTitle, { color: '#F57C00' }]}>Crop Protection and Fertilization</Text>
+                    <Text style={[calculatorStyles.categoryTitle, { color: '#F57C00' }]}>Ochrona Roślin i Nawożenie</Text>
                     <InfoCard 
-                        title="Crop Protection Calculator"
-                        description="Calculate the required amount of crop protection chemicals."
+                        title="Kalkulator Ochrony Roślin"
+                        description="Oblicz wymaganą ilość środków ochrony roślin."
                         iconName="shield"
                         iconBackgroundColor="#FF9800"
                         borderColor="#F57C00"
@@ -54,8 +54,8 @@ const CalculatorListScreen = () => {
                         onPress={() => navigation.navigate('CropProtectionCalculator')}
                     />
                     <InfoCard 
-                        title="Fertilization Calculator"
-                        description="Determine the optimal amount of fertilizer for your crops."
+                        title="Kalkulator Nawożenia"
+                        description="Określ optymalną ilość nawozu dla swoich upraw."
                         iconName="spa"
                         iconBackgroundColor="#FF9800"
                         borderColor="#F57C00"
@@ -63,8 +63,8 @@ const CalculatorListScreen = () => {
                         onPress={() => navigation.navigate('FertilizationCalculator')}
                     />
                     <InfoCard 
-                        title="Plant Water Needs Calculator"
-                        description="Calculate the water requirements for your plants."
+                        title="Kalkulator Zapotrzebowania na Wodę"
+                        description="Oblicz zapotrzebowanie roślin na wodę."
                         iconName="opacity"
                         iconBackgroundColor="#FF9800"
                         borderColor="#F57C00"
@@ -76,10 +76,10 @@ const CalculatorListScreen = () => {
                 <View style={calculatorStyles.separator} />
 
                 <View style={calculatorStyles.categoryContainer}>
-                    <Text style={[calculatorStyles.categoryTitle, { color: '#7B1FA2' }]}>Grain Management</Text>
+                    <Text style={[calculatorStyles.categoryTitle, { color: '#7B1FA2' }]}>Zarządzanie Zbożem</Text>
                     <InfoCard 
-                        title="Grain Weight After Drying Calculator"
-                        description="Calculate the grain weight after drying."
+                        title="Kalkulator Wagi Zboża po Suszeniu"
+                        description="Oblicz wagę zboża po procesie suszenia."
                         iconName="straighten"
                         iconBackgroundColor="#9C27B0"
                         borderColor="#7B1FA2"
@@ -87,8 +87,8 @@ const CalculatorListScreen = () => {
                         onPress={() => navigation.navigate('GrainWeightAfterDryingCalculator')}
                     />
                     <InfoCard 
-                        title="Grain Storage Capacity Calculator"
-                        description="Calculate how much grain (in tons) can be stored in a given storage capacity based on grain type and volume."
+                        title="Kalkulator Pojemności Magazynowej"
+                        description="Oblicz ile ton zboża można przechować w danym magazynie w zależności od rodzaju zboża i objętości."
                         iconName="store"
                         iconBackgroundColor="#9C27B0"
                         borderColor="#7B1FA2"
@@ -100,10 +100,10 @@ const CalculatorListScreen = () => {
                 <View style={calculatorStyles.separator} />
 
                 <View style={calculatorStyles.categoryContainer}>
-                    <Text style={[calculatorStyles.categoryTitle, { color: '#455A64' }]}>Machinery and Fuel</Text>
+                    <Text style={[calculatorStyles.categoryTitle, { color: '#455A64' }]}>Maszyny i Paliwo</Text>
                     <InfoCard 
-                        title="Fuel Consumption Calculator"
-                        description="Calculate the fuel consumption of your agricultural machinery."
+                        title="Kalkulator Zużycia Paliwa"
+                        description="Oblicz zużycie paliwa przez swoje maszyny rolnicze."
                         iconName="local-gas-station"
                         iconBackgroundColor="#607D8B"
                         borderColor="#455A64"
@@ -111,8 +111,8 @@ const CalculatorListScreen = () => {
                         onPress={() => navigation.navigate('FuelConsumptionCalculator')}
                     />
                     <InfoCard 
-                        title="Machinery Efficiency Calculator"
-                        description="Determine the efficiency of your agricultural machinery."
+                        title="Kalkulator Wydajności Maszyn"
+                        description="Określ wydajność swoich maszyn rolniczych."
                         iconName="build"
                         iconBackgroundColor="#607D8B"
                         borderColor="#455A64"

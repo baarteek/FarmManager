@@ -4,13 +4,12 @@ import { styles } from '../../styles/AppStyles';
 import { useRoute, useNavigation } from '@react-navigation/native';
 import FloatingActionButton from '../../components/FloatingActionButton';
 import WarningView from '../../components/WarningView';
-import { useFieldContext } from '../../context/FieldProvider';
 import CropDetails from '../../components/CropDetails';
 
 const ShowCropsScreen = () => {
     const route = useRoute();
     const navigation = useNavigation();
-    const { fields, deleteCropFromField } = useFieldContext();
+
     const { fieldId } = route.params;
 
     const [crops, setCrops] = useState([]);

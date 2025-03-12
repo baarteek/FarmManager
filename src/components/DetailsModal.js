@@ -39,7 +39,7 @@ const DetailsModal = ({ visible, onClose, title, details }) => {
                             {formattedDetails && Object.entries(formattedDetails).map(([key, value]) => (
                                 <View key={key} style={styles.detailRow}>
                                     <Text style={styles.detailKey}>{key}:</Text>
-                                    <Text style={styles.detailValue}>{value.toString()}</Text>
+                                    <Text style={styles.detailValue}>{value || "Brak wartości"}</Text>
                                 </View>
                             ))}
                         </View>

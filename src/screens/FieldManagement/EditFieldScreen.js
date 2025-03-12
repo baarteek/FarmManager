@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, Alert, ScrollView } from "react-native";
 import { styles } from "../../styles/AppStyles";
 import { useNavigation, useRoute } from "@react-navigation/native";
@@ -9,8 +9,7 @@ import SoilTypePicker from '../../components/SoilTypePicker';
 const EditFieldScreen = () => {
     const navigation = useNavigation();
     const route = useRoute();
-    const { field } = route.params;
-    console.log(field);
+    const { farmId, field } = route.params;
 
     const [name, setName] = useState(field.name);
     const [area, setArea] = useState(field.area);
@@ -18,22 +17,35 @@ const EditFieldScreen = () => {
 
     const handleSaveField = async () => {
         if (!name || !area || soilType === null) {
-            Alert.alert("Błąd", "Wszystkie pola są wymagane."); 
+            Alert.alert("Błąd", "Wszystkie pola są wymagane.");
             return;
         }
 
         try {
-            const storedFields = await AsyncStorage.getItem('fields');
-            if (storedFields) {
-                let parsedFields = JSON.parse(storedFields);
-                const updatedFields = parsedFields.map(f => 
-                    f.id === field.id ? { ...f, name, area: formatDecimalInput(area), soilType } : f
-                );
+            const storedFarms = await AsyncStorage.getItem('farms');
+            if (storedFarms) {
+                let farms = JSON.parse(storedFarms);
+                const farmIndex = farms.findIndex(f => f.id === farmId);
 
-                await AsyncStorage.setItem('fields', JSON.stringify(updatedFields));
-                Alert.alert("Zapisano", "Pole zostało zaktualizowane.", [
-                    { text: "OK", onPress: () => navigation.goBack() }
-                ]);
+                if (farmIndex !== -1) {
+                    let fields = farms[farmIndex].fields || [];
+                    const fieldIndex = fields.findIndex(f => f.id === field.id);
+
+                    if (fieldIndex !== -1) {
+                        fields[fieldIndex] = { 
+                            ...fields[fieldIndex], 
+                            name, 
+                            area: formatDecimalInput(area), 
+                            soilType 
+                        };
+                        farms[farmIndex].fields = fields;
+                        await AsyncStorage.setItem('farms', JSON.stringify(farms));
+
+                        Alert.alert("Zapisano", "Pole zostało zaktualizowane.", [
+                            { text: "OK", onPress: () => navigation.goBack() }
+                        ]);
+                    }
+                }
             }
         } catch (error) {
             console.error("Błąd aktualizacji pola:", error);
