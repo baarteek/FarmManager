@@ -8,18 +8,22 @@ import {
   ActivityIndicator,
   ScrollView,
 } from "react-native";
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation, useRoute } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { styles } from "../../styles/AppStyles";
 
-const AddFertilizationProductScreen = () => {
+const AddProductScreen = () => {
   const navigation = useNavigation();
+  const route = useRoute();
+  const { productType } = route.params || {};
 
   const [productName, setProductName] = useState("");
   const [quantityPerUnit, setQuantityPerUnit] = useState("");
   const [unit, setUnit] = useState("kg/ha");
   const [description, setDescription] = useState("");
   const [loading, setLoading] = useState(false);
+
+  const storageKey = productType === "plantProtection" ? "plantProtectionProducts" : "fertilizationProducts";
 
   const handleAddProduct = async () => {
     if (!productName.trim()) {
@@ -37,27 +41,18 @@ const AddFertilizationProductScreen = () => {
 
     setLoading(true);
     try {
-      const storedProducts = await AsyncStorage.getItem(
-        "fertilizationProducts",
-      );
+      const storedProducts = await AsyncStorage.getItem(storageKey);
       let products = storedProducts ? JSON.parse(storedProducts) : [];
 
       products.push(newProduct);
-      await AsyncStorage.setItem(
-        "fertilizationProducts",
-        JSON.stringify(products),
-      );
+      await AsyncStorage.setItem(storageKey, JSON.stringify(products));
 
-      Alert.alert("Sukces", "Nowy produkt do nawożenia został dodany.", [
+      Alert.alert("Sukces", `Nowy produkt (${productType}) został dodany.`, [
         { text: "OK", onPress: () => navigation.goBack() },
       ]);
     } catch (err) {
       console.error("Błąd podczas dodawania produktu:", err.message);
-      Alert.alert(
-        "Błąd",
-        err.message ||
-          "Nie udało się dodać produktu. Spróbuj ponownie później.",
-      );
+      Alert.alert("Błąd", err.message || "Nie udało się dodać produktu. Spróbuj ponownie później.");
     } finally {
       setLoading(false);
     }
@@ -65,9 +60,7 @@ const AddFertilizationProductScreen = () => {
 
   return (
     <ScrollView style={styles.mainCantainer}>
-      <Text style={[styles.largeText, { textAlign: "center" }]}>
-        Nazwa produktu
-      </Text>
+      <Text style={[styles.largeText, { textAlign: "center" }]}>Nazwa Produktu</Text>
       <TextInput
         style={styles.input}
         placeholder="Wprowadź nazwę produktu"
@@ -76,13 +69,7 @@ const AddFertilizationProductScreen = () => {
       />
 
       <Text style={[styles.largeText, { textAlign: "center" }]}>Jednostka</Text>
-      <View
-        style={{
-          flexDirection: "row",
-          justifyContent: "center",
-          marginVertical: 10,
-        }}
-      >
+      <View style={{ flexDirection: "row", justifyContent: "center", marginVertical: 10 }}>
         <TouchableOpacity
           style={{
             padding: 10,
@@ -93,14 +80,7 @@ const AddFertilizationProductScreen = () => {
           }}
           onPress={() => setUnit("kg/ha")}
         >
-          <Text
-            style={{
-              fontWeight: "bold",
-              color: unit === "kg/ha" ? "#62C962" : "#000",
-            }}
-          >
-            kg/ha
-          </Text>
+          <Text style={{ fontWeight: "bold", color: unit === "kg/ha" ? "#62C962" : "#000" }}>kg/ha</Text>
         </TouchableOpacity>
         <TouchableOpacity
           style={{
@@ -112,20 +92,11 @@ const AddFertilizationProductScreen = () => {
           }}
           onPress={() => setUnit("l/ha")}
         >
-          <Text
-            style={{
-              fontWeight: "bold",
-              color: unit === "l/ha" ? "#62C962" : "#000",
-            }}
-          >
-            l/ha
-          </Text>
+          <Text style={{ fontWeight: "bold", color: unit === "l/ha" ? "#62C962" : "#000" }}>l/ha</Text>
         </TouchableOpacity>
       </View>
 
-      <Text style={[styles.largeText, { textAlign: "center" }]}>
-        Ilość ({unit})
-      </Text>
+      <Text style={[styles.largeText, { textAlign: "center" }]}>Ilość ({unit})</Text>
       <TextInput
         style={styles.input}
         placeholder="Wprowadź ilość"
@@ -134,9 +105,7 @@ const AddFertilizationProductScreen = () => {
         keyboardType="numeric"
       />
 
-      <Text style={[styles.largeText, { textAlign: "center" }]}>
-        Opis produktu
-      </Text>
+      <Text style={[styles.largeText, { textAlign: "center" }]}>Opis produktu</Text>
       <TextInput
         style={styles.input}
         placeholder="Dodaj opis produktu"
@@ -145,31 +114,14 @@ const AddFertilizationProductScreen = () => {
       />
 
       <TouchableOpacity
-        style={[
-          styles.button,
-          {
-            margin: "5%",
-            marginTop: "5%",
-            width: "80%",
-            backgroundColor: "#62C962",
-            alignSelf: "center",
-          },
-        ]}
+        style={[styles.button, { margin: "5%", marginTop: "5%", width: "80%", backgroundColor: "#62C962", alignSelf: "center" }]}
         onPress={handleAddProduct}
         disabled={loading}
       >
         {loading ? (
           <ActivityIndicator size="large" color="#fff" />
         ) : (
-          <Text
-            style={{
-              textAlign: "center",
-              fontWeight: "bold",
-              fontSize: 22,
-              color: "#fff",
-              marginHorizontal: "10%",
-            }}
-          >
+          <Text style={{ textAlign: "center", fontWeight: "bold", fontSize: 22, color: "#fff", marginHorizontal: "10%" }}>
             Dodaj produkt
           </Text>
         )}
@@ -178,4 +130,4 @@ const AddFertilizationProductScreen = () => {
   );
 };
 
-export default AddFertilizationProductScreen;
+export default AddProductScreen;

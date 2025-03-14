@@ -38,6 +38,7 @@ const CropDetails = ({ crop, handleDeleteCrop, onEdit }) => {
   const [plantProtections, setPlantProtections] = useState([]);
   const [cultivationOperations, setCultivationOperations] = useState([]);
   const [fertilizationProducts, setFertilizationProducts] = useState([]);
+  const [plantProtectionProducts, setPlantProtectionProducts] = useState([]);
   const [loading, setLoading] = useState(true);
 
   const fetchData = async () => {
@@ -50,6 +51,10 @@ const CropDetails = ({ crop, handleDeleteCrop, onEdit }) => {
       const storedProducts = await AsyncStorage.getItem('fertilizationProducts');
       const parsedProducts = storedProducts ? JSON.parse(storedProducts) : [];
       setFertilizationProducts(parsedProducts);
+
+      const storedPlantProtectionProducts = await AsyncStorage.getItem('plantProtectionProducts');
+      const parsedPlatnProtectionProducts = storedPlantProtectionProducts ? JSON.parse(storedPlantProtectionProducts) : [];
+      setPlantProtectionProducts(parsedPlatnProtectionProducts);
   
       setFertilizations(crop.fertilizations ? [...crop.fertilizations] : []);
       setPlantProtections(crop.plantProtections ? [...crop.plantProtections] : []);
@@ -97,10 +102,12 @@ const CropDetails = ({ crop, handleDeleteCrop, onEdit }) => {
   };
 
   const handlePlantProtectionClick = (protection) => {
+    const product = plantProtectionProducts.find(p => p.id === protection.productId);
     setSelectedDetails({
       "Data": formatDate(protection.date),
       "Godzina": formatTime(protection.date),
-      "Ilość": protection.quantity + " kg/ha",
+      "Produkt": product ? product.productName : "Nieznany produkt",
+      "Ilość": product ? `${product.quantityPerUnit} ${product.unit}` : "Brak danych",
       "Interwencja": protection.agrotechnicalIntervention,
       "Opis": protection.description || "Brak opisu",
     });
@@ -219,7 +226,7 @@ const CropDetails = ({ crop, handleDeleteCrop, onEdit }) => {
         </View>
         <View style={styles.line} />
 
-        <ExpandableComponent title="Zabiegi uprawowe" isExpanded={true} backgroundColor="#BAF1BA">
+        <ExpandableComponent title="Zabiegi agrotechniczne" isExpanded={false} backgroundColor="#BAF1BA">
           {cultivationOperations.length > 0 ? (
             cultivationOperations.map(operation => (
               <View key={operation.id} style={styles.infoRowContainer}>

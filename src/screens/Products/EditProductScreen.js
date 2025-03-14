@@ -4,16 +4,18 @@ import { useNavigation, useRoute } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { styles } from '../../styles/AppStyles';
 
-const EditFertilizationProductScreen = () => {
+const EditProductScreen = () => {
   const navigation = useNavigation();
   const route = useRoute();
-  const { product } = route.params;
+  const { product, productType } = route.params;
 
   const [productName, setProductName] = useState(product.productName);
   const [quantityPerUnit, setQuantityPerUnit] = useState(product.quantityPerUnit);
   const [unit, setUnit] = useState(product.unit || 'kg/ha');
   const [description, setDescription] = useState(product.description);
   const [loading, setLoading] = useState(false);
+
+  const storageKey = productType === "plantProtection" ? "plantProtectionProducts" : "fertilizationProducts";
 
   const handleUpdateProduct = async () => {
     if (!productName.trim()) {
@@ -23,7 +25,7 @@ const EditFertilizationProductScreen = () => {
 
     setLoading(true);
     try {
-      const storedProducts = await AsyncStorage.getItem('fertilizationProducts');
+      const storedProducts = await AsyncStorage.getItem(storageKey);
       let products = storedProducts ? JSON.parse(storedProducts) : [];
       
       const updatedProducts = products.map(p => {
@@ -39,7 +41,7 @@ const EditFertilizationProductScreen = () => {
         return p;
       });
       
-      await AsyncStorage.setItem('fertilizationProducts', JSON.stringify(updatedProducts));
+      await AsyncStorage.setItem(storageKey, JSON.stringify(updatedProducts));
 
       Alert.alert(
         "Sukces",
@@ -56,8 +58,7 @@ const EditFertilizationProductScreen = () => {
 
   return (
     <ScrollView style={styles.mainCantainer}>
-     
-      <Text style={[styles.largeText, { textAlign: 'center' }]}>Nazwa produktu</Text>
+      <Text style={[styles.largeText, { textAlign: 'center' }]}>Nazwa Produktu</Text>
       <TextInput
         style={styles.input}
         placeholder="Wprowadź nazwę produktu"
@@ -127,4 +128,4 @@ const EditFertilizationProductScreen = () => {
   );
 };
 
-export default EditFertilizationProductScreen;
+export default EditProductScreen;

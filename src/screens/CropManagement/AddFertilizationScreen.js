@@ -132,10 +132,10 @@ const AddFertilizationScreen = () => {
         selectedProduct={selectedProduct}
         onSelect={setSelectedProduct}
         onAdd={() => {
-          navigation.navigate('Dodaj Produkt Nawozenia');
+          navigation.navigate('Dodaj Produkt', { productType: 'fertilization'});
         }}
         onEdit={(product) => {
-          navigation.navigate('Edytuj Produkt Nawozenia', { product });
+          navigation.navigate('Edytuj Produkt', { product, productType: 'fertilization' });
         }}
         onDelete={(product) => {
           Alert.alert(
