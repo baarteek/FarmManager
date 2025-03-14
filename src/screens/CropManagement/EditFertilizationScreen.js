@@ -1,14 +1,11 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text, TextInput, TouchableOpacity, Alert, ActivityIndicator } from 'react-native';
-import { ScrollView } from 'react-native-gesture-handler';
-import { useNavigation, useRoute } from '@react-navigation/native';
+import React, { useState, useEffect, useCallback } from 'react';
+import { View, Text, TextInput, TouchableOpacity, Alert, ActivityIndicator, ScrollView } from 'react-native';
+import { useNavigation, useRoute, useFocusEffect } from '@react-navigation/native';
 import DateTimePicker from '@react-native-community/datetimepicker';
-import moment from 'moment-timezone';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { styles } from '../../styles/AppStyles';
-import FertilizationTypePicker from '../../components/FertilizationTypePicker';
 import AgrotechnicalInterventionList from '../../components/AgrotechnicalInterventionList';
-import { formatDecimalInput } from '../../utils/TextUtils';
+import ProductSelector from '../../components/ProductSelector';
 
 const EditFertilizationScreen = () => {
     const navigation = useNavigation();
@@ -16,12 +13,23 @@ const EditFertilizationScreen = () => {
     const { cropId, fertilizationId } = route.params;
 
     const [date, setDate] = useState(new Date());
-    const [type, setType] = useState('');
-    const [quantity, setQuantity] = useState('');
     const [agrotechnicalIntervention, setAgrotechnicalIntervention] = useState(0);
     const [description, setDescription] = useState('');
+    const [selectedProduct, setSelectedProduct] = useState(null);
+    const [products, setProducts] = useState([]);
     const [initialLoading, setInitialLoading] = useState(true);
     const [loading, setLoading] = useState(false);
+
+    const loadProducts = async () => {
+        try {
+            const storedProducts = await AsyncStorage.getItem('fertilizationProducts');
+            const parsedProducts = storedProducts ? JSON.parse(storedProducts) : [];
+            setProducts(parsedProducts);
+        } catch (err) {
+            console.error("Błąd podczas pobierania produktów:", err.message);
+            Alert.alert("Błąd", "Nie udało się pobrać produktów.");
+        }
+    };
 
     useEffect(() => {
         const fetchFertilization = async () => {
@@ -44,12 +52,16 @@ const EditFertilizationScreen = () => {
                 }
 
                 if (foundFertilization) {
-                    const localDate = moment.utc(foundFertilization.date).tz(moment.tz.guess()).toDate();
-                    setDate(localDate);
-                    setType(foundFertilization.type.toString());
-                    setQuantity(foundFertilization.quantity.toString());
+                    setDate(new Date(foundFertilization.date));
                     setAgrotechnicalIntervention(foundFertilization.agrotechnicalIntervention);
                     setDescription(foundFertilization.description);
+
+                    const storedProducts = await AsyncStorage.getItem('fertilizationProducts');
+                    const parsedProducts = storedProducts ? JSON.parse(storedProducts) : [];
+                    setProducts(parsedProducts);
+
+                    const selectedProd = parsedProducts.find(p => p.id === foundFertilization.productId);
+                    setSelectedProduct(selectedProd || null);
                 } else {
                     Alert.alert("Błąd", "Nie znaleziono nawożenia.");
                     navigation.goBack();
@@ -66,9 +78,15 @@ const EditFertilizationScreen = () => {
         fetchFertilization();
     }, [cropId, fertilizationId, navigation]);
 
+    useFocusEffect(
+        useCallback(() => {
+            loadProducts();
+        }, [])
+    );
+
     const handleSave = async () => {
-        if (!type || !quantity || !agrotechnicalIntervention) {
-            Alert.alert('Błąd walidacji', 'Wszystkie pola muszą być wypełnione.');
+        if (!selectedProduct || !agrotechnicalIntervention) {
+            Alert.alert('Błąd walidacji', 'Wszystkie pola muszą być wypełnione, w tym wybór produktu.');
             return;
         }
 
@@ -90,10 +108,9 @@ const EditFertilizationScreen = () => {
                                 crop.fertilizations[fertilizationIndex] = {
                                     ...crop.fertilizations[fertilizationIndex],
                                     date,
-                                    type: parseInt(type, 10),
-                                    quantity: formatDecimalInput(quantity),
                                     agrotechnicalIntervention,
-                                    description
+                                    description,
+                                    productId: selectedProduct.id
                                 };
                                 updated = true;
                                 break;
@@ -120,34 +137,6 @@ const EditFertilizationScreen = () => {
         }
     };
 
-    const onChangeDate = (event, selectedDate) => {
-        if (selectedDate) {
-            setDate(prevDate => {
-                const newDate = new Date(prevDate);
-                newDate.setFullYear(selectedDate.getFullYear(), selectedDate.getMonth(), selectedDate.getDate());
-                return newDate;
-            });
-        }
-    };
-
-    const onChangeTime = (event, selectedTime) => {
-        if (selectedTime) {
-            setDate(prevDate => {
-                const newDate = new Date(prevDate);
-                newDate.setHours(selectedTime.getHours(), selectedTime.getMinutes());
-                return newDate;
-            });
-        }
-    };
-
-    if (initialLoading) {
-        return (
-            <View style={styles.mainContainer}>
-                <ActivityIndicator size="large" color="#00ff00" />
-            </View>
-        );
-    }
-
     return (
         <ScrollView style={styles.mainCantainer}>
             <Text style={[styles.largeText, { textAlign: 'center' }]}>Data nawożenia</Text>
@@ -156,53 +145,59 @@ const EditFertilizationScreen = () => {
                     value={date}
                     mode="date"
                     display="default"
-                    onChange={onChangeDate}
-                    style={{ alignSelf: 'center', marginVertical: '2%' }}
-                />
-                <DateTimePicker
-                    value={date}
-                    mode="time"
-                    display="default"
-                    onChange={onChangeTime}
+                    onChange={(event, selectedDate) => setDate(selectedDate || date)}
                     style={{ alignSelf: 'center', marginVertical: '2%' }}
                 />
             </View>
-            <View style={styles.containerWithBorder}>
-                <Text style={[styles.largeText, { textAlign: 'center' }]}>Typ</Text>
-                <FertilizationTypePicker
-                    setSelectedFertilizationType={setType}
-                    selectedFertilizationType={type}
-                />
-            </View>
-            <Text style={[styles.largeText, { textAlign: 'center' }]}>Ilość (kg/ha)</Text>
-            <TextInput 
-                style={styles.input}
-                placeholder="Ilość"
-                value={quantity}
-                onChangeText={setQuantity}
-                keyboardType="numeric"
-            />
+
             <Text style={[styles.largeText, { textAlign: 'center' }]}>Interwencja agrotechniczna</Text>
-            <AgrotechnicalInterventionList 
-                selectedOption={agrotechnicalIntervention} 
-                setSelectedOption={setAgrotechnicalIntervention} 
-            />
+            <AgrotechnicalInterventionList selectedOption={agrotechnicalIntervention} setSelectedOption={setAgrotechnicalIntervention} />
+
             <Text style={[styles.largeText, { textAlign: 'center' }]}>Opis</Text>
-            <TextInput
-                style={styles.input}
-                placeholder="Opis"
-                value={description}
-                onChangeText={setDescription}
+            <TextInput style={styles.input} placeholder="Opis" value={description} onChangeText={setDescription} />
+
+            <ProductSelector 
+                products={products}
+                selectedProduct={selectedProduct}
+                onSelect={setSelectedProduct}
+                onAdd={() => navigation.navigate('Dodaj Produkt Nawozenia')}
+                onEdit={(product) => navigation.navigate('Edytuj Produkt Nawozenia', { product })}
+                onDelete={(product) => {
+                    Alert.alert(
+                        "Usuń produkt",
+                        `Czy na pewno chcesz usunąć produkt ${product.productName}?`,
+                        [
+                            { text: "Anuluj", style: "cancel" },
+                            { 
+                                text: "Usuń", 
+                                style: "destructive", 
+                                onPress: async () => {
+                                    try {
+                                        const updatedProducts = products.filter(p => p.id !== product.id);
+                                        await AsyncStorage.setItem('fertilizationProducts', JSON.stringify(updatedProducts));
+                                        setProducts(updatedProducts);
+                                        if (selectedProduct && selectedProduct.id === product.id) {
+                                            setSelectedProduct(null);
+                                        }
+                                    } catch (error) {
+                                        Alert.alert("Błąd", "Nie udało się usunąć produktu.");
+                                    }
+                                } 
+                            },
+                        ]
+                    );
+                }}
             />
+
             <TouchableOpacity 
                 style={[styles.button, { margin: '5%', marginTop: '5%', width: '80%', backgroundColor: '#62C962', alignSelf: 'center' }]} 
                 onPress={handleSave}
                 disabled={loading}
             >
-                {loading ? (
-                    <ActivityIndicator size="large" color="#fff" />
-                ) : (
-                    <Text style={{ textAlign: 'center', fontWeight: 'bold', fontSize: 22, color: '#fff' }}>Zapisz zmiany</Text>
+                {loading ? <ActivityIndicator size="large" color="#fff" /> : (
+                    <Text style={{ textAlign: 'center', fontWeight: 'bold', fontSize: 22, color: '#fff' }}>
+                        Zapisz zmiany
+                    </Text>
                 )}
             </TouchableOpacity>
         </ScrollView>

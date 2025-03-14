@@ -37,14 +37,19 @@ const CropDetails = ({ crop, handleDeleteCrop, onEdit }) => {
   const [fertilizations, setFertilizations] = useState([]);
   const [plantProtections, setPlantProtections] = useState([]);
   const [cultivationOperations, setCultivationOperations] = useState([]);
+  const [fertilizationProducts, setFertilizationProducts] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  const fetchData = () => {
+  const fetchData = async () => {
     try {
       setFieldName(crop.fieldName || "Nieznane pole");
       setFarmName(crop.farmName || "Nieznane gospodarstwo");
       setCropTypeName(cropTypeMapping[crop.type] || "Nieznany typ");
       setCropIdentifier(crop.identifier || "Brak");
+
+      const storedProducts = await AsyncStorage.getItem('fertilizationProducts');
+      const parsedProducts = storedProducts ? JSON.parse(storedProducts) : [];
+      setFertilizationProducts(parsedProducts);
   
       setFertilizations(crop.fertilizations ? [...crop.fertilizations] : []);
       setPlantProtections(crop.plantProtections ? [...crop.plantProtections] : []);
@@ -78,10 +83,12 @@ const CropDetails = ({ crop, handleDeleteCrop, onEdit }) => {
   };
 
   const handleFertilizationClick = (fertilization) => {
+    const product = fertilizationProducts.find(p => p.id === fertilization.productId);
     setSelectedDetails({
       "Data": formatDate(fertilization.date),
       "Godzina": formatTime(fertilization.date),
-      "Ilość": fertilization.quantity + " kg/ha",
+      "Produkt": product ? product.productName : "Nieznany produkt",
+      "Ilość": product ? `${product.quantityPerUnit} ${product.unit}` : "Brak danych",
       "Interwencja": fertilization.agrotechnicalIntervention,
       "Opis": fertilization.description || "Brak opisu",
     });

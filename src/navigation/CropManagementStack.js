@@ -8,6 +8,8 @@ import AddPlantProtectionScreen from "../screens/CropManagement/AddPlantProtecti
 import EditPlantProtectionScreen from "../screens/CropManagement/EditPlantProtectionScreen";
 import AddCultivationOperationScreen from "../screens/CropManagement/AddCultivationOperationScreen";
 import EditCultivationOperationScreen from "../screens/CropManagement/EditCultivationOperationScreen";
+import AddFertilizationProductScreen from "../screens/Products/AddFertilizationProductScreen";
+import EditFertilizationProductScreen from "../screens/Products/EditFertilizationProductScreen";
 
 const Stack = createStackNavigator();
 
@@ -71,6 +73,16 @@ const CropManagementStack = () => {
         name="Edytuj Zabieg Uprawowy"
         component={EditCultivationOperationScreen}
         options={{ headerShown: true, title: "Edytuj Zabieg Uprawowy" }}
+      />
+      <Stack.Screen
+        name="Dodaj Produkt Nawozenia"
+        component={AddFertilizationProductScreen}
+        options={{ headerShown: true, title: "Dodaj Produkt" }}
+      />
+            <Stack.Screen
+        name="Edytuj Produkt Nawozenia"
+        component={EditFertilizationProductScreen}
+        options={{ headerShown: true, title: "Edytuj Produkt" }}
       />
     </Stack.Navigator>
   );
