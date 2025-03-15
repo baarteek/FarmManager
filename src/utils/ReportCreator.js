@@ -1,5 +1,4 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import * as FileSystem from 'expo-file-system';
 import * as Sharing from 'expo-sharing';
 import { printToFileAsync } from 'expo-print';
 
@@ -12,6 +11,12 @@ const getAgrotechnicalActivitiesReportData = async (farmId) => {
 
         const farms = JSON.parse(farmsData);
         const selectedFarm = farms.find(farm => farm.id === farmId);
+
+        const fertilizationProducts = await AsyncStorage.getItem('fertilizationProducts');
+        const fertilizationProductsJson = JSON.parse(fertilizationProducts);
+
+        const plantProtectionProducts = await AsyncStorage.getItem('plantProtectionProducts');
+        const plantProtectionProductsJson = JSON.parse(plantProtectionProducts);
 
         if (!selectedFarm) {
             throw new Error(`Nie znaleziono gospodarstwa o ID: ${farmId}`);
@@ -42,6 +47,7 @@ const getAgrotechnicalActivitiesReportData = async (farmId) => {
                 });
 
                 activeCrop.plantProtections.forEach(protection => {
+                    let plantProtectionProduct = plantProtectionProductsJson.find(prod => prod.id === protection.productId);
                     referenceParcels.forEach(parcel => {
                         agrotechnicalActivities.push({
                             cropIdentifier: activeCrop.identifier,
@@ -50,8 +56,8 @@ const getAgrotechnicalActivitiesReportData = async (farmId) => {
                             area: parcel.area,
                             typeOfUse: activeCrop.name,
                             typeOfActivity: "Oprysk",
-                            plantProtectionProduct: protection.nameOfProduct,
-                            amount: `${protection.quantity} l/ha`,
+                            plantProtectionProduct: plantProtectionProduct.productName,
+                            amount: `${plantProtectionProduct.quantityPerUnit} ${plantProtectionProduct.unit}`,
                             packageNumber: protection.agrotechnicalIntervention || "",
                             comments: protection.description || ""
                         });
@@ -59,6 +65,8 @@ const getAgrotechnicalActivitiesReportData = async (farmId) => {
                 });
 
                 activeCrop.fertilizations.forEach(fertilization => {
+                    let fertilizationProduct = fertilizationProductsJson.find(prod => prod.id === fertilization.productId);
+                    console.log(fertilizationProduct)
                     referenceParcels.forEach(parcel => {
                         agrotechnicalActivities.push({
                             cropIdentifier: activeCrop.identifier,
@@ -67,8 +75,8 @@ const getAgrotechnicalActivitiesReportData = async (farmId) => {
                             area: parcel.area,
                             typeOfUse: activeCrop.name,
                             typeOfActivity: "Nawożenie",
-                            plantProtectionProduct: fertilization.nameOfProduct,
-                            amount: `${fertilization.quantity} t/ha`,
+                            plantProtectionProduct: fertilizationProduct.productName || "",
+                            amount: `${fertilizationProduct.quantityPerUnit} ${fertilizationProduct.unit}` || "",
                             packageNumber: fertilization.agrotechnicalIntervention || "",
                             comments: fertilization.description || ""
                         });
